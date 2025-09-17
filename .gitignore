@@ -1,0 +1,36 @@
+# ===== HBuilderX 编译输出 =====
+/dist/
+/unpackage/
+/build/
+/.temp/
+
+# ===== HBuilderX 缓存配置 =====
+/.hbuilderx/
+
+# ===== 日志与临时文件 =====
+*.log
+*.tmp
+*.bak
+*.swp
+*.old
+*.orig
+
+# ===== 本地依赖（npm/uni_modules）=====
+/node_modules/
+/uni_modules/.cache/
+
+# ===== IDE 配置文件 =====
+.vscode/
+.idea/
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.AppleDouble
+.LSOverride
+
+# ===== 环境变量配置（本地开发用）=====
+.env.local
+.env.*.local
