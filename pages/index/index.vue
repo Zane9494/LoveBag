@@ -71,7 +71,7 @@
 			<view class="cards-section" v-if="displayCards.length > 0">
 				<view class="section-header">
 					<text class="section-title">{{sectionTitle}}</text>
-					<text class="card-count">{{displayCards.length}}张</text>
+					<text class="card-count">{{displayCards.length}}种</text>
 				</view>
 
 				<view class="cards-grid">
@@ -112,30 +112,80 @@
 		<!-- 卡片详情弹窗 -->
 		<view class="modal-overlay" v-if="showModal" @click="closeModal">
 			<view class="modal-content" @click.stop>
-				<view class="modal-header" :style="currentThemeStyles">
-					<text class="modal-title">{{selectedCard.name}}</text>
-					<text class="modal-rarity" :class="'rarity-' + selectedCard.rarity">{{getRarityText(selectedCard.rarity)}}</text>
+				<!-- 关闭按钮 -->
+				<view class="modal-close-btn" @click="closeModal">
+					<text class="close-icon">×</text>
 				</view>
+
+				<!-- 卡片头部 -->
+				<view class="modal-header" :style="currentThemeStyles">
+					<view class="header-decoration">
+						<view class="decoration-circle"></view>
+						<view class="decoration-circle delay-1"></view>
+						<view class="decoration-circle delay-2"></view>
+					</view>
+					<view class="header-content">
+						<text class="modal-title">{{selectedCard.name}}</text>
+						<view class="modal-rarity-container">
+							<text class="rarity-label">稀有度</text>
+							<view class="modal-rarity" :class="'rarity-' + selectedCard.rarity">
+								<text class="rarity-icon">✦</text>
+								<text class="rarity-text">{{getRarityText(selectedCard.rarity)}}</text>
+							</view>
+						</view>
+					</view>
+				</view>
+
+				<!-- 卡片内容 -->
 				<view class="modal-body">
+					<!-- 描述部分 -->
 					<view class="detail-section" :style="{ borderLeft: `4rpx solid ${themeColor.primary}` }">
-						<text class="section-title">描述</text>
+						<view class="section-header">
+							<text class="section-icon">📝</text>
+							<text class="section-title">卡片描述</text>
+						</view>
 						<text class="section-content">{{selectedCard.description}}</text>
 					</view>
+
+					<!-- 使用方法部分 -->
 					<view class="detail-section" :style="{ borderLeft: `4rpx solid ${themeColor.primary}` }">
-						<text class="section-title">使用方法</text>
+						<view class="section-header">
+							<text class="section-icon">💡</text>
+							<text class="section-title">使用方法</text>
+						</view>
 						<text class="section-content">{{selectedCard.usage}}</text>
 					</view>
+
+					<!-- 使用技巧部分 -->
 					<view class="detail-section" :style="{ borderLeft: `4rpx solid ${themeColor.primary}` }">
-						<text class="section-title">使用技巧</text>
+						<view class="section-header">
+							<text class="section-icon">⭐</text>
+							<text class="section-title">使用技巧</text>
+						</view>
 						<text class="section-content">{{selectedCard.tips}}</text>
 					</view>
-					<view class="detail-section" :style="{ borderLeft: `4rpx solid ${themeColor.primary}` }">
-						<text class="section-title">心声</text>
-						<text class="section-content quote">{{selectedCard.quote}}</text>
+
+					<!-- 心声部分 -->
+					<view class="detail-section quote-section">
+						<view class="section-header">
+							<text class="section-icon">💭</text>
+							<text class="section-title">内心独白</text>
+						</view>
+						<view class="quote-container" :style="{ background: `linear-gradient(135deg, ${themeColor.primary}15 0%, ${themeColor.secondary}15 100%)` }">
+							<text class="quote-mark">"</text>
+							<text class="section-content quote">{{selectedCard.quote}}</text>
+							<text class="quote-mark quote-end">"</text>
+						</view>
 					</view>
 				</view>
+
+				<!-- 底部操作区 -->
 				<view class="modal-footer">
-					<button class="close-btn" :style="currentThemeStyles" @click="closeModal">关闭</button>
+					<view class="footer-decoration"></view>
+					<button class="close-btn" :style="currentThemeStyles" @click="closeModal">
+						<text class="btn-icon">✓</text>
+						<text class="btn-text">我知道了</text>
+					</button>
 				</view>
 			</view>
 		</view>
@@ -196,7 +246,7 @@
 				if (this.selectedCategory) {
 					return this.getRarityText(this.selectedCategory) + '卡片'
 				}
-				return '已搜索卡片'
+				return '全部卡片'
 			},
 			// 可用的分类列表（只显示有搜索过卡片的分类）
 			availableCategories() {
@@ -752,133 +802,369 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(0, 0, 0, 0.6);
+		background: rgba(0, 0, 0, 0.7);
+		backdrop-filter: blur(10rpx);
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		z-index: 1000;
-		animation: fadeIn 0.3s ease;
+		animation: fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 		padding: 40rpx;
 		box-sizing: border-box;
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+			backdrop-filter: blur(0rpx);
+		}
+		to {
+			opacity: 1;
+			backdrop-filter: blur(10rpx);
+		}
 	}
 
 	.modal-content {
 		background: white;
-		border-radius: 20rpx;
+		border-radius: 24rpx;
 		width: 100%;
-		max-width: 600rpx;
-		max-height: 80vh;
-		overflow-y: auto;
-		box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.25);
-		animation: slideUp 0.3s ease;
+		max-width: 640rpx;
+		max-height: 85vh;
+		overflow: hidden;
+		box-shadow: 0 24rpx 48rpx rgba(0,0,0,0.15), 0 8rpx 16rpx rgba(0,0,0,0.1);
+		animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+		position: relative;
 	}
 
 	@keyframes slideUp {
 		from {
 			opacity: 0;
-			transform: translateY(30rpx);
+			transform: translateY(60rpx) scale(0.9);
 		}
 		to {
 			opacity: 1;
-			transform: translateY(0);
+			transform: translateY(0) scale(1);
 		}
 	}
 
-	.modal-header {
+	.modal-close-btn {
+		position: absolute;
+		top: 20rpx;
+		right: 20rpx;
+		width: 56rpx;
+		height: 56rpx;
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		align-items: center;
-		padding: 30rpx;
-		border-bottom: 1rpx solid #f1f3f4;
+		background: rgba(255, 255, 255, 0.95);
+		border-radius: 50%;
+		box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.15);
+		cursor: pointer;
+		transition: all 0.3s ease;
+		z-index: 1010;
+		backdrop-filter: blur(10rpx);
+	}
+
+	.modal-close-btn:hover {
+		background: rgba(255, 255, 255, 1);
+		transform: scale(1.05);
+		box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.2);
+	}
+
+	.modal-close-btn:active {
+		transform: scale(0.95);
+	}
+
+	.close-icon {
+		font-size: 32rpx;
+		color: #495057;
+		font-weight: bold;
+		line-height: 1;
+	}
+
+	.modal-header {
+		padding: 40rpx 30rpx 30rpx;
 		background: linear-gradient(135deg, #4ecdc4 0%, #2ba3a8 100%);
-		border-radius: 20rpx 20rpx 0 0;
+		border-radius: 24rpx 24rpx 0 0;
 		color: white;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.header-decoration {
+		position: absolute;
+		top: -50%;
+		left: -50%;
+		width: 200%;
+		height: 200%;
+		pointer-events: none;
+		opacity: 0.1;
+	}
+
+	.decoration-circle {
+		position: absolute;
+		width: 120rpx;
+		height: 120rpx;
+		border: 2rpx solid rgba(255, 255, 255, 0.3);
+		border-radius: 50%;
+		top: 20%;
+		left: 80%;
+	}
+
+	.decoration-circle.delay-1 {
+		width: 80rpx;
+		height: 80rpx;
+		top: 60%;
+		left: 10%;
+		animation: float 8s ease-in-out infinite;
+		animation-delay: 1s;
+	}
+
+	.decoration-circle.delay-2 {
+		width: 60rpx;
+		height: 60rpx;
+		top: 10%;
+		left: 20%;
+		animation: float 6s ease-in-out infinite;
+		animation-delay: 3s;
+	}
+
+	@keyframes float {
+		0%, 100% {
+			transform: translateY(0) rotate(0deg);
+			opacity: 0.3;
+		}
+		50% {
+			transform: translateY(-20rpx) rotate(180deg);
+			opacity: 0.6;
+		}
+	}
+
+	.header-content {
+		position: relative;
+		z-index: 2;
 	}
 
 	.modal-title {
-		font-size: 32rpx;
-		font-weight: 600;
+		font-size: 36rpx;
+		font-weight: 700;
 		color: white;
+		margin-bottom: 15rpx;
+		text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
+		line-height: 1.2;
+	}
+
+	.modal-rarity-container {
+		display: flex;
+		align-items: center;
+		margin-top: 10rpx;
+	}
+
+	.rarity-label {
+		font-size: 24rpx;
+		color: rgba(255, 255, 255, 0.8);
+		margin-right: 12rpx;
+		font-weight: 500;
 	}
 
 	.modal-rarity {
-		font-size: 22rpx;
+		display: flex;
+		align-items: center;
 		padding: 8rpx 16rpx;
-		border-radius: 15rpx;
-		color: white;
-		font-weight: 600;
+		border-radius: 20rpx;
 		background: rgba(255, 255, 255, 0.2);
+		backdrop-filter: blur(10rpx);
+		border: 1rpx solid rgba(255, 255, 255, 0.3);
+		font-weight: 600;
+		font-size: 22rpx;
+	}
+
+	.rarity-icon {
+		font-size: 20rpx;
+		margin-right: 6rpx;
+		animation: sparkle 2s ease-in-out infinite;
+	}
+
+	@keyframes sparkle {
+		0%, 100% { transform: scale(1) rotate(0deg); }
+		50% { transform: scale(1.1) rotate(180deg); }
 	}
 
 	.modal-body {
 		padding: 30rpx;
+		max-height: 60vh;
+		overflow-y: auto;
+		background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
 	}
 
 	.detail-section {
-		margin-bottom: 30rpx;
-		padding: 20rpx;
-		background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
-		border-radius: 15rpx;
+		margin-bottom: 25rpx;
+		padding: 24rpx;
+		background: white;
+		border-radius: 16rpx;
 		border-left: 4rpx solid #4ecdc4;
+		box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.detail-section:hover {
+		transform: translateY(-2rpx);
+		box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.08);
+	}
+
+	.detail-section::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 2rpx;
+		background: linear-gradient(90deg, transparent 0%, rgba(78, 205, 196, 0.3) 50%, transparent 100%);
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 16rpx;
+	}
+
+	.section-icon {
+		font-size: 28rpx;
+		margin-right: 12rpx;
+		width: 32rpx;
+		text-align: center;
 	}
 
 	.section-title {
-		font-size: 26rpx;
+		font-size: 28rpx;
 		font-weight: 600;
 		color: #495057;
-		display: block;
-		margin-bottom: 15rpx;
+		flex: 1;
 	}
 
 	.section-content {
-		font-size: 24rpx;
+		font-size: 26rpx;
 		color: #6c757d;
-		line-height: 1.6;
+		line-height: 1.7;
 		display: block;
+		margin-left: 44rpx;
+	}
+
+	.quote-section {
+		border-left: 4rpx solid #6fa8dc;
+	}
+
+	.quote-container {
+		position: relative;
+		padding: 24rpx;
+		border-radius: 12rpx;
+		margin-left: 44rpx;
+		border: 1rpx solid rgba(111, 168, 220, 0.2);
+	}
+
+	.quote-mark {
+		font-size: 40rpx;
+		color: rgba(111, 168, 220, 0.4);
+		position: absolute;
+		font-family: serif;
+		font-weight: bold;
+	}
+
+	.quote-mark:first-child {
+		top: 8rpx;
+		left: 12rpx;
+	}
+
+	.quote-mark.quote-end {
+		bottom: 8rpx;
+		right: 12rpx;
+		transform: rotate(180deg);
 	}
 
 	.quote {
 		font-style: italic;
 		color: #495057;
-		background: linear-gradient(135deg, #e7f3ff 0%, #d6ebff 100%);
-		padding: 20rpx;
-		border-radius: 15rpx;
-		border-left: 4rpx solid #6fa8dc;
+		font-size: 26rpx;
+		line-height: 1.6;
+		padding: 20rpx 30rpx;
+		position: relative;
+		z-index: 1;
+		margin: 0;
 	}
 
 	.modal-footer {
 		padding: 30rpx;
-		border-top: 1rpx solid #f1f3f4;
-		text-align: center;
 		background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-		border-radius: 0 0 20rpx 20rpx;
+		border-radius: 0 0 24rpx 24rpx;
+		text-align: center;
+		position: relative;
+		border-top: 1rpx solid rgba(0,0,0,0.05);
+	}
+
+	.footer-decoration {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 2rpx;
+		background: linear-gradient(90deg, transparent 0%, rgba(78, 205, 196, 0.2) 50%, transparent 100%);
 	}
 
 	.close-btn {
 		background: linear-gradient(135deg, #4ecdc4 0%, #2ba3a8 100%);
 		color: white;
 		border: none;
-		border-radius: 25rpx;
-		padding: 20rpx 60rpx;
+		border-radius: 28rpx;
+		padding: 18rpx 48rpx;
 		font-size: 28rpx;
 		font-weight: 600;
-		box-shadow: 0 4rpx 12rpx rgba(78, 205, 196, 0.4);
-		transition: all 0.2s ease;
+		box-shadow: 0 6rpx 20rpx rgba(78, 205, 196, 0.3);
+		transition: all 0.3s ease;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		min-width: 200rpx;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.close-btn::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+		transition: left 0.5s ease;
+	}
+
+	.close-btn:hover::before {
+		left: 100%;
 	}
 
 	.close-btn:active {
-		transform: translateY(1rpx);
-		box-shadow: 0 2rpx 8rpx rgba(78, 205, 196, 0.5);
+		transform: translateY(2rpx);
+		box-shadow: 0 3rpx 12rpx rgba(78, 205, 196, 0.4);
 	}
 
-	.arrow-icon {
-		font-size: 20rpx;
-		color: #8b9dc3;
+	.btn-icon {
+		font-size: 26rpx;
+		margin-right: 8rpx;
+		animation: checkmark 0.6s ease-in-out;
+	}
+
+	@keyframes checkmark {
+		0% { transform: scale(0.5) rotate(-45deg); opacity: 0; }
+		50% { transform: scale(1.2) rotate(0deg); opacity: 0.8; }
+		100% { transform: scale(1) rotate(0deg); opacity: 1; }
+	}
+
+	.btn-text {
+		position: relative;
+		z-index: 1;
 	}
 
 	/* 分类选择器样式 */
