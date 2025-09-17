@@ -47,7 +47,6 @@
 							</view>
 						</view>
 						<text class="theme-name">{{ getThemeName(key) }}</text>
-						<text class="theme-status" v-if="currentTheme === key">正在使用</text>
 					</view>
 				</view>
 			</view>
@@ -218,7 +217,7 @@ export default {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background-color: #f8f9fa;
 }
 
 .custom-navbar {
@@ -316,8 +315,7 @@ export default {
 }
 
 .theme-section {
-	background-color: rgba(255, 255, 255, 0.95);
-	backdrop-filter: blur(10rpx);
+	background-color: white;
 	border-radius: 24rpx;
 	padding: 40rpx 30rpx;
 	flex: 1;
@@ -339,8 +337,8 @@ export default {
 
 .theme-grid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 25rpx;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 30rpx;
 	padding: 10rpx 0;
 }
 
@@ -348,10 +346,10 @@ export default {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 30rpx 20rpx;
+	padding: 40rpx 30rpx;
 	border: 3rpx solid transparent;
 	border-radius: 24rpx;
-	background-color: white;
+	background-color: #f8f9fa;
 	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 	cursor: pointer;
 	position: relative;
@@ -362,10 +360,10 @@ export default {
 }
 
 .theme-preview {
-	width: 120rpx;
-	height: 120rpx;
-	border-radius: 60rpx;
-	margin-bottom: 25rpx;
+	width: 140rpx;
+	height: 140rpx;
+	border-radius: 70rpx;
+	margin-bottom: 30rpx;
 	box-shadow: 0 8rpx 25rpx rgba(0,0,0,0.15);
 	position: relative;
 	overflow: hidden;
@@ -426,38 +424,27 @@ export default {
 }
 
 .theme-name {
-	font-size: 26rpx;
+	font-size: 28rpx;
 	color: #2c3e50;
 	font-weight: 600;
 	text-align: center;
 	margin-bottom: 8rpx;
 }
 
-.theme-status {
-	font-size: 20rpx;
-	color: #27ae60;
-	font-weight: 600;
-	text-align: center;
-	background: rgba(39, 174, 96, 0.1);
-	padding: 4rpx 12rpx;
-	border-radius: 12rpx;
-}
-
 .confirm-section {
-	background-color: rgba(255, 255, 255, 0.95);
-	backdrop-filter: blur(10rpx);
+	background-color: white;
 	border-radius: 24rpx;
-	padding: 30rpx;
+	padding: 40rpx 30rpx;
 	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.1);
 	text-align: center;
 }
 
 .confirm-btn {
 	width: 100%;
-	height: 88rpx;
+	height: 100rpx;
 	border: none;
-	border-radius: 44rpx;
-	font-size: 32rpx;
+	border-radius: 50rpx;
+	font-size: 34rpx;
 	font-weight: 700;
 	cursor: pointer;
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
