@@ -216,7 +216,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 32rpx;
+	padding: 0 20rpx; /* 从32rpx改为20rpx，让返回按钮更靠左 */
 }
 
 .back-btn {
@@ -323,9 +323,9 @@ export default {
 
 .theme-preview {
 	width: 100%;
-	height: 160rpx;
+	height: 180rpx; /* 从160rpx增加到180rpx，让预览区域更高 */
 	border-radius: 12rpx;
-	margin-bottom: 20rpx;
+	margin-bottom: 16rpx; /* 从20rpx减少到16rpx，减少与主题名称的空白 */
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -382,7 +382,7 @@ export default {
 
 .confirm-btn {
 	width: 100%;
-	height: 96rpx;
+	height: 110rpx; /* 从96rpx增加到110rpx，参考index.vue的按钮样式 */
 	border-radius: 25rpx;
 	border: none;
 	font-size: 28rpx;
