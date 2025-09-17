@@ -15,21 +15,15 @@
 		<view class="main-content">
 			<!-- 当前主题预览 -->
 			<view class="preview-section" :style="previewThemeStyles">
-				<view class="preview-content">
-					<image class="preview-logo" src="/static/logo.png" mode="aspectFit"></image>
-					<view class="preview-text">
-						<text class="preview-title">{{ getThemeName(selectedTheme) }}</text>
-						<text class="preview-subtitle">{{ selectedTheme === currentTheme ? '当前使用的主题' : '预览主题效果' }}</text>
-					</view>
+				<image class="preview-logo" src="/static/logo.png" mode="aspectFit"></image>
+				<view class="preview-text">
+					<text class="preview-title">{{ getThemeName(selectedTheme) }}</text>
+					<text class="preview-subtitle">{{ selectedTheme === currentTheme ? '当前使用的主题' : '预览主题效果' }}</text>
 				</view>
 			</view>
 
 			<!-- 主题选择 -->
 			<view class="theme-section">
-				<view class="section-header">
-					<text class="section-title">选择主题</text>
-				</view>
-
 				<view class="theme-grid">
 					<view
 						class="theme-card"
@@ -42,9 +36,7 @@
 							<view class="theme-check" v-if="currentTheme === key">
 								<text class="check-icon">✓</text>
 							</view>
-							<view class="theme-selected" v-if="selectedTheme === key && selectedTheme !== currentTheme">
-								<text class="selected-icon">●</text>
-							</view>
+							<!-- 移除被选中主题的 selected-icon -->
 						</view>
 						<text class="theme-name">{{ getThemeName(key) }}</text>
 					</view>
@@ -110,18 +102,13 @@ export default {
 			}
 		},
 		confirmButtonStyle() {
-			if (this.selectedTheme === this.currentTheme) {
-				return {
-					background: '#e9ecef',
-					color: '#6c757d',
-					boxShadow: 'none'
-				}
-			}
+			// 确认按钮跟随选中的主题颜色变化
 			const colors = this.themeColors[this.selectedTheme]
 			return {
 				background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
 				color: 'white',
-				boxShadow: `0 8rpx 24rpx ${colors.primary}40`
+				boxShadow: `0 8rpx 24rpx ${colors.primary}40`,
+				opacity: this.selectedTheme === this.currentTheme ? '0.6' : '1'
 			}
 		}
 	},
@@ -187,21 +174,19 @@ export default {
 
 		getThemeCardStyle(theme, key) {
 			const isSelected = this.selectedTheme === key
-			const isCurrent = this.currentTheme === key
-
-			if (isSelected && !isCurrent) {
+			// 选中时只显示边框，不做其他效果变化
+			if (isSelected) {
 				return {
 					borderColor: theme.primary,
-					boxShadow: `0 6rpx 20rpx ${theme.primary}40`,
-					background: 'white',
-					transform: 'scale(1.02)'
+					borderWidth: '3rpx',
+					borderStyle: 'solid'
 				}
 			}
 
 			return {
 				borderColor: 'transparent',
-				boxShadow: '0 4rpx 12rpx rgba(0,0,0,0.08)',
-				background: 'white'
+				borderWidth: '3rpx',
+				borderStyle: 'solid'
 			}
 		},
 
@@ -212,161 +197,139 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .container {
+	height: 100vh;
+	background: #f8f9fa;
 	display: flex;
 	flex-direction: column;
-	min-height: 100vh;
-	background-color: #f8f9fa;
 }
 
 .custom-navbar {
-	width: 100%;
-	background-color: #fff;
-	box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
-	position: sticky;
-	top: 0;
-	z-index: 100;
+	background: white;
+	border-bottom: 1rpx solid #e9ecef;
+	z-index: 1000;
 }
 
 .navbar-content {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 	height: 88rpx;
-	padding: 0 40rpx;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 32rpx;
 }
 
 .back-btn {
-	width: 60rpx;
-	height: 60rpx;
+	width: 88rpx;
+	height: 88rpx;
 	display: flex;
-	justify-content: center;
 	align-items: center;
-	border-radius: 50%;
-	background-color: #f8f9fa;
-	transition: all 0.2s ease;
-}
-
-.back-btn:active {
-	transform: scale(0.9);
-	background-color: #e9ecef;
+	justify-content: center;
+	cursor: pointer;
 }
 
 .back-icon {
-	font-size: 32rpx;
-	color: #495057;
-	font-weight: bold;
+	font-size: 40rpx;
+	color: #333;
 }
 
 .navbar-title {
 	font-size: 32rpx;
-	color: #495057;
 	font-weight: 600;
+  color: #495057;
 }
 
 .placeholder {
-	width: 60rpx;
+	width: 88rpx;
 }
 
 .main-content {
 	flex: 1;
-	padding: 20rpx;
 	display: flex;
 	flex-direction: column;
+	padding: 40rpx 32rpx;
 }
 
 .preview-section {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 	background: linear-gradient(135deg, #4ecdc4 0%, #2ba3a8 100%);
-	border-radius: 24rpx;
-	padding: 50rpx 40rpx;
+	color: white;
+	padding: 40rpx;
+	border-radius: 20rpx;
 	margin-bottom: 30rpx;
-	box-shadow: 0 12rpx 40rpx rgba(78, 205, 196, 0.3);
+	box-shadow: 0 8rpx 32rpx rgba(78, 205, 196, 0.4);
 }
 
 .preview-content {
 	display: flex;
-	flex-direction: column;
 	align-items: center;
+	justify-content: center;
+	flex-direction: column;
 	color: white;
 }
 
 .preview-logo {
-	width: 100rpx;
-	height: 100rpx;
+	height: 120rpx;
+	width: 120rpx;
+	margin-bottom: 20rpx;
 	border-radius: 50%;
 	border: 4rpx solid rgba(255, 255, 255, 0.9);
-	margin-bottom: 20rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15);
 }
 
 .preview-text {
 	text-align: center;
+	display: flex;
+	align-items: center;
+	gap: 15rpx;
 }
 
 .preview-title {
-	font-size: 32rpx;
+	font-size: 28rpx;
 	font-weight: 600;
-	margin-bottom: 10rpx;
 }
 
 .preview-subtitle {
 	font-size: 24rpx;
+	line-height: 1.4;
 	opacity: 0.9;
 }
 
 .theme-section {
-	background-color: white;
-	border-radius: 24rpx;
-	padding: 40rpx 30rpx;
 	flex: 1;
-	margin-bottom: 20rpx;
-	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.1);
-}
-
-.section-header {
-	text-align: center;
-	margin-bottom: 40rpx;
-}
-
-.section-title {
-	font-size: 36rpx;
-	font-weight: 700;
-	color: #2c3e50;
-	margin-bottom: 15rpx;
+	display: flex;
+	flex-direction: column;
 }
 
 .theme-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 30rpx;
-	padding: 10rpx 0;
+	gap: 24rpx;
+	flex: 1;
 }
 
 .theme-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 40rpx 30rpx;
-	border: 3rpx solid transparent;
-	border-radius: 24rpx;
-	background-color: #f8f9fa;
-	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	background: white;
+	border-radius: 16rpx;
+	padding: 24rpx;
+	text-align: center;
 	cursor: pointer;
-	position: relative;
-}
-
-.theme-card:active {
-	transform: scale(0.98);
+	transition: all 0.3s ease;
+	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
 }
 
 .theme-preview {
-	width: 140rpx;
-	height: 140rpx;
-	border-radius: 70rpx;
-	margin-bottom: 30rpx;
-	box-shadow: 0 8rpx 25rpx rgba(0,0,0,0.15);
+	width: 100%;
+	height: 160rpx;
+	border-radius: 12rpx;
+	margin-bottom: 20rpx;
 	position: relative;
-	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .theme-check {
@@ -374,15 +337,19 @@ export default {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 50rpx;
-	height: 50rpx;
-	background: rgba(255, 255, 255, 0.95);
+	width: 48rpx;
+	height: 48rpx;
+	background: rgba(255,255,255,0.9);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	animation: checkBounce 0.4s ease;
-	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15);
+}
+
+.check-icon {
+	font-size: 24rpx;
+	color: #10b981;
+	font-weight: bold;
 }
 
 .theme-selected {
@@ -390,76 +357,44 @@ export default {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 40rpx;
-	height: 40rpx;
-	background: rgba(255, 255, 255, 0.9);
-	border-radius: 50%;
+	width: 32rpx;
+	height: 32rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	animation: selectedPulse 0.3s ease;
-}
-
-@keyframes checkBounce {
-	0% { transform: translate(-50%, -50%) scale(0); }
-	60% { transform: translate(-50%, -50%) scale(1.15); }
-	100% { transform: translate(-50%, -50%) scale(1); }
-}
-
-@keyframes selectedPulse {
-	0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-	100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-.check-icon {
-	font-size: 24rpx;
-	color: #27ae60;
-	font-weight: bold;
 }
 
 .selected-icon {
 	font-size: 20rpx;
-	color: #3498db;
-	font-weight: bold;
+	color: white;
 }
 
 .theme-name {
 	font-size: 28rpx;
-	color: #2c3e50;
-	font-weight: 600;
-	text-align: center;
-	margin-bottom: 8rpx;
+	color: #333;
+	font-weight: 500;
 }
 
 .confirm-section {
-	background-color: white;
-	border-radius: 24rpx;
-	padding: 40rpx 30rpx;
-	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.1);
-	text-align: center;
+	margin-top: 40rpx;
+	padding-top: 40rpx;
 }
 
 .confirm-btn {
 	width: 100%;
-	height: 100rpx;
+	height: 96rpx;
+	border-radius: 25rpx;
 	border: none;
-	border-radius: 50rpx;
-	font-size: 34rpx;
-	font-weight: 700;
+	font-size: 28rpx;
+	font-weight: 600;
+	transition: all 0.2s ease;
 	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	box-shadow: 0 8rpx 25rpx rgba(0,0,0,0.15);
-}
-
-.confirm-btn:active:not(.disabled) {
-	transform: translateY(-3rpx);
-	box-shadow: 0 12rpx 30rpx rgba(0,0,0,0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .confirm-btn.disabled {
 	cursor: not-allowed;
-	opacity: 0.6;
-	transform: none !important;
-	box-shadow: 0 4rpx 15rpx rgba(0,0,0,0.1);
 }
 </style>
