@@ -905,9 +905,6 @@
 	.category-item {
 		background-color: white;
 		border-radius: 20rpx;
-		box-shadow:
-			0 4rpx 12rpx rgba(0,0,0,0.08),
-			0 2rpx 8rpx rgba(0,0,0,0.06);
 		transition: all 0.2s ease;
 		flex-shrink: 0;
 		min-height: 60rpx;
@@ -916,21 +913,6 @@
 		border: 2rpx solid transparent;
 		position: relative;
 		z-index: 1;
-	}
-
-	.category-item::after {
-		content: '';
-		position: absolute;
-		bottom: -8rpx;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 85%;
-		height: 8rpx;
-		background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
-		border-radius: 50%;
-		filter: blur(3rpx);
-		z-index: -1;
-		opacity: 0.8;
 	}
 
 	.category-content {
@@ -950,7 +932,6 @@
 	.category-item.active .category-name {
 		font-weight: 700;
 		color: white;
-		text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.2);
 	}
 
 	.category-item .category-count {
@@ -973,14 +954,5 @@
 
 	.category-item:active {
 		transform: translateY(-2rpx);
-		box-shadow:
-			0 6rpx 16rpx rgba(0,0,0,0.15),
-			0 4rpx 12rpx rgba(0,0,0,0.1);
-	}
-
-	.category-item:active::after {
-		height: 10rpx;
-		filter: blur(4rpx);
-		opacity: 1;
 	}
 </style>
