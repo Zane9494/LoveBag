@@ -3,20 +3,21 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "恋爱卡片",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "jsons/cards-data/cards-data",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/theme-settings/theme-settings",
+			"style": {
+				"navigationBarTitleText": "主题设置",
+				"navigationStyle": "custom"
 			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "恋爱卡片",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
