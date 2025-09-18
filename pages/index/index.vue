@@ -356,10 +356,9 @@
 					this.displayCards = this.searchedCards
 					this.filteredCards = this.searchedCards
 				} else {
-					// 搜索时显示所有匹配的卡片
+					// 搜索时显示所有匹配的卡片（只匹配name）
 					this.filteredCards = this.allCards.filter(card => {
-						return card.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
-							   card.description.toLowerCase().includes(this.searchText.toLowerCase())
+						return card.name.toLowerCase().includes(this.searchText.toLowerCase())
 					})
 					this.displayCards = this.filteredCards
 				}
