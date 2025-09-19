@@ -357,9 +357,16 @@
 					this.filteredCards = this.searchedCards
 				} else {
 					// 搜索时显示所有匹配的卡片（只匹配name）
-					this.filteredCards = this.allCards.filter(card => {
-						return card.name.toLowerCase().includes(this.searchText.toLowerCase())
-					})
+					const searchTerm = this.searchText.toLowerCase().trim()
+
+					// 如果搜索的是"卡"字，返回空结果，因为所有卡片都包含"卡"字
+					if (searchTerm === '卡') {
+						this.filteredCards = []
+					} else {
+						this.filteredCards = this.allCards.filter(card => {
+							return card.name.toLowerCase().includes(searchTerm)
+						})
+					}
 					this.displayCards = this.filteredCards
 				}
 			},
