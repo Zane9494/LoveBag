@@ -208,7 +208,7 @@
 						<view class="setup-actions">
 							<button class="setup-btn confirm-btn" :style="takenBtnStyle" @click="confirmNewCycle">
 								<text class="btn-icon">✓</text>
-								<text class="btn-text">开始周期</text>
+								<text class="btn-text">确定</text>
 							</button>
 							<button class="setup-btn cancel-btn" @click="closeNewCycleModal">
 								取消
@@ -788,7 +788,7 @@
 				this.startNewCycle(selectedDate)
 
 				uni.showToast({
-					title: '已开始新的服药周期',
+					title: '新周期已开始',
 					icon: 'success',
 					duration: 1500
 				})
@@ -1402,7 +1402,8 @@
 	.setup-btn {
 		flex: 1;
 		height: 56rpx;
-		border: none;
+		border: none !important;
+		outline: none;
 		border-radius: 28rpx;
 		display: flex;
 		align-items: center;
@@ -1412,18 +1413,20 @@
 		transition: all 0.2s ease;
 	}
 
+	.setup-btn::before,
+	.setup-btn::after {
+		display: none !important;
+	}
+
 	.confirm-btn {
 		background: linear-gradient(135deg, #4ecdc4 0%, #2ba3a8 100%);
 		color: white;
+		border: none !important;
 	}
 
 	.cancel-btn {
 		background: #f8f9fa;
 		color: #495057;
-		border: 1rpx solid #ced4da;
-	}
-
-	.setup-btn:active {
-		transform: translateY(2rpx);
+		border: none !important;
 	}
 </style>
