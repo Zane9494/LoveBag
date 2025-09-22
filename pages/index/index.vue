@@ -107,6 +107,22 @@
 				<text class="empty-title">未找到相关卡片</text>
 				<text class="empty-subtitle">试试其他关键词吧</text>
 			</view>
+
+			<!-- 爱的特效 -->
+			<view v-if="showLoveEffect" class="love-effect-overlay">
+				<view class="love-effect-blur"></view>
+				<view class="love-effect-center">
+					<view class="gift-box" :class="{open: loveBoxOpen}">
+						<view class="box-lid"></view>
+						<view class="box-body"></view>
+					</view>
+					<view class="love-effect-burst">
+						<view v-for="n in 18" :key="'star'+n" class="burst-star" :style="getBurstStyle(n, 'star')"></view>
+						<view v-for="n in 12" :key="'ribbon'+n" class="burst-ribbon" :style="getBurstStyle(n, 'ribbon')"></view>
+					</view>
+					<view class="love-effect-text" v-if="loveBoxOpen">我也爱你</view>
+				</view>
+			</view>
 		</view>
 
 		<!-- 卡片详情弹窗 -->
@@ -235,7 +251,10 @@
 						secondary: '#059669'
 					}
 				},
-				searchFocused: false // 搜索框聚焦状态
+				searchFocused: false, // 搜索框聚焦状态
+				showLoveEffect: false,
+				loveEffectTimer: null,
+				loveBoxOpen: false
 			}
 		},
 		computed: {
@@ -350,15 +369,28 @@
 			// 更新显示的卡片
 			updateDisplayCards() {
 				this.searchedCards = this.allCards.filter(card => card.isSearched)
-
+				const searchTerm = this.searchText.toLowerCase().trim()
+				if (searchTerm === '我爱你') {
+					this.showLoveEffect = true
+					this.loveBoxOpen = false
+					clearTimeout(this.loveEffectTimer)
+					setTimeout(() => {
+						this.loveBoxOpen = true
+					}, 350)
+					this.loveEffectTimer = setTimeout(() => {
+						this.showLoveEffect = false
+						this.loveBoxOpen = false
+					}, 2200)
+					this.filteredCards = []
+					this.displayCards = []
+					return
+				}
 				if (this.searchText.trim() === '') {
 					// 未搜索时显示已搜索过的卡片
 					this.displayCards = this.searchedCards
 					this.filteredCards = this.searchedCards
 				} else {
 					// 搜索时显示所有匹配的卡片（只匹配name）
-					const searchTerm = this.searchText.toLowerCase().trim()
-
 					// 如果搜索的是"卡"字，返回空结果，因为所有卡片都包含"卡"字
 					if (searchTerm === '卡') {
 						this.filteredCards = []
@@ -438,6 +470,40 @@
 					background: 'white',
 					color: '#495057',
 					border: '2rpx solid transparent'
+				}
+			},
+			getStarStyle(n) {
+				// 随机生成星星位置和动画参数
+				const left = Math.random() * 100
+				const top = Math.random() * 100
+				const duration = 1.2 + Math.random() * 1.2
+				const delay = Math.random() * 1.2
+				const size = 12 + Math.random() * 16
+				return {
+					left: left + '%',
+					top: top + '%',
+					width: size + 'rpx',
+					height: size + 'rpx',
+					animationDuration: duration + 's',
+					animationDelay: delay + 's'
+				}
+			},
+			getBurstStyle(n, type) {
+				// 爆发轨迹：从中心随机角度和距离迸发
+				const angle = Math.random() * 360
+				const distance = 120 + Math.random() * 80
+				const duration = 0.8 + Math.random() * 0.7
+				const delay = 0.2 + Math.random() * 0.3
+				const size = type === 'star' ? (18 + Math.random() * 16) : (22 + Math.random() * 12)
+				const color = type === 'star' ? '#ffd700' : `hsl(${Math.floor(Math.random()*360)},80%,70%)`
+				return {
+					transform: `rotate(${angle}deg) translateY(-${distance}rpx) scale(1)`,
+					background: type === 'star' ? `radial-gradient(circle, #ffd700 60%, #fff 100%)` : color,
+					width: size + 'rpx',
+					height: type === 'star' ? size + 'rpx' : (size/3 + 'rpx'),
+					borderRadius: type === 'star' ? '50%' : '8rpx',
+					opacity: 0.85,
+					animation: type === 'star' ? `burst-star ${duration}s ${delay}s cubic-bezier(.7,.2,.4,1) forwards` : `burst-ribbon ${duration}s ${delay}s cubic-bezier(.7,.2,.4,1) forwards`
 				}
 			}
 		}
@@ -1246,5 +1312,120 @@
 
 	.category-item:active {
 		transform: translateY(-2rpx);
+	}
+
+	.love-effect-overlay {
+		position: fixed;
+		top: 0; left: 0; width: 100vw; height: 100vh;
+		z-index: 9999;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		pointer-events: auto;
+	}
+
+	.love-effect-blur {
+		position: absolute;
+		top: 0; left: 0; width: 100vw; height: 100vh;
+		background: rgba(255,255,255,0.7);
+		backdrop-filter: blur(16rpx);
+		z-index: 1;
+	}
+
+	.love-effect-center {
+		position: absolute;
+		top: 50%; left: 50%; transform: translate(-50%, -50%);
+		z-index: 10;
+		width: 420rpx;
+		height: 420rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.gift-box {
+		position: absolute;
+		left: 50%; top: 50%; transform: translate(-50%, -50%) scale(1);
+		width: 120rpx; height: 120rpx;
+		z-index: 12;
+		transition: transform 0.4s cubic-bezier(.7,.2,.4,1);
+	}
+
+	.gift-box.open {
+		transform: translate(-50%, -50%) scale(1.15) rotate(-8deg);
+	}
+
+	.box-lid {
+		position: absolute;
+		left: 0; top: 0;
+		width: 120rpx; height: 40rpx;
+		background: linear-gradient(90deg, #fa709a 60%, #ffd700 100%);
+		border-radius: 18rpx 18rpx 8rpx 8rpx;
+		box-shadow: 0 6rpx 16rpx #fa709a44;
+		transition: transform 0.4s cubic-bezier(.7,.2,.4,1);
+	}
+
+	.gift-box.open .box-lid {
+		transform: translateY(-38rpx) rotate(-18deg);
+	}
+
+	.box-body {
+		position: absolute;
+		left: 0; top: 38rpx;
+		width: 120rpx; height: 82rpx;
+		background: linear-gradient(135deg, #ffd700 60%, #fa709a 100%);
+		border-radius: 0 0 18rpx 18rpx;
+		box-shadow: 0 8rpx 24rpx #ffd70044;
+	}
+
+	.love-effect-burst {
+		position: absolute;
+		left: 50%; top: 50%; transform: translate(-50%, -50%);
+		width: 320rpx; height: 320rpx;
+		pointer-events: none;
+		z-index: 11;
+	}
+
+	.burst-star {
+		position: absolute;
+		left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.2);
+		opacity: 0.7;
+	}
+
+	.burst-ribbon {
+		position: absolute;
+		left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.2);
+		opacity: 0.7;
+	}
+
+	@keyframes burst-star {
+		0% { transform: scale(0.2) translateY(0); opacity: 0.5; }
+		60% { transform: scale(1.2) translateY(-60rpx); opacity: 1; }
+		100% { transform: scale(1) translateY(-120rpx); opacity: 0; }
+	}
+
+	@keyframes burst-ribbon {
+		0% { transform: scale(0.2) translateY(0); opacity: 0.5; }
+		60% { transform: scale(1.1) translateY(-80rpx); opacity: 1; }
+		100% { transform: scale(1) translateY(-160rpx); opacity: 0; }
+	}
+
+	.love-effect-text {
+		position: absolute;
+		top: 50%; left: 50%; transform: translate(-50%, -50%);
+		font-size: 60rpx;
+		color: #fa709a;
+		font-weight: bold;
+		text-shadow: 0 4rpx 24rpx #fff, 0 2rpx 8rpx #fa709a44;
+		z-index: 20;
+		letter-spacing: 8rpx;
+		animation: love-fade-in 1.2s cubic-bezier(.6,.2,.4,1);
+	}
+
+	@keyframes love-fade-in {
+		0% { opacity: 0; transform: scale(0.8) translate(-50%, -50%); }
+		80% { opacity: 1; transform: scale(1.1) translate(-50%, -50%); }
+		100% { opacity: 1; transform: scale(1) translate(-50%, -50%); }
 	}
 </style>
