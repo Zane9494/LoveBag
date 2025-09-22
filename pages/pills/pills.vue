@@ -11,7 +11,7 @@
 				<text class="navbar-title">药丸记录</text>
 				<view class="navbar-right">
 					<view class="info-btn" @click="showInfo">
-						<text class="iconfont icon-gengduo info-icon"></text>
+						<text class="iconfont icon-gengduo1 info-icon"></text>
 					</view>
 				</view>
 			</view>
@@ -36,7 +36,7 @@
 				<view class="action-title">今日操作</view>
 				<view class="action-buttons">
 					<button class="action-btn taken-btn" :style="takenBtnStyle" @click="recordTaken(true)">
-						<text class="iconfont icon-drug-full btn-icon"></text>
+						<text class="iconfont icon-yaowan1 btn-icon"></text>
 						<text class="btn-text">已服用</text>
 					</button>
 					<button class="action-btn missed-btn" @click="recordTaken(false)">
@@ -351,7 +351,7 @@
 					case 'overdue': return '可以补充记录服药情况'
 					case 'missed': return '明日请按时服用'
 					case 'break-period': return '正在停药期，无需服药'
-					default: return '点击开始新的服药周期'
+					default: return '设置服药周期开始时间'
 				}
 			},
 
@@ -606,7 +606,7 @@
 				if (!day.status) return ''
 
 				switch(day.status) {
-					case 'taken': return 'icon-drug-full'
+					case 'taken': return 'icon-yaowan1'
 					case 'pending': return 'icon-yaowan'
 					case 'overdue':
 					case 'missed': return 'icon-jinggao'
@@ -790,9 +790,8 @@
 
 					// 只在服药期（前21天）生成记录
 					if (cycleDay <= 21) {
-						// 模拟理想的服药情况，偶尔有少量漏服
-						const shouldTake = Math.random() > 0.05 // 95%的概率按时服药
-						this.records[dateStr] = shouldTake
+						// 生成100%符合标准的完美服药记录
+						this.records[dateStr] = true
 					}
 
 					currentDate.setDate(currentDate.getDate() + 1)
@@ -852,39 +851,8 @@
 
 			// 处理状态卡片点击
 			handleStatusCardClick() {
-				// 如果未开始周期，显示新周期设置弹窗
-				if (this.todayStatus === 'no-cycle') {
-					this.showNewCycle()
-				} else {
-					// 其他状态显示提示
-					let message = ''
-					switch(this.todayStatus) {
-						case 'taken':
-							message = '今日已按时服药，继续保持！'
-							break
-						case 'pending':
-							message = '请及时服用今日药丸'
-							break
-						case 'overdue':
-							message = '可以补充记录服药情况'
-							break
-						case 'missed':
-							message = '明日请按时服用'
-							break
-						case 'break-period':
-							message = '正在停药期，请按计划停药'
-							break
-						default:
-							message = '点击查看状态详情'
-							break
-					}
-
-					uni.showToast({
-						title: message,
-						icon: 'none',
-						duration: 2000
-					})
-				}
+				// 任何状态都可以显示新周期设置弹窗
+				this.showNewCycle()
 			}
 		}
 	}
