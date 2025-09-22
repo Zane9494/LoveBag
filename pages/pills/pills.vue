@@ -1,6 +1,6 @@
 <template>
 	<view class="page">
-		<!-- 自定义导航栏 -->
+		<!-- 自定义导航��� -->
 		<view class="custom-navbar" :style="{paddingTop: statusBarHeight + 'px'}">
 			<view class="navbar-content">
 				<view class="navbar-left">
@@ -245,33 +245,10 @@
 				newCycleStartDate: new Date(), // 新周期开始日期
 				records: {}, // 服药记录 格式: {'2025-09-22': true/false}
 
-				// 主题相关
-				currentTheme: 'teal',
+				// 固定使用紫色主题
 				themeColors: {
-					teal: {
-						primary: '#4ecdc4',
-						secondary: '#2ba3a8'
-					},
-					purple: {
-						primary: '#8b5cf6',
-						secondary: '#a78bfa'
-					},
-					pink: {
-						primary: '#ff9a9e',
-						secondary: '#fecfef'
-					},
-					orange: {
-						primary: '#fa709a',
-						secondary: '#fee140'
-					},
-					blue: {
-						primary: '#3b82f6',
-						secondary: '#1e40af'
-					},
-					green: {
-						primary: '#10b981',
-						secondary: '#059669'
-					}
+					primary: '#8b5cf6',
+					secondary: '#a78bfa'
 				},
 
 				// 日期限制
@@ -280,11 +257,10 @@
 			}
 		},
 		computed: {
-			// 当前主题样式
+			// 当前主题样式 - 固定紫色
 			currentThemeStyles() {
-				const colors = this.themeColors[this.currentTheme]
 				return {
-					background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`
+					background: `linear-gradient(135deg, ${this.themeColors.primary} 0%, ${this.themeColors.secondary} 100%)`
 				}
 			},
 
@@ -357,7 +333,7 @@
 					case 'pending': return '请按时服用今日药丸'
 					case 'overdue': return '可以补充记录服药情况'
 					case 'missed': return '明日请按时服用'
-					case 'break-period': return '正在停药期，无需服药'
+					case 'break-period': return '正��停药期，无需服药'
 					case 'restart-needed': return '超过3天未服药，请重新设置周期'
 					default: return '设置服药周期开始时间'
 				}
@@ -382,11 +358,10 @@
 				return this.todayStatus === 'pending' || this.todayStatus === 'overdue'
 			},
 
-			// 已服用按钮样式
+			// 已服用按钮样式 - 固定紫色
 			takenBtnStyle() {
-				const colors = this.themeColors[this.currentTheme]
 				return {
-					background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`
+					background: `linear-gradient(135deg, ${this.themeColors.primary} 0%, ${this.themeColors.secondary} 100%)`
 				}
 			},
 
@@ -470,7 +445,6 @@
 
 		onLoad() {
 			this.getSystemInfo()
-			this.loadTheme()
 			this.loadData()
 			// 记录当前使用的页面
 			this.recordCurrentPage()
@@ -486,18 +460,6 @@
 			getSystemInfo() {
 				const systemInfo = uni.getSystemInfoSync()
 				this.statusBarHeight = systemInfo.statusBarHeight || 0
-			},
-
-			// 加载主题
-			loadTheme() {
-				try {
-					const savedTheme = uni.getStorageSync('currentTheme')
-					if (savedTheme && this.themeColors[savedTheme]) {
-						this.currentTheme = savedTheme
-					}
-				} catch (e) {
-					console.log('加载主题失败:', e)
-				}
 			},
 
 			// 加载数据
