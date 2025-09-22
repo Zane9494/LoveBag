@@ -1,8 +1,10 @@
 <template>
 	<view class="side-nav-overlay" v-if="visible" @click="closeSideNav">
 		<view class="side-nav-container" @click.stop>
-			<view class="side-nav-header">
-				<text class="nav-title">导航菜单</text>
+			<view class="side-nav-header" :style="{paddingTop: statusBarHeight + 'px'}">
+				<view class="nav-header-content">
+					<text class="nav-title">导航菜单</text>
+				</view>
 			</view>
 
 			<view class="nav-items">
@@ -29,7 +31,20 @@
 				default: false
 			}
 		},
+		data() {
+			return {
+				statusBarHeight: 0
+			}
+		},
+		mounted() {
+			this.getSystemInfo()
+		},
 		methods: {
+			getSystemInfo() {
+				const systemInfo = uni.getSystemInfoSync()
+				this.statusBarHeight = systemInfo.statusBarHeight || 0
+			},
+
 			closeSideNav() {
 				this.$emit('close');
 			},
@@ -86,18 +101,25 @@
 	}
 
 	.side-nav-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 40rpx 30rpx 20rpx;
-		border-bottom: 1rpx solid #f1f3f4;
+		width: 100%;
 		background: linear-gradient(135deg, #4ecdc4 0%, #2ba3a8 100%);
+		box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
 		color: white;
+	}
+
+	.nav-header-content {
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		height: 88rpx;
+		padding: 0 30rpx;
+		position: relative;
 	}
 
 	.nav-title {
 		font-size: 32rpx;
 		font-weight: 600;
+		color: white;
 	}
 
 	.nav-items {
