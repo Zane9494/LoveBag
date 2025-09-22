@@ -1,10 +1,31 @@
 {
-  "id": "",
-  "name": "",
+  "id": "5027773",
+  "name": "lovecards",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "18165359",
+      "name": "药品,药物,违禁品,违禁药物",
+      "font_class": "drug-full",
+      "unicode": "e88a",
+      "unicode_decimal": 59530
+    },
+    {
+      "icon_id": "25186472",
+      "name": "icons-ic-card",
+      "font_class": "icons-ic-card",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "17816845",
+      "name": "更多",
+      "font_class": "gengduo",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
     {
       "icon_id": "1304892",
       "name": "右箭头",
