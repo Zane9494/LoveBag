@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1758529544813') format('truetype');
+  src: url('iconfont.ttf?t=1758532084348') format('truetype');
 }
 
 .iconfont {
@@ -9,6 +9,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-yaowan1:before {
+  content: "\e7f9";
+}
+
+.icon-jinggao:before {
+  content: "\e61e";
+}
+
+.icon-yaowan:before {
+  content: "\e603";
+}
+
+.icon-diancanling:before {
+  content: "\e602";
 }
 
 .icon-drug-full:before {

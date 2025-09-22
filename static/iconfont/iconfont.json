@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "24372464",
+      "name": "药丸",
+      "font_class": "yaowan1",
+      "unicode": "e7f9",
+      "unicode_decimal": 59385
+    },
+    {
+      "icon_id": "7588096",
+      "name": "警告",
+      "font_class": "jinggao",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "19266077",
+      "name": "药丸",
+      "font_class": "yaowan",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "13416326",
+      "name": "点餐铃",
+      "font_class": "diancanling",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
       "icon_id": "18165359",
       "name": "药品,药物,违禁品,违禁药物",
       "font_class": "drug-full",
