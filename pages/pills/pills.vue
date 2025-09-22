@@ -154,7 +154,7 @@
 				<view class="modal-body">
 					<view class="info-section">
 						<view class="info-item">
-							<text class="iconfont icon-drug-full info-icon taken-color"></text>
+							<text class="iconfont icon-yaowan1 info-icon taken-color"></text>
 							<text class="info-text">已服用 - 按时服药</text>
 						</view>
 						<view class="info-item">
@@ -297,6 +297,11 @@
 				if (cycleDay === null) return 'no-cycle'
 				if (cycleDay > 21) return 'break-period' // 停药期
 
+				// 检查是否超过3天未服药
+				if (this.isOverThreeDaysWithoutMedication()) {
+					return 'restart-needed'
+				}
+
 				const hasRecord = this.records.hasOwnProperty(today)
 				const isOverdue = this.isOverdue(this.currentDate)
 
@@ -311,8 +316,9 @@
 			// 今日图标类名
 			todayIconClass() {
 				switch(this.todayStatus) {
-					case 'taken': return 'icon-drug-full'
+					case 'taken': return 'icon-yaowan1'  // 统一使用 icon-yaowan1
 					case 'pending': return 'icon-yaowan'
+					case 'restart-needed': return 'icon-jinggao'
 					case 'overdue':
 					case 'missed': return 'icon-jinggao'
 					default: return 'icon-yaowan'
@@ -323,8 +329,9 @@
 			todayIconStyle() {
 				const colors = this.themeColors[this.currentTheme]
 				switch(this.todayStatus) {
-					case 'taken': return { color: colors.primary, fontSize: '48rpx' }
+					case 'taken': return { color: '#4ecdc4', fontSize: '48rpx' }  // 统一颜色
 					case 'pending': return { color: '#ffa726', fontSize: '48rpx' }
+					case 'restart-needed': return { color: '#ef5350', fontSize: '48rpx' }
 					case 'overdue':
 					case 'missed': return { color: '#ef5350', fontSize: '48rpx' }
 					default: return { color: '#9e9e9e', fontSize: '48rpx' }
@@ -339,6 +346,7 @@
 					case 'overdue': return '已过期未记录'
 					case 'missed': return '今日未服用'
 					case 'break-period': return '停药期'
+					case 'restart-needed': return '需要重新设置'
 					default: return '未开始周期'
 				}
 			},
@@ -351,6 +359,7 @@
 					case 'overdue': return '可以补充记录服药情况'
 					case 'missed': return '明日请按时服用'
 					case 'break-period': return '正在停药期，无需服药'
+					case 'restart-needed': return '超过3天未服药，请重新设置周期'
 					default: return '设置服药周期开始时间'
 				}
 			},
@@ -561,10 +570,57 @@
 				return targetDate < today
 			},
 
+			// 检查是否超过三天未服药
+			isOverThreeDaysWithoutMedication() {
+				if (!this.cycleStartDate) return false
+
+				const today = new Date()
+				today.setHours(0, 0, 0, 0)
+
+				// 检查过去连续未服药的天数
+				let consecutiveMissedDays = 0
+
+				for (let i = 1; i <= 3; i++) {
+					const dateToCheck = new Date(today)
+					dateToCheck.setDate(today.getDate() - i)
+					const cycleDay = this.getCycleDay(dateToCheck)
+
+					// 只检查服药期内的日期
+					if (cycleDay === null || cycleDay > 21) {
+						break
+					}
+
+					const dateStr = this.formatDate(dateToCheck)
+
+					// 如果这天没有记录或者记录为未服用，增加计数
+					if (!this.records.hasOwnProperty(dateStr) || !this.records[dateStr]) {
+						consecutiveMissedDays++
+					} else {
+						// 如果有服药记录，则中断连续计数
+						break
+					}
+				}
+
+				return consecutiveMissedDays >= 3
+			},
+
 			// 获取某天的状态
 			getDayStatus(date) {
 				const cycleDay = this.getCycleDay(date)
 				if (cycleDay === null || cycleDay > 21) return null
+
+				// 如果已经超过3天未服药，不再预测未来状态
+				if (this.isOverThreeDaysWithoutMedication()) {
+					const today = new Date()
+					today.setHours(0, 0, 0, 0)
+					const targetDate = new Date(date)
+					targetDate.setHours(0, 0, 0, 0)
+
+					// 只显示今天及之前的状态，未来不显示任何预测
+					if (targetDate > today) {
+						return null
+					}
+				}
 
 				const dateStr = this.formatDate(date)
 				const hasRecord = this.records.hasOwnProperty(dateStr)
