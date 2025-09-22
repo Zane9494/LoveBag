@@ -454,9 +454,9 @@
 
 				this.saveData()
 
-				// 提示完成
+				// 提示完成 - 简化文案避免换行
 				uni.showToast({
-					title: `${timer.name} 时间到了！`,
+					title: `${timer.name} 完成！`,
 					icon: 'success',
 					duration: 2000
 				})
@@ -684,6 +684,7 @@
 	}
 
 	.add-text {
+    margin-right: 10rpx;
 		font-size: 24rpx;
 		color: #495057;
 	}
