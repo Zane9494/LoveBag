@@ -32,9 +32,26 @@
 
 			<!-- 快速添加区域 -->
 			<view class="quick-add-section">
-				<view class="section-title">快速添加</view>
+				<view class="section-header">
+					<view class="section-title">快速添加</view>
+					<view class="custom-add-btn" @click="showAddTimer">
+						<text class="iconfont icon-add add-icon"></text>
+						<text class="add-text">自定义</text>
+					</view>
+				</view>
 				<scroll-view class="quick-scroll" scroll-x="true" show-scrollbar="false">
 					<view class="quick-list">
+						<!-- 自定义添加的项目 -->
+						<view class="quick-item custom-item"
+							  v-for="item in customQuickItems"
+							  :key="'custom-' + item.name"
+							  @click="addQuickTimer(item)"
+							  @longpress="showDeleteCustomItem(item)">
+							<view class="quick-icon">{{item.icon}}</view>
+							<text class="quick-name">{{item.name}}</text>
+							<text class="quick-time">{{item.time}}s</text>
+						</view>
+						<!-- 预设项目 -->
 						<view class="quick-item"
 							  v-for="item in quickItems"
 							  :key="item.name"
@@ -100,25 +117,6 @@
 				<text class="empty-title">还没有计时器</text>
 				<text class="empty-subtitle">添加食材开始计时吧</text>
 			</view>
-
-			<!-- 历史记录区域 -->
-			<view class="history-section" v-if="completedTimers.length > 0">
-				<view class="section-title">最近完成</view>
-				<view class="history-list">
-					<view class="history-item"
-						  v-for="timer in recentCompleted"
-						  :key="timer.id">
-						<view class="history-info">
-							<text class="history-icon">{{timer.icon}}</text>
-							<text class="history-name">{{timer.name}}</text>
-							<text class="history-time">{{timer.originalTime}}s</text>
-						</view>
-						<view class="history-action" @click="addQuickTimer(timer)">
-							<text class="iconfont icon-add"></text>
-						</view>
-					</view>
-				</view>
-			</view>
 		</view>
 
 		<!-- 侧边导航栏组件 -->
@@ -146,7 +144,7 @@
 								   maxlength="10" />
 						</view>
 						<view class="form-section">
-							<text class="form-label">计时时间/秒）</text>
+							<text class="form-label">计时时间(秒)</text>
 							<input class="form-input"
 								   v-model.number="newTimer.time"
 								   type="number"
@@ -216,6 +214,9 @@
 					{ name: '白菜', time: 40, icon: '🥬' }
 				],
 
+				// 自定义快速添加项目
+				customQuickItems: [],
+
 				// 新计时器表单
 				newTimer: {
 					name: '',
@@ -224,7 +225,7 @@
 				},
 
 				// 可选图标
-				availableIcons: ['🍲', '🥩', '🦐', '🥔', '🍄', '🥬', '🥒', '🧊', '🦆', '🐟', '🥕', '🌶️']
+				availableIcons: ['🍲', '🥩', '🦐', '🥔', '🍄', '🥬', '🥒', '🧊', '🦆', '🐟', '🥕', '🌶️', '🥓', '🦀', '🦑', '🍅', '🧄', '🧅', '🌽', '🥦', '🍆', '🫑', '🥖', '🍜']
 			}
 		},
 
@@ -234,10 +235,6 @@
 				return {
 					background: `linear-gradient(135deg, ${this.themeColors.primary} 0%, ${this.themeColors.secondary} 100%)`
 				}
-			},
-
-			recentCompleted() {
-				return this.completedTimers.slice(-5).reverse()
 			}
 		},
 
@@ -270,6 +267,7 @@
 					const savedTimers = uni.getStorageSync('hotpotActiveTimers')
 					const savedCompleted = uni.getStorageSync('hotpotCompletedTimers')
 					const savedNextId = uni.getStorageSync('hotpotNextTimerId')
+					const savedCustomItems = uni.getStorageSync('hotpotCustomQuickItems')
 
 					if (savedTimers) {
 						this.activeTimers = savedTimers
@@ -279,6 +277,9 @@
 					}
 					if (savedNextId) {
 						this.nextTimerId = savedNextId
+					}
+					if (savedCustomItems) {
+						this.customQuickItems = savedCustomItems
 					}
 				} catch (e) {
 					console.log('加载数据失败:', e)
@@ -290,6 +291,7 @@
 					uni.setStorageSync('hotpotActiveTimers', this.activeTimers)
 					uni.setStorageSync('hotpotCompletedTimers', this.completedTimers)
 					uni.setStorageSync('hotpotNextTimerId', this.nextTimerId)
+					uni.setStorageSync('hotpotCustomQuickItems', this.customQuickItems)
 				} catch (e) {
 					console.log('保存数据失败:', e)
 				}
@@ -381,6 +383,14 @@
 				}
 
 				this.activeTimers.push(timer)
+
+				// 添加到自定义快速项目
+				this.customQuickItems.push({
+					name: this.newTimer.name.trim(),
+					time: this.newTimer.time,
+					icon: this.newTimer.icon
+				})
+
 				this.saveData()
 				this.closeAddModal()
 
@@ -511,6 +521,28 @@
 				} catch (e) {
 					console.log('记录页面失败:', e)
 				}
+			},
+
+			// 显示删除自定义项目的提示
+			showDeleteCustomItem(item) {
+				uni.showModal({
+					title: '删除自定义项目',
+					content: `确定要删除 "${item.name}" 吗？`,
+					success: (res) => {
+						if (res.confirm) {
+							this.deleteCustomItem(item)
+						}
+					}
+				})
+			},
+
+			// 删除自定义项目
+			deleteCustomItem(item) {
+				const index = this.customQuickItems.findIndex(i => i.name === item.name && i.icon === item.icon)
+				if (index !== -1) {
+					this.customQuickItems.splice(index, 1)
+					this.saveData()
+				}
 			}
 		}
 	}
@@ -632,6 +664,30 @@
 		margin-bottom: 20rpx;
 	}
 
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16rpx;
+	}
+
+	.custom-add-btn {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
+
+	.add-icon {
+		font-size: 28rpx;
+		color: #8b5cf6;
+		margin-right: 8rpx;
+	}
+
+	.add-text {
+		font-size: 24rpx;
+		color: #495057;
+	}
+
 	/* 快速添加区域 */
 	.quick-add-section {
 		margin-bottom: 30rpx;
@@ -662,6 +718,16 @@
 	.quick-item:active {
 		transform: translateY(-2rpx);
 		box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.1);
+	}
+
+	.custom-add-item {
+		background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+		color: white;
+	}
+
+	.custom-add-item .quick-name,
+	.custom-add-item .quick-time {
+		color: white;
 	}
 
 	.quick-icon {
@@ -868,69 +934,6 @@
 		display: block;
 	}
 
-	/* 历史记录 */
-	.history-section {
-		margin-top: 30rpx;
-	}
-
-	.history-list {
-		background: white;
-		border-radius: 16rpx;
-		overflow: hidden;
-		box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.06);
-	}
-
-	.history-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 20rpx 24rpx;
-		border-bottom: 1rpx solid #f1f3f4;
-	}
-
-	.history-item:last-child {
-		border-bottom: none;
-	}
-
-	.history-info {
-		display: flex;
-		align-items: center;
-		flex: 1;
-	}
-
-	.history-icon {
-		font-size: 28rpx;
-		margin-right: 12rpx;
-	}
-
-	.history-name {
-		font-size: 26rpx;
-		font-weight: 500;
-		color: #495057;
-		margin-right: 12rpx;
-	}
-
-	.history-time {
-		font-size: 22rpx;
-		color: #6c757d;
-	}
-
-	.history-action {
-		width: 48rpx;
-		height: 48rpx;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		border-radius: 50%;
-		background: #f8f9fa;
-		transition: all 0.2s ease;
-	}
-
-	.history-action:active {
-		background: #e9ecef;
-		transform: scale(0.9);
-	}
-
 	/* 弹窗样式 */
 	.modal-overlay {
 		position: fixed;
@@ -1068,12 +1071,18 @@
 		font-size: 28rpx;
 		font-weight: 600;
 		transition: all 0.2s ease;
+		outline: none;
+		box-sizing: border-box;
+	}
+
+	.form-btn::after,
+	.form-btn::before {
+		display: none !important;
 	}
 
 	.cancel-btn {
 		background: #f8f9fa;
 		color: #495057;
-		border: 2rpx solid #e9ecef;
 	}
 
 	.confirm-btn {

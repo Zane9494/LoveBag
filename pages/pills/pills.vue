@@ -1,6 +1,6 @@
 <template>
 	<view class="page">
-		<!-- 自定义导航��� -->
+		<!-- 自定义导航栏 -->
 		<view class="custom-navbar" :style="{paddingTop: statusBarHeight + 'px'}">
 			<view class="navbar-content">
 				<view class="navbar-left">
@@ -333,7 +333,7 @@
 					case 'pending': return '请按时服用今日药丸'
 					case 'overdue': return '可以补充记录服药情况'
 					case 'missed': return '明日请按时服用'
-					case 'break-period': return '正��停药期，无需服药'
+					case 'break-period': return '正处停药期，无需服药'
 					case 'restart-needed': return '超过3天未服药，请重新设置周期'
 					default: return '设置服药周期开始时间'
 				}
