@@ -17,6 +17,11 @@
 					<text class="iconfont icon-drug-full nav-icon"></text>
 					<text class="nav-text">药丸记录</text>
 				</view>
+
+				<view class="nav-item" @click="handleNavClick('hotpot')">
+					<text class="iconfont icon-diancanling nav-icon"></text>
+					<text class="nav-text">小锅伴</text>
+				</view>
 			</view>
 		</view>
 	</view>

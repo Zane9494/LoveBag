@@ -561,6 +561,12 @@
 								url: '/pages/pills/pills'
 							})
 							break
+						case 'hotpot':
+							// 跳转到小锅伴页面
+							uni.reLaunch({
+								url: '/pages/hotpot/hotpot'
+							})
+							break
 					}
 				}, 200)
 			},

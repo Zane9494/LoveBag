@@ -20,6 +20,13 @@
 				"navigationBarTitleText": "药丸记录",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/hotpot/hotpot",
+			"style": {
+				"navigationBarTitleText": "小锅伴",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {
