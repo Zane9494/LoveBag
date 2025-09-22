@@ -55,8 +55,67 @@
 			},
 
 			handleNavClick(type) {
-				this.$emit('navigate', type);
+				// 先关闭侧边栏
 				this.closeSideNav();
+
+				// 减少延迟时间，让切换更快
+				setTimeout(() => {
+					// 获取当前页面路由
+					const pages = getCurrentPages();
+					const currentPage = pages[pages.length - 1];
+					const currentRoute = currentPage.route;
+
+					switch(type) {
+						case 'cards':
+							// 跳转到恋爱卡片页面
+							if (currentRoute !== 'pages/index/index') {
+								uni.reLaunch({
+									url: '/pages/index/index',
+									animationType: 'slide-in-right',
+									animationDuration: 200
+								});
+							} else {
+								uni.showToast({
+									title: '当前页面',
+									icon: 'none',
+									duration: 1000
+								});
+							}
+							break;
+						case 'pills':
+							// 跳转到药丸记录页面
+							if (currentRoute !== 'pages/pills/pills') {
+								uni.reLaunch({
+									url: '/pages/pills/pills',
+									animationType: 'slide-in-right',
+									animationDuration: 200
+								});
+							} else {
+								uni.showToast({
+									title: '当前页面',
+									icon: 'none',
+									duration: 1000
+								});
+							}
+							break;
+						case 'hotpot':
+							// 跳转到小锅伴页面
+							if (currentRoute !== 'pages/hotpot/hotpot') {
+								uni.reLaunch({
+									url: '/pages/hotpot/hotpot',
+									animationType: 'slide-in-right',
+									animationDuration: 200
+								});
+							} else {
+								uni.showToast({
+									title: '当前页面',
+									icon: 'none',
+									duration: 1000
+								});
+							}
+							break;
+					}
+				}, 100); // 从200ms减少到100ms
 			}
 		}
 	}

@@ -108,7 +108,6 @@
 		<SideNavigation
 			:visible="sideNavVisible"
 			@close="hideSideNav"
-			@navigate="handleNavigation"
 		/>
 
 		<!-- 详情弹窗 -->
@@ -863,38 +862,6 @@
 			// 隐藏侧边导航栏
 			hideSideNav() {
 				this.sideNavVisible = false
-			},
-
-			// 处理导航点击
-			handleNavigation(type) {
-				// 先关闭侧边栏
-				this.hideSideNav()
-
-				// 延迟一点执行跳转，确保侧边栏动画完成
-				setTimeout(() => {
-					switch(type) {
-						case 'cards':
-							// 跳转到恋爱卡片页面，使用reLaunch替换当前页面栈
-							uni.reLaunch({
-								url: '/pages/index/index'
-							})
-							break
-						case 'pills':
-							// 当前就是药丸记录页面
-							uni.showToast({
-								title: '当前页面',
-								icon: 'none',
-								duration: 1500
-							})
-							break
-						case 'hotpot':
-							// 跳转到小锅伴页面
-							uni.reLaunch({
-								url: '/pages/hotpot/hotpot'
-							})
-							break
-					}
-				}, 200)
 			},
 
 			// 返回

@@ -125,7 +125,6 @@
 		<SideNavigation
 			:visible="sideNavVisible"
 			@close="hideSideNav"
-			@navigate="handleNavigation"
 		/>
 
 		<!-- 添加计时器弹窗 -->
@@ -147,7 +146,7 @@
 								   maxlength="10" />
 						</view>
 						<view class="form-section">
-							<text class="form-label">计时时间（秒）</text>
+							<text class="form-label">计时时间/秒）</text>
 							<input class="form-input"
 								   v-model.number="newTimer.time"
 								   type="number"
@@ -522,32 +521,12 @@
 				this.sideNavVisible = false
 			},
 
-			handleNavigation(type) {
-				this.hideSideNav()
-				setTimeout(() => {
-					switch(type) {
-						case 'cards':
-							uni.reLaunch({ url: '/pages/index/index' })
-							break
-						case 'pills':
-							uni.reLaunch({ url: '/pages/pills/pills' })
-							break
-						case 'hotpot':
-							uni.showToast({
-								title: '当前页面',
-								icon: 'none',
-								duration: 1500
-							})
-							break
-					}
-				}, 200)
-			},
-
+			// 记录当前使用的页面
 			recordCurrentPage() {
 				try {
 					uni.setStorageSync('lastUsedPage', 'hotpot')
 				} catch (e) {
-					console.log('���录页面失败:', e)
+					console.log('记录页面失败:', e)
 				}
 			}
 		}
