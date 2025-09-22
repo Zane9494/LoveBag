@@ -13,6 +13,13 @@
 				"navigationBarTitleText": "主题设置",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/pills/pills",
+			"style": {
+				"navigationBarTitleText": "药丸记录",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {

@@ -124,7 +124,7 @@
 					</view>
 					<view class="love-effect-burst">
 						<view v-for="n in 18" :key="'star'+n" class="burst-star" :style="getBurstStyle(n, 'star')"></view>
-						<view v-for="n in 12" :key="'ribbon'+n" class="burst-ribbon" :style="getBurstStyle(n, 'ribbon')"></view>
+						<view v-for="n in 12" class="burst-ribbon" :style="getBurstStyle(n, 'ribbon')"></view>
 					</view>
 					<view class="love-effect-text" v-if="loveBoxOpen">我也爱你</view>
 				</view>
@@ -326,10 +326,15 @@
 			this.getSystemInfo()
 			this.loadTheme()
 			this.loadCards()
+			// 记录当前使用的页面
+			this.recordCurrentPage()
 		},
+
 		onShow() {
 			// 页面显示时重新加载主题，以防用户从主题设置页面返回
 			this.loadTheme()
+			// 记录当前使用的页面
+			this.recordCurrentPage()
 		},
 		methods: {
 			// 获取系统信息
@@ -536,26 +541,47 @@
 
 			// 处理导航点击
 			handleNavigation(type) {
-				switch(type) {
-					case 'cards':
-						// 当前就是恋爱卡片页面，可以添加一些提示或刷新逻辑
-						uni.showToast({
-							title: '当前页面',
-							icon: 'none',
-							duration: 1500
-						})
-						break
-					case 'pills':
-						// 跳转到药丸记录页面（需要创建该页面）
-						uni.showToast({
-							title: '药丸记录功能开发中',
-							icon: 'none',
-							duration: 2000
-						})
-						// uni.navigateTo({
-						// 	url: '/pages/pills/pills'
-						// })
-						break
+				// 先关闭侧边栏
+				this.hideSideNav()
+
+				// 延迟一点执行跳转，确保侧边栏动画完成
+				setTimeout(() => {
+					switch(type) {
+						case 'cards':
+							// 当前就是恋爱卡片页面，可以添加一些提示或刷新逻辑
+							uni.showToast({
+								title: '当前页面',
+								icon: 'none',
+								duration: 1500
+							})
+							break
+						case 'pills':
+							// 跳转到药丸记录页面
+							console.log('准备跳转到药丸记录页面')
+							uni.navigateTo({
+								url: '/pages/pills/pills',
+								success: function(res) {
+									console.log('跳转成功', res)
+								},
+								fail: function(err) {
+									console.error('跳转失败', err)
+									uni.showToast({
+										title: '页面跳转失败',
+										icon: 'none',
+										duration: 2000
+									})
+								}
+							})
+							break
+					}
+				}, 200)
+			},
+			// 记录当前使用的页面
+			recordCurrentPage() {
+				try {
+					uni.setStorageSync('lastUsedPage', 'cards')
+				} catch (e) {
+					console.log('记录页面失败:', e)
 				}
 			}
 		}
