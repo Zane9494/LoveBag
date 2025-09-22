@@ -532,8 +532,11 @@
 
 			// 格式化显示用日期
 			formatDisplayDate(date) {
-				const options = { year: 'numeric', month: 'numeric', day: 'numeric' }
-				return new Intl.DateTimeFormat('zh-CN', options).format(new Date(date))
+				const d = new Date(date)
+				const year = d.getFullYear()
+				const month = d.getMonth() + 1
+				const day = d.getDate()
+				return `${year}年${month}月${day}日`
 			},
 
 			// 获取周期天数
@@ -739,23 +742,33 @@
 				this.showNewCycleModal = true
 			},
 
+			// 关闭新周期设置弹窗
+			closeNewCycleModal() {
+				this.showNewCycleModal = false
+			},
+
 			// 日期改变处理
 			onDateChange(event) {
-				const selectedDate = new Date(event.detail.value)
-				this.newCycleStartDate = selectedDate
+				this.newCycleStartDate = event.detail.value
 			},
 
 			// 确认开始新周期
 			confirmNewCycle() {
-				const selectedDate = this.newCycleStartDate
+				const selectedDate = new Date(this.newCycleStartDate)
+				const today = new Date()
+				today.setHours(0, 0, 0, 0)
+				selectedDate.setHours(0, 0, 0, 0)
 
-				// 如果选择的日期在今天之前，调整为今天
-				if (selectedDate < this.currentDate) {
-					this.newCycleStartDate = new Date(this.currentDate)
+				// 清除之前的记录
+				this.records = {}
+
+				// 如果选择的是过去的日期，需要根据21+7规律生成理想的服药记录
+				if (selectedDate < today) {
+					this.generatePastRecords(selectedDate, today)
 				}
 
 				// 开始新周期
-				this.startNewCycle(this.newCycleStartDate)
+				this.startNewCycle(selectedDate)
 
 				uni.showToast({
 					title: '已开始新的服药周期',
@@ -764,6 +777,27 @@
 				})
 
 				this.closeNewCycleModal()
+			},
+
+			// 生成过去的理想服药记录
+			generatePastRecords(startDate, endDate) {
+				const currentDate = new Date(startDate)
+				let dayCount = 1
+
+				while (currentDate <= endDate) {
+					const dateStr = this.formatDate(currentDate)
+					const cycleDay = ((dayCount - 1) % 28) + 1
+
+					// 只在服药期（前21天）生成记录
+					if (cycleDay <= 21) {
+						// 模拟理想的服药情况，偶尔有少量漏服
+						const shouldTake = Math.random() > 0.05 // 95%的概率按时服药
+						this.records[dateStr] = shouldTake
+					}
+
+					currentDate.setDate(currentDate.getDate() + 1)
+					dayCount++
+				}
 			},
 
 			// 显示侧边导航栏
@@ -785,8 +819,8 @@
 				setTimeout(() => {
 					switch(type) {
 						case 'cards':
-							// 跳转到恋爱卡片页面
-							uni.navigateTo({
+							// 跳转到恋爱卡片页面，使用reLaunch替换当前页面栈
+							uni.reLaunch({
 								url: '/pages/index/index'
 							})
 							break

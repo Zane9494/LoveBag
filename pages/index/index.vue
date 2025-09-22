@@ -556,21 +556,9 @@
 							})
 							break
 						case 'pills':
-							// 跳转到药丸记录页面
-							console.log('准备跳转到药丸记录页面')
-							uni.navigateTo({
-								url: '/pages/pills/pills',
-								success: function(res) {
-									console.log('跳转成功', res)
-								},
-								fail: function(err) {
-									console.error('跳转失败', err)
-									uni.showToast({
-										title: '页面跳转失败',
-										icon: 'none',
-										duration: 2000
-									})
-								}
+							// 跳转到药丸记录页面，使用reLaunch替换当前页面栈
+							uni.reLaunch({
+								url: '/pages/pills/pills'
 							})
 							break
 					}
