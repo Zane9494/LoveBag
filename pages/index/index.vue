@@ -3,7 +3,13 @@
 		<!-- 自定义导航栏 -->
 		<view class="custom-navbar" :style="{paddingTop: statusBarHeight + 'px'}">
 			<view class="navbar-content">
+				<view class="navbar-left">
+					<view class="more-btn" @click="showSideNav">
+						<text class="iconfont icon-gengduo more-icon"></text>
+					</view>
+				</view>
 				<text class="navbar-title">{{title}}</text>
+				<view class="navbar-right"></view>
 			</view>
 		</view>
 
@@ -125,6 +131,13 @@
 			</view>
 		</view>
 
+		<!-- 侧边导航栏组件 -->
+		<SideNavigation
+			:visible="sideNavVisible"
+			@close="hideSideNav"
+			@navigate="handleNavigation"
+		/>
+
 		<!-- 卡片详情弹窗 -->
 		<view class="modal-overlay" v-if="showModal" @click="closeModal">
 			<view class="modal-content" @click.stop>
@@ -210,8 +223,12 @@
 
 <script>
 	import cardsData from '../../jsons/cards-data/cards-data.json'
+	import SideNavigation from '../../components/SideNavigation.vue'
 
 	export default {
+		components: {
+			SideNavigation
+		},
 		data() {
 			return {
 				title: '恋爱卡片',
@@ -254,7 +271,8 @@
 				searchFocused: false, // 搜索框聚焦状态
 				showLoveEffect: false,
 				loveEffectTimer: null,
-				loveBoxOpen: false
+				loveBoxOpen: false,
+				sideNavVisible: false // 侧边导航栏可见性
 			}
 		},
 		computed: {
@@ -505,6 +523,40 @@
 					opacity: 0.85,
 					animation: type === 'star' ? `burst-star ${duration}s ${delay}s cubic-bezier(.7,.2,.4,1) forwards` : `burst-ribbon ${duration}s ${delay}s cubic-bezier(.7,.2,.4,1) forwards`
 				}
+			},
+			// 显示侧边导航栏
+			showSideNav() {
+				this.sideNavVisible = true
+			},
+
+			// 隐藏侧边导航栏
+			hideSideNav() {
+				this.sideNavVisible = false
+			},
+
+			// 处理导航点击
+			handleNavigation(type) {
+				switch(type) {
+					case 'cards':
+						// 当前就是恋爱卡片页面，可以添加一些提示或刷新逻辑
+						uni.showToast({
+							title: '当前页面',
+							icon: 'none',
+							duration: 1500
+						})
+						break
+					case 'pills':
+						// 跳转到药丸记录页面（需要创建该页面）
+						uni.showToast({
+							title: '药丸记录功能开发中',
+							icon: 'none',
+							duration: 2000
+						})
+						// uni.navigateTo({
+						// 	url: '/pages/pills/pills'
+						// })
+						break
+				}
 			}
 		}
 	}
@@ -531,16 +583,51 @@
 
 	.navbar-content {
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
 		align-items: center;
 		height: 88rpx;
 		padding: 0 40rpx;
+		position: relative;
+	}
+
+	.navbar-left {
+		display: flex;
+		align-items: center;
+		height: 100%;
+	}
+
+	.navbar-right {
+		width: 56rpx; /* 与左侧按钮宽度保持一致，用于平衡布局 */
+	}
+
+	.more-btn {
+		width: 56rpx;
+		height: 56rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-radius: 50%;
+		transition: all 0.2s ease;
+	}
+
+	.more-btn:active {
+		transform: scale(0.9);
+		background: rgba(0, 0, 0, 0.05);
+	}
+
+	.more-icon {
+		font-size: 28rpx;
+		color: #495057;
+		font-weight: bold;
 	}
 
 	.navbar-title {
 		font-size: 32rpx;
 		color: #495057;
 		font-weight: 600;
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
 	}
 
 	.main-content {
