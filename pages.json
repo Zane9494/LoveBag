@@ -27,6 +27,13 @@
 				"navigationBarTitleText": "小锅伴",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/nav-settings/nav-settings",
+			"style": {
+				"navigationBarTitleText": "导航设置",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {

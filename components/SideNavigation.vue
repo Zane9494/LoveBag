@@ -4,23 +4,22 @@
 			<view class="side-nav-header" :style="{paddingTop: statusBarHeight + 'px'}">
 				<view class="nav-header-content">
 					<text class="nav-title">导航菜单</text>
+					<view class="nav-settings-btn" @click="openNavSettings">
+						<text class="iconfont icon-gengduo settings-icon"></text>
+						<text class="settings-text">设置</text>
+					</view>
 				</view>
 			</view>
 
 			<view class="nav-items">
-				<view class="nav-item" @click="handleNavClick('cards')">
-					<text class="iconfont icon-icons-ic-card nav-icon"></text>
-					<text class="nav-text">恋爱卡片</text>
-				</view>
-
-				<view class="nav-item" @click="handleNavClick('pills')">
-					<text class="iconfont icon-drug-full nav-icon"></text>
-					<text class="nav-text">药丸记录</text>
-				</view>
-
-				<view class="nav-item" @click="handleNavClick('hotpot')">
-					<text class="iconfont icon-diancanling nav-icon"></text>
-					<text class="nav-text">小锅伴</text>
+				<view
+					class="nav-item"
+					v-for="item in visibleNavItems"
+					:key="item.key"
+					@click="handleNavClick(item.key)"
+				>
+					<text :class="['iconfont', item.icon, 'nav-icon']"></text>
+					<text class="nav-text">{{ item.name }}</text>
 				</view>
 			</view>
 		</view>
@@ -38,20 +37,88 @@
 		},
 		data() {
 			return {
-				statusBarHeight: 0
+				statusBarHeight: 0,
+				defaultNavItems: [
+					{
+						key: 'cards',
+						name: '恋爱卡片',
+						icon: 'icon-icons-ic-card',
+						visible: true,
+						route: '/pages/index/index'
+					},
+					{
+						key: 'pills',
+						name: '药丸记录',
+						icon: 'icon-drug-full',
+						visible: true,
+						route: '/pages/pills/pills'
+					},
+					{
+						key: 'hotpot',
+						name: '小锅伴',
+						icon: 'icon-diancanling',
+						visible: true,
+						route: '/pages/hotpot/hotpot'
+					}
+				],
+				navItems: [],
+				visibleNavItems: []
 			}
 		},
 		mounted() {
-			this.getSystemInfo()
+			this.getSystemInfo();
+			this.loadNavSettings();
+		},
+		watch: {
+			visible(newVal) {
+				if (newVal) {
+					// 每次打开侧边栏时重新加载设置
+					this.loadNavSettings();
+				}
+			}
 		},
 		methods: {
 			getSystemInfo() {
-				const systemInfo = uni.getSystemInfoSync()
-				this.statusBarHeight = systemInfo.statusBarHeight || 0
+				const systemInfo = uni.getSystemInfoSync();
+				this.statusBarHeight = systemInfo.statusBarHeight || 0;
+			},
+
+			loadNavSettings() {
+				try {
+					const savedSettings = uni.getStorageSync('navSettings');
+					if (savedSettings && savedSettings.length > 0) {
+						this.navItems = savedSettings;
+					} else {
+						this.navItems = [...this.defaultNavItems];
+					}
+					this.updateVisibleNavItems();
+				} catch (e) {
+					console.log('加载导航设置失败:', e);
+					this.navItems = [...this.defaultNavItems];
+					this.updateVisibleNavItems();
+				}
+			},
+
+			updateVisibleNavItems() {
+				this.visibleNavItems = this.navItems.filter(item => item.visible);
 			},
 
 			closeSideNav() {
 				this.$emit('close');
+			},
+
+			openNavSettings() {
+				// 先关闭侧边栏
+				this.closeSideNav();
+
+				// 跳转到导航设置页面
+				setTimeout(() => {
+					uni.navigateTo({
+						url: '/pages/nav-settings/nav-settings',
+						animationType: 'slide-in-right',
+						animationDuration: 200
+					});
+				}, 100);
 			},
 
 			handleNavClick(type) {
@@ -65,57 +132,26 @@
 					const currentPage = pages[pages.length - 1];
 					const currentRoute = currentPage.route;
 
-					switch(type) {
-						case 'cards':
-							// 跳转到恋爱卡片页面
-							if (currentRoute !== 'pages/index/index') {
-								uni.reLaunch({
-									url: '/pages/index/index',
-									animationType: 'slide-in-right',
-									animationDuration: 200
-								});
-							} else {
-								uni.showToast({
-									title: '当前页面',
-									icon: 'none',
-									duration: 1000
-								});
-							}
-							break;
-						case 'pills':
-							// 跳转到药丸记录页面
-							if (currentRoute !== 'pages/pills/pills') {
-								uni.reLaunch({
-									url: '/pages/pills/pills',
-									animationType: 'slide-in-right',
-									animationDuration: 200
-								});
-							} else {
-								uni.showToast({
-									title: '当前页面',
-									icon: 'none',
-									duration: 1000
-								});
-							}
-							break;
-						case 'hotpot':
-							// 跳转到小锅伴页面
-							if (currentRoute !== 'pages/hotpot/hotpot') {
-								uni.reLaunch({
-									url: '/pages/hotpot/hotpot',
-									animationType: 'slide-in-right',
-									animationDuration: 200
-								});
-							} else {
-								uni.showToast({
-									title: '当前页面',
-									icon: 'none',
-									duration: 1000
-								});
-							}
-							break;
+					// 根据 type 找到对应的路由
+					const targetItem = this.navItems.find(item => item.key === type);
+					if (!targetItem) return;
+
+					const targetRoute = targetItem.route.replace('/', '');
+
+					if (currentRoute !== targetRoute) {
+						uni.reLaunch({
+							url: targetItem.route,
+							animationType: 'slide-in-right',
+							animationDuration: 200
+						});
+					} else {
+						uni.showToast({
+							title: '当前页面',
+							icon: 'none',
+							duration: 1000
+						});
 					}
-				}, 100); // 从200ms减少到100ms
+				}, 100);
 			}
 		}
 	}
@@ -173,7 +209,7 @@
 
 	.nav-header-content {
 		display: flex;
-		justify-content: flex-start;
+		justify-content: space-between;
 		align-items: center;
 		height: 88rpx;
 		padding: 0 30rpx;
@@ -183,6 +219,23 @@
 	.nav-title {
 		font-size: 32rpx;
 		font-weight: 600;
+		color: white;
+	}
+
+	.nav-settings-btn {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
+
+	.settings-icon {
+		font-size: 28rpx;
+		color: white;
+		margin-right: 5rpx;
+	}
+
+	.settings-text {
+		font-size: 28rpx;
 		color: white;
 	}
 
