@@ -1,8 +1,6 @@
 <template>
 	<view class="nav-settings-page">
-		<view class="status-bar" :style="{height: statusBarHeight + 'px'}"></view>
-
-		<view class="nav-bar">
+		<view class="nav-bar" :style="{paddingTop: statusBarHeight + 'px'}">
 			<view class="nav-bar-content">
 				<text class="iconfont icon-back nav-back" @click="goBack"></text>
 				<text class="nav-title">导航设置</text>
@@ -13,16 +11,17 @@
 		<view class="settings-content">
 			<view class="section">
 				<text class="section-title">功能项设置</text>
-				<text class="section-desc">拖拽调整顺序，点击开关控制显示</text>
+				<text class="section-desc">长按拖拽调整顺序，点击开关控制显示</text>
 			</view>
 
 			<view class="nav-items-list">
 				<view
 					class="nav-item-setting"
 					v-for="(item, index) in navItems"
-					:key="item.key"
-					:data-index="index"
-					@longpress="startDrag"
+					:key="item.key + '_' + index"
+					:class="{ 'dragging': dragIndex === index }"
+					:style="getDragStyle(index)"
+					@longpress="startDrag($event, index)"
 					@touchmove="onDrag"
 					@touchend="endDrag"
 				>
@@ -44,7 +43,14 @@
 			</view>
 
 			<view class="reset-section">
-				<button class="reset-btn" @click="resetToDefault">恢复默认设置</button>
+				<button
+					class="reset-btn"
+					:class="{ 'disabled': !hasChanges }"
+					:disabled="!hasChanges"
+					@click="resetToDefault"
+				>
+					恢复默认设置
+				</button>
 			</view>
 		</view>
 	</view>
@@ -56,7 +62,8 @@
 		data() {
 			return {
 				statusBarHeight: 0,
-				navItems: [
+				navItems: [],
+				defaultNavItems: [
 					{
 						key: 'cards',
 						name: '恋爱卡片',
@@ -81,12 +88,29 @@
 				],
 				dragIndex: -1,
 				isDragging: false,
-				startY: 0
+				startY: 0,
+				dragOffset: 0
 			}
 		},
 		mounted() {
 			this.getSystemInfo();
 			this.loadSettings();
+		},
+		computed: {
+			hasChanges() {
+				// 检查顺序是否变化
+				const orderChanged = this.navItems.some((item, index) => {
+					return item.key !== this.defaultNavItems[index].key;
+				});
+
+				// 检查可见性是否变化
+				const visibilityChanged = this.navItems.some((item, index) => {
+					const defaultItem = this.defaultNavItems.find(def => def.key === item.key);
+					return defaultItem && item.visible !== defaultItem.visible;
+				});
+
+				return orderChanged || visibilityChanged;
+			}
 		},
 		methods: {
 			getSystemInfo() {
@@ -97,11 +121,14 @@
 			loadSettings() {
 				try {
 					const savedSettings = uni.getStorageSync('navSettings');
-					if (savedSettings) {
+					if (savedSettings && savedSettings.length > 0) {
 						this.navItems = savedSettings;
+					} else {
+						this.navItems = JSON.parse(JSON.stringify(this.defaultNavItems));
 					}
 				} catch (e) {
 					console.log('加载导航设置失败:', e);
+					this.navItems = JSON.parse(JSON.stringify(this.defaultNavItems));
 				}
 			},
 
@@ -131,14 +158,16 @@
 				this.navItems[index].visible = !this.navItems[index].visible;
 			},
 
-			startDrag(e) {
+			startDrag(e, index) {
 				this.isDragging = true;
-				this.dragIndex = parseInt(e.currentTarget.dataset.index);
+				this.dragIndex = index;
 				this.startY = e.touches[0].clientY;
+				this.dragOffset = 0;
 
-				// 添加拖拽样式
-				e.currentTarget.style.opacity = '0.7';
-				e.currentTarget.style.transform = 'scale(1.05)';
+				// 添加触感反馈
+				if (uni.vibrateShort) {
+					uni.vibrateShort();
+				}
 			},
 
 			onDrag(e) {
@@ -146,20 +175,28 @@
 
 				e.preventDefault();
 				const currentY = e.touches[0].clientY;
-				const deltaY = currentY - this.startY;
+				this.dragOffset = currentY - this.startY;
 
 				// 计算目标位置
-				const itemHeight = 120; // 大概的项目高度
-				const targetIndex = Math.max(0, Math.min(this.navItems.length - 1,
-					this.dragIndex + Math.round(deltaY / itemHeight)));
+				const itemHeight = 84; // rpx转换成实际高度大约84px
+				const moveSteps = Math.round(this.dragOffset / itemHeight);
+				const targetIndex = Math.max(0, Math.min(this.navItems.length - 1, this.dragIndex + moveSteps));
 
-				if (targetIndex !== this.dragIndex) {
-					// 交换位置
+				if (targetIndex !== this.dragIndex && Math.abs(moveSteps) >= 1) {
+					// 移动元素
 					const dragItem = this.navItems[this.dragIndex];
 					this.navItems.splice(this.dragIndex, 1);
 					this.navItems.splice(targetIndex, 0, dragItem);
+
+					// 更新拖拽索引和起始位置
 					this.dragIndex = targetIndex;
 					this.startY = currentY;
+					this.dragOffset = 0;
+
+					// 添加触感反馈
+					if (uni.vibrateShort) {
+						uni.vibrateShort();
+					}
 				}
 			},
 
@@ -168,41 +205,29 @@
 
 				this.isDragging = false;
 				this.dragIndex = -1;
+				this.dragOffset = 0;
+			},
 
-				// 恢复样式
-				e.currentTarget.style.opacity = '';
-				e.currentTarget.style.transform = '';
+			getDragStyle(index) {
+				if (this.dragIndex === index && this.isDragging) {
+					return {
+						transform: `translateY(${this.dragOffset}px)`,
+						zIndex: 100,
+						opacity: 0.8
+					};
+				}
+				return {};
 			},
 
 			resetToDefault() {
+				if (!this.hasChanges) return;
+
 				uni.showModal({
 					title: '确认重置',
 					content: '是否恢复为默认的导航设置？',
 					success: (res) => {
 						if (res.confirm) {
-							this.navItems = [
-								{
-									key: 'cards',
-									name: '恋爱卡片',
-									icon: 'icon-icons-ic-card',
-									visible: true,
-									route: '/pages/index/index'
-								},
-								{
-									key: 'pills',
-									name: '药丸记录',
-									icon: 'icon-drug-full',
-									visible: true,
-									route: '/pages/pills/pills'
-								},
-								{
-									key: 'hotpot',
-									name: '小锅伴',
-									icon: 'icon-diancanling',
-									visible: true,
-									route: '/pages/hotpot/hotpot'
-								}
-							];
+							this.navItems = JSON.parse(JSON.stringify(this.defaultNavItems));
 
 							uni.showToast({
 								title: '已恢复默认',
@@ -225,10 +250,6 @@
 	.nav-settings-page {
 		min-height: 100vh;
 		background: #f8f9fa;
-	}
-
-	.status-bar {
-		background: #4ecdc4;
 	}
 
 	.nav-bar {
@@ -298,26 +319,41 @@
 		align-items: center;
 		padding: 30rpx;
 		border-bottom: 1rpx solid #f0f0f0;
-		transition: all 0.3s ease;
+		transition: all 0.2s ease;
 		background: white;
+		position: relative;
 	}
 
 	.nav-item-setting:last-child {
 		border-bottom: none;
 	}
 
-	.nav-item-setting:active {
+	.nav-item-setting:active:not(.dragging) {
 		background: #f8f9fa;
+	}
+
+	.nav-item-setting.dragging {
+		background: #fff;
+		box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.15);
+		border-radius: 12rpx;
+		margin: 8rpx 16rpx;
+		z-index: 100;
 	}
 
 	.drag-handle {
 		margin-right: 20rpx;
 		opacity: 0.5;
+		padding: 10rpx;
+		transition: opacity 0.2s ease;
 	}
 
 	.drag-handle .iconfont {
 		font-size: 24rpx;
 		color: #999;
+	}
+
+	.nav-item-setting.dragging .drag-handle {
+		opacity: 0.8;
 	}
 
 	.item-info {
@@ -348,13 +384,32 @@
 	.reset-btn {
 		background: white;
 		color: #666;
-		border: 2rpx solid #ddd;
+		border: none;
 		border-radius: 50rpx;
 		padding: 20rpx 60rpx;
 		font-size: 28rpx;
+		box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+		transition: all 0.2s ease;
 	}
 
-	.reset-btn:active {
+	.reset-btn::after {
+		border: none;
+	}
+
+	.reset-btn.disabled {
 		background: #f0f0f0;
+		color: #ccc;
+		box-shadow: none;
+		cursor: not-allowed;
+	}
+
+	.reset-btn:not(.disabled):active {
+		background: #f0f0f0;
+		transform: scale(0.98);
+	}
+
+	.dragging {
+		opacity: 0.7;
+		transform: scale(1.05);
 	}
 </style>
