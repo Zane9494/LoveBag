@@ -113,6 +113,13 @@
 						icon: 'icon-diancanling',
 						visible: true,
 						route: '/pages/hotpot/hotpot'
+					},
+					{
+						key: 'game',
+						name: '游戏',
+						icon: 'icon-youxi',
+						visible: true,
+						route: '/pages/game/game'
 					}
 				],
 				navItems: [],
@@ -166,7 +173,8 @@
 				try {
 					const savedSettings = uni.getStorageSync('navSettings');
 					if (savedSettings && savedSettings.length > 0) {
-						this.navItems = savedSettings;
+						// 合并保存的设置和新的默认项目
+						this.navItems = this.mergeNavSettings(savedSettings, this.defaultNavItems);
 					} else {
 						this.navItems = [...this.defaultNavItems];
 					}
@@ -176,6 +184,22 @@
 					this.navItems = [...this.defaultNavItems];
 					this.updateVisibleNavItems();
 				}
+			},
+
+			// 合并导航设置，确保新功能能被添加
+			mergeNavSettings(savedSettings, defaultSettings) {
+				const merged = [...savedSettings];
+				
+				// 检查是否有新的默认项目需要添加
+				defaultSettings.forEach(defaultItem => {
+					const existingItem = merged.find(item => item.key === defaultItem.key);
+					if (!existingItem) {
+						// 添加新的默认项目到末尾
+						merged.push({...defaultItem});
+					}
+				});
+				
+				return merged;
 			},
 
 			updateVisibleNavItems() {

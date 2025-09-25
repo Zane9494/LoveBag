@@ -29,9 +29,9 @@
 			}
 		},
 		{
-			"path": "pages/nav-settings/nav-settings",
+			"path": "pages/game/game",
 			"style": {
-				"navigationBarTitleText": "导航设置",
+				"navigationBarTitleText": "游戏",
 				"navigationStyle": "custom"
 			}
 		}
