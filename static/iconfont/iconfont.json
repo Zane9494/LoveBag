@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1727457",
+      "name": "223保存",
+      "font_class": "baocun",
+      "unicode": "e8c8",
+      "unicode_decimal": 59592
+    },
+    {
       "icon_id": "1985064",
       "name": "游戏",
       "font_class": "youxi",
