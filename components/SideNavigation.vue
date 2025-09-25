@@ -4,9 +4,15 @@
 			<view class="side-nav-header" :style="{paddingTop: statusBarHeight + 'px'}">
 				<view class="nav-header-content">
 					<text class="nav-title">{{ isEditMode ? '编辑导航' : '导航菜单' }}</text>
-					<view class="nav-settings-btn" @click="toggleEditMode">
-						<text class="iconfont" :class="isEditMode ? 'icon-check' : 'icon-gengduo'" :style="{ fontSize: '28rpx', color: 'white', marginRight: isEditMode ? '0' : '5rpx' }"></text>
-						<text class="settings-text" v-if="!isEditMode">设置</text>
+					<view class="header-actions">
+						<view class="nav-settings-btn" @click="saveAndExit" v-if="isEditMode">
+							<text class="iconfont icon-baocun" :style="{ fontSize: '28rpx', color: 'white', marginRight: '5rpx' }"></text>
+							<text class="settings-text">保存</text>
+						</view>
+						<view class="nav-settings-btn" @click="toggleEditMode" v-else>
+							<text class="iconfont icon-shezhi" :style="{ fontSize: '28rpx', color: 'white', marginRight: '5rpx' }"></text>
+							<text class="settings-text">设置</text>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -41,9 +47,9 @@
 						@touchmove="onDrag"
 						@touchend="endDrag"
 					>
-						<view class="drag-handle">
-							<text class="iconfont icon-gengduo drag-icon"></text>
-						</view>
+					<view class="drag-handle">
+						<text class="drag-icon">⋮⋮</text>
+					</view>
 
 						<view class="item-info">
 							<text :class="['iconfont', item.icon, 'item-icon']"></text>
@@ -59,21 +65,12 @@
 				</view>
 
 				<view class="edit-actions">
-					<button
-						class="action-btn reset-btn"
-						:class="{ 'disabled': !hasChanges }"
-						:disabled="!hasChanges"
-						@click="resetToDefault"
-					>
-						恢复默认
-					</button>
-					
-					<view class="main-actions">
-						<button class="action-btn cancel-btn" @click="cancelEdit">
-							取消
+					<view class="bottom-actions">
+						<button class="action-btn reset-btn" :class="{ 'disabled': !hasChanges }" :disabled="!hasChanges" @click="resetToDefault">
+							<text class="btn-text">恢复默认</text>
 						</button>
-						<button class="action-btn save-btn" @click="saveAndExit">
-							保存
+						<button class="action-btn cancel-btn" @click="cancelEdit">
+							<text class="btn-text">取消</text>
 						</button>
 					</view>
 				</view>
@@ -278,11 +275,9 @@
 
 				this.isDragging = false;
 				
-				// 延迟重置，让动画完成
-				setTimeout(() => {
-					this.dragIndex = -1;
-					this.dragOffset = 0;
-				}, 200);
+				// 立即重置拖拽状态，避免悬浮
+				this.dragIndex = -1;
+				this.dragOffset = 0;
 			},
 
 			getDragStyle(index) {
@@ -411,6 +406,12 @@
 		position: relative;
 	}
 
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 16rpx;
+	}
+
 	.nav-title {
 		font-size: 32rpx;
 		font-weight: 600;
@@ -526,9 +527,10 @@
 	}
 
 	.drag-icon {
-		font-size: 28rpx;
+		font-size: 32rpx;
 		color: #999;
-		transform: rotate(90deg);
+		font-weight: bold;
+		line-height: 1;
 	}
 
 	.nav-item-edit.dragging .drag-handle {
@@ -602,63 +604,64 @@
 		padding: 30rpx;
 		display: flex;
 		flex-direction: column;
-		gap: 20rpx;
+		gap: 24rpx;
 	}
 
-	.main-actions {
+	.bottom-actions {
 		display: flex;
-		gap: 20rpx;
+		gap: 16rpx;
 	}
 
 	.action-btn {
 		border: none;
-		border-radius: 12rpx;
+		border-radius: 16rpx;
 		font-size: 28rpx;
-		transition: all 0.2s ease;
-		flex: 1;
-		padding: 24rpx;
+		transition: all 0.15s ease;
+		padding: 26rpx 32rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8rpx;
+		font-weight: 500;
 	}
 
 	.action-btn::after {
 		border: none;
 	}
 
+	.btn-text {
+		font-size: 28rpx;
+	}
+
+
 	.reset-btn {
-		background: white;
-		color: #666;
-		box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+		background: rgba(78, 205, 196, 0.1);
+		color: #4ecdc4;
+		border: 2rpx solid rgba(78, 205, 196, 0.2);
+		flex: 1;
 	}
 
 	.reset-btn.disabled {
-		background: #f0f0f0;
+		background: #f5f5f5;
 		color: #ccc;
-		box-shadow: none;
+		border-color: #f0f0f0;
 	}
 
 	.reset-btn:not(.disabled):active {
-		background: #f0f0f0;
-		transform: scale(0.98);
+		background: rgba(78, 205, 196, 0.2);
+		transform: scale(0.96);
 	}
 
 	.cancel-btn {
-		background: white;
+		background: #f8f9fa;
 		color: #666;
-		box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+		border: 2rpx solid #e9ecef;
+		flex: 1;
 	}
 
 	.cancel-btn:active {
-		background: #f0f0f0;
-		transform: scale(0.98);
+		background: #e9ecef;
+		transform: scale(0.96);
 	}
 
-	.save-btn {
-		background: #4ecdc4;
-		color: white;
-		box-shadow: 0 2rpx 8rpx rgba(78, 205, 196, 0.3);
-	}
-
-	.save-btn:active {
-		background: #45b7b8;
-		transform: scale(0.98);
-	}
 </style>
