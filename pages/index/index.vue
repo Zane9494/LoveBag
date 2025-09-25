@@ -1,5 +1,5 @@
 <template>
-	<view class="page">
+	<view class="page" @click="handleScreenClick">
 		<!-- 自定义导航栏 -->
 		<view class="custom-navbar" :style="{paddingTop: statusBarHeight + 'px'}">
 			<view class="navbar-content">
@@ -124,11 +124,16 @@
 					</view>
 					<view class="love-effect-burst">
 						<view v-for="n in 18" :key="'star'+n" class="burst-star" :style="getBurstStyle(n, 'star')"></view>
-						<view v-for="n in 12" class="burst-ribbon" :style="getBurstStyle(n, 'ribbon')"></view>
+						<view v-for="n in 12" :key="'ribbon'+n" class="burst-ribbon" :style="getBurstStyle(n, 'ribbon')"></view>
 					</view>
 					<view class="love-effect-text" v-if="loveBoxOpen">我也爱你</view>
 				</view>
 			</view>
+		</view>
+
+		<!-- 彩带特效 -->
+		<view v-for="confetti in confettiList" :key="confetti.id" class="confetti-container" :style="confetti.containerStyle">
+			<view v-for="n in 20" :key="'confetti-'+confetti.id+'-'+n" class="confetti-piece" :style="getConfettiStyle(confetti, n)"></view>
 		</view>
 
 		<!-- 侧边导航栏组件 -->
@@ -271,7 +276,9 @@
 				showLoveEffect: false,
 				loveEffectTimer: null,
 				loveBoxOpen: false,
-				sideNavVisible: false // 侧边导航栏可见性
+				sideNavVisible: false, // 侧边导航栏可见性
+				confettiList: [], // 彩带列表
+				confettiId: 0 // 彩带ID计数器
 			}
 		},
 		computed: {
@@ -402,9 +409,11 @@
 					this.loveEffectTimer = setTimeout(() => {
 						this.showLoveEffect = false
 						this.loveBoxOpen = false
+						// 特效结束后清空搜索框并回到初始状态
+						this.searchText = ''
+						this.updateDisplayCards()
 					}, 2200)
-					this.filteredCards = []
-					this.displayCards = []
+					// 保持当前显示状态，不清空
 					return
 				}
 				if (this.searchText.trim() === '') {
@@ -544,6 +553,81 @@
 					uni.setStorageSync('lastUsedPage', 'cards')
 				} catch (e) {
 					console.log('记录页面失败:', e)
+				}
+			},
+
+			// 处理屏幕点击事件
+			handleScreenClick(event) {
+				// 获取点击位置
+				const x = event.detail.x || 0
+				const y = event.detail.y || 0
+				
+				// 创建彩带效果
+				this.createConfetti(x, y)
+			},
+
+			// 创建彩带效果
+			createConfetti(x, y) {
+				const confettiId = ++this.confettiId
+				const confetti = {
+					id: confettiId,
+					x: x,
+					y: y,
+					containerStyle: {
+						position: 'fixed',
+						left: x + 'px',
+						top: y + 'px',
+						width: '1px',
+						height: '1px',
+						pointerEvents: 'none',
+						zIndex: 9998
+					}
+				}
+				
+				this.confettiList.push(confetti)
+				
+				// 2秒后移除彩带
+				setTimeout(() => {
+					const index = this.confettiList.findIndex(item => item.id === confettiId)
+					if (index > -1) {
+						this.confettiList.splice(index, 1)
+					}
+				}, 2000)
+			},
+
+			// 获取彩带样式
+			getConfettiStyle(confetti, n) {
+				// 计算角度，让彩带向四面八方飞散
+				const angle = (n * 18) % 360 // 每个彩带间隔18度
+				const distance = 80 + Math.random() * 120 // 随机距离
+				const duration = 1.2 + Math.random() * 0.8 // 随机持续时间
+				const delay = Math.random() * 0.3 // 随机延迟
+				const size = 8 + Math.random() * 12 // 随机大小
+				
+				// 随机颜色
+				const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd']
+				const color = colors[Math.floor(Math.random() * colors.length)]
+				
+				// 计算最终位置
+				const radian = (angle * Math.PI) / 180
+				const endX = Math.cos(radian) * distance
+				const endY = Math.sin(radian) * distance
+				
+				// 创建唯一的动画名称
+				const animationName = `confetti-burst-${confetti.id}-${n}`
+				
+				// 动态创建CSS动画（这里我们用transform直接设置）
+				return {
+					position: 'absolute',
+					left: '0px',
+					top: '0px',
+					width: size + 'px',
+					height: (size / 3) + 'px',
+					backgroundColor: color,
+					borderRadius: '2px',
+					opacity: 1,
+					transform: `translate(0px, 0px) rotate(${angle}deg)`,
+					animation: `confetti-burst-${n % 8} ${duration}s ${delay}s ease-out forwards`
 				}
 			}
 		}
@@ -1502,5 +1586,50 @@
 		0% { opacity: 0; transform: scale(0.8) translate(-50%, -50%); }
 		80% { opacity: 1; transform: scale(1.1) translate(-50%, -50%); }
 		100% { opacity: 1; transform: scale(1) translate(-50%, -50%); }
+	}
+
+	/* 彩带特效样式 */
+	.confetti-container {
+		position: fixed;
+		pointer-events: none;
+		z-index: 9998;
+	}
+
+	.confetti-piece {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	@keyframes confetti-burst-0 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(120px, -80px) rotate(720deg) scale(0.3); }
+	}
+	@keyframes confetti-burst-1 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(80px, -120px) rotate(-720deg) scale(0.3); }
+	}
+	@keyframes confetti-burst-2 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(-80px, -120px) rotate(720deg) scale(0.3); }
+	}
+	@keyframes confetti-burst-3 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(-120px, -80px) rotate(-720deg) scale(0.3); }
+	}
+	@keyframes confetti-burst-4 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(-120px, 80px) rotate(720deg) scale(0.3); }
+	}
+	@keyframes confetti-burst-5 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(-80px, 120px) rotate(-720deg) scale(0.3); }
+	}
+	@keyframes confetti-burst-6 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(80px, 120px) rotate(720deg) scale(0.3); }
+	}
+	@keyframes confetti-burst-7 {
+		0% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+		100% { opacity: 0; transform: translate(120px, 80px) rotate(-720deg) scale(0.3); }
 	}
 </style>
