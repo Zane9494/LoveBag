@@ -30,39 +30,43 @@
 				</view>
 			</view>
 
-			<!-- 编辑模式 -->
-			<view class="edit-content" v-else>
-				<view class="edit-desc">
-					<text class="desc-text">长按 ⋮⋮ 拖拽调整顺序，点击右侧切换显示</text>
-				</view>
-
-				<view class="nav-items-edit">
-					<view
-						class="nav-item-edit"
-						v-for="(item, index) in navItems"
-						:key="item.key + '_' + index"
-						:class="{ 'dragging': dragIndex === index }"
-						:style="getDragStyle(index)"
-						@longpress="startDrag($event, index)"
-						@touchmove="onDrag"
-						@touchend="endDrag"
-					>
-					<view class="drag-handle">
-						<text class="drag-icon">⋮⋮</text>
+				<!-- 编辑模式 -->
+				<view class="edit-content" v-else>
+					<view class="edit-desc">
+						<text class="desc-text">长按 ⋮⋮ 拖拽调整顺序，点击右侧切换显示</text>
 					</view>
 
-						<view class="item-info">
-							<text :class="['iconfont', item.icon, 'item-icon']"></text>
-							<text class="item-name">{{ item.name }}</text>
-						</view>
+					<view class="nav-items-edit" ref="sortableContainer">
+						<view
+							class="nav-item-edit"
+							v-for="(item, index) in navItems"
+							:key="item.key"
+							:data-index="index"
+							:class="{ 
+								'dragging': dragState.isDragging && dragState.dragIndex === index,
+								'drag-over': dragState.dragOverIndex === index && dragState.dragOverIndex !== dragState.dragIndex
+							}"
+						>
+							<view class="drag-handle" 
+								@touchstart="onDragStart($event, index)"
+								@touchmove.prevent="onDragMove"
+								@touchend="onDragEnd"
+								@touchcancel="onDragEnd">
+								<text class="drag-icon">⋮⋮</text>
+							</view>
 
-						<view class="toggle-switch" @click="toggleItemVisibility(index)">
-							<view class="switch-track" :class="{ 'active': item.visible }">
-								<view class="switch-thumb" :class="{ 'active': item.visible }"></view>
+							<view class="item-info">
+								<text :class="['iconfont', item.icon, 'item-icon']"></text>
+								<text class="item-name">{{ item.name }}</text>
+							</view>
+
+							<view class="toggle-switch" @click="toggleItemVisibility(index)">
+								<view class="switch-track" :class="{ 'active': item.visible }">
+									<view class="switch-thumb" :class="{ 'active': item.visible }"></view>
+								</view>
 							</view>
 						</view>
 					</view>
-				</view>
 
 				<view class="edit-actions">
 					<view class="bottom-actions">
@@ -125,16 +129,27 @@
 				navItems: [],
 				visibleNavItems: [],
 				backupSettings: null,
-				dragIndex: -1,
-				isDragging: false,
-				startY: 0,
-				dragOffset: 0,
-				lastTargetIndex: -1 // 记录上一次的目标位置，避免重复移动
+				// 轻量级拖拽状态
+				dragState: {
+					isDragging: false,
+					dragIndex: -1,
+					dragOverIndex: -1,
+					startY: 0,
+					currentY: 0,
+					itemHeight: 60,
+					longPressTimer: null
+				}
 			}
 		},
 		mounted() {
 			this.getSystemInfo();
 			this.loadNavSettings();
+		},
+		beforeDestroy() {
+			// 清理定时器
+			if (this.dragState.longPressTimer) {
+				clearTimeout(this.dragState.longPressTimer);
+			}
 		},
 		computed: {
 			hasChanges() {
@@ -251,87 +266,122 @@
 				this.navItems[index].visible = !this.navItems[index].visible;
 			},
 
-			startDrag(e, index) {
-				this.isDragging = true;
-				this.dragIndex = index;
-				this.lastTargetIndex = index; // 初始化上一次目标位置
-				this.startY = e.touches[0].clientY;
-				this.dragOffset = 0;
+			// 轻量级拖拽开始
+			onDragStart(e, index) {
+				if (!e.touches || e.touches.length === 0) return;
+				
+				const touch = e.touches[0];
+				
+				// 清除之前的定时器
+				if (this.dragState.longPressTimer) {
+					clearTimeout(this.dragState.longPressTimer);
+				}
+				
+				// 记录触摸起始位置
+				this.dragState.startY = touch.clientY;
+				
+				// 设置长按定时器
+				this.dragState.longPressTimer = setTimeout(() => {
+					this.startDragging(index, touch.clientY);
+				}, 400); // 400ms长按触发
+			},
 
-				// 添加触感反馈
+			// 开始拖拽
+			startDragging(index, startY) {
+				this.dragState.isDragging = true;
+				this.dragState.dragIndex = index;
+				this.dragState.dragOverIndex = index;
+				this.dragState.startY = startY;
+				this.dragState.currentY = startY;
+				
+				// 触觉反馈
 				if (uni.vibrateShort) {
-					uni.vibrateShort();
+					uni.vibrateShort({
+						type: 'heavy'
+					});
 				}
 			},
 
-			onDrag(e) {
-				if (!this.isDragging || this.dragIndex === -1) return;
+			// 拖拽移动
+			onDragMove(e) {
+				if (!e.touches || e.touches.length === 0) return;
+				
+				const touch = e.touches[0];
+				const moveDistance = Math.abs(touch.clientY - this.dragState.startY);
+				
+				// 如果移动距离超过阈值，取消长按
+				if (moveDistance > 15 && this.dragState.longPressTimer && !this.dragState.isDragging) {
+					clearTimeout(this.dragState.longPressTimer);
+					this.dragState.longPressTimer = null;
+					return;
+				}
+				
+				// 如果正在拖拽，处理移动
+				if (this.dragState.isDragging) {
+					this.dragState.currentY = touch.clientY;
+					this.updateDragOverIndex();
+				}
+			},
 
-				e.preventDefault();
-				const currentY = e.touches[0].clientY;
-				this.dragOffset = currentY - this.startY;
-
-				// 计算目标位置，支持跨越多个位置
-				const itemHeight = 80; // 每个项目的高度
-				const moveSteps = Math.round(this.dragOffset / itemHeight);
-				const targetIndex = Math.max(0, Math.min(this.navItems.length - 1, this.dragIndex + moveSteps));
-
-				// 只有当目标位置与上一次的目标位置不同时才进行移动，避免重复操作
-				if (targetIndex !== this.lastTargetIndex && targetIndex !== this.dragIndex) {
-					// 移动元素到目标位置
-					const dragItem = this.navItems[this.dragIndex];
-					this.navItems.splice(this.dragIndex, 1);
-					this.navItems.splice(targetIndex, 0, dragItem);
-
-					// 更新拖拽索引和上一次目标位置
-					this.dragIndex = targetIndex;
-					this.lastTargetIndex = targetIndex;
-
-					// 添加触感反馈
+			// 更新拖拽悬停索引
+			updateDragOverIndex() {
+				const dragOffset = this.dragState.currentY - this.dragState.startY;
+				const steps = Math.round(dragOffset / this.dragState.itemHeight);
+				const targetIndex = Math.max(0, Math.min(
+					this.navItems.length - 1,
+					this.dragState.dragIndex + steps
+				));
+				
+				if (targetIndex !== this.dragState.dragOverIndex) {
+					this.dragState.dragOverIndex = targetIndex;
+					
+					// 轻触觉反馈
 					if (uni.vibrateShort) {
-						uni.vibrateShort({
-							type: 'light'
-						});
+						uni.vibrateShort({ type: 'light' });
 					}
 				}
 			},
 
-			endDrag(e) {
-				if (!this.isDragging) return;
-
-				// 先重置拖拽状态
-				this.isDragging = false;
-				this.dragOffset = 0;
-				this.lastTargetIndex = -1;
+			// 拖拽结束
+			onDragEnd(e) {
+				// 清除长按定时器
+				if (this.dragState.longPressTimer) {
+					clearTimeout(this.dragState.longPressTimer);
+					this.dragState.longPressTimer = null;
+				}
 				
-				// 使用nextTick确保DOM更新后再重置dragIndex
-				this.$nextTick(() => {
-					this.dragIndex = -1;
-				});
+				if (this.dragState.isDragging) {
+					this.finishDrag();
+				}
 			},
 
-			getDragStyle(index) {
-				// 只有在正在拖拽且是当前拖拽元素时才应用特殊样式
-				if (this.dragIndex === index && this.isDragging) {
-					// 计算当前应该显示的偏移量
-					const itemHeight = 80;
-					const currentSteps = Math.round(this.dragOffset / itemHeight);
-					const remainingOffset = this.dragOffset - (currentSteps * itemHeight);
-					
-					return {
-						transform: `translateY(${remainingOffset}px)`,
-						zIndex: 100,
-						opacity: 0.8,
-						transition: 'none' // 拖拽时禁用过渡动画
-					};
+			// 完成拖拽
+			finishDrag() {
+				const fromIndex = this.dragState.dragIndex;
+				const toIndex = this.dragState.dragOverIndex;
+				
+				// 执行移动
+				if (fromIndex !== toIndex) {
+					this.moveItem(fromIndex, toIndex);
 				}
-				// 拖拽结束后恢复正常样式，添加过渡动画
-				return {
-					transform: 'translateY(0px)',
-					zIndex: 'auto',
-					opacity: 1,
-					transition: 'all 0.2s ease'
-				};
+				
+				// 重置状态
+				setTimeout(() => {
+					this.dragState.isDragging = false;
+					this.dragState.dragIndex = -1;
+					this.dragState.dragOverIndex = -1;
+				}, 200);
+			},
+
+			// 移动数组元素
+			moveItem(fromIndex, toIndex) {
+				if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+				if (fromIndex >= this.navItems.length || toIndex >= this.navItems.length) return;
+				
+				const newItems = [...this.navItems];
+				const [movedItem] = newItems.splice(fromIndex, 1);
+				newItems.splice(toIndex, 0, movedItem);
+				this.navItems = newItems;
 			},
 
 			resetToDefault() {
@@ -557,17 +607,35 @@
 		background: #fff;
 		box-shadow: 0 16rpx 48rpx rgba(78, 205, 196, 0.4);
 		border-radius: 16rpx;
-		margin: 12rpx 20rpx;
-		z-index: 100;
+		margin: 8rpx 16rpx;
+		z-index: 1000;
 		border: 2rpx solid rgba(78, 205, 196, 0.3);
 		transform: scale(1.02);
+		transition: none;
+	}
+
+	.nav-item-edit.drag-over {
+		background: rgba(78, 205, 196, 0.05);
+		border: 2rpx dashed rgba(78, 205, 196, 0.3);
+		transform: scale(0.98);
+		transition: all 0.2s ease;
 	}
 
 	.drag-handle {
 		margin-right: 20rpx;
-		opacity: 0.5;
-		padding: 10rpx;
-		transition: opacity 0.2s ease;
+		opacity: 0.6;
+		padding: 15rpx 10rpx;
+		transition: all 0.2s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 60rpx;
+		border-radius: 8rpx;
+	}
+
+	.nav-item-edit:active .drag-handle {
+		opacity: 0.8;
+		background: rgba(78, 205, 196, 0.1);
 	}
 
 	.drag-icon {
@@ -579,14 +647,11 @@
 
 	.nav-item-edit.dragging .drag-handle {
 		opacity: 1;
+		background: rgba(78, 205, 196, 0.2);
 	}
 
 	.nav-item-edit.dragging .drag-icon {
 		color: #4ecdc4;
-	}
-
-	.nav-item-edit:active .drag-handle {
-		opacity: 0.8;
 	}
 
 	.item-info {
