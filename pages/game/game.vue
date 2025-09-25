@@ -9,11 +9,6 @@
 					</view>
 				</view>
 				<text class="navbar-title">游戏</text>
-				<view class="navbar-right">
-					<view class="info-btn" @click="showInfo">
-						<text class="iconfont icon-gengduo1 info-icon"></text>
-					</view>
-				</view>
 			</view>
 		</view>
 
