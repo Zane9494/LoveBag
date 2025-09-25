@@ -406,13 +406,15 @@
 					setTimeout(() => {
 						this.loveBoxOpen = true
 					}, 350)
-					this.loveEffectTimer = setTimeout(() => {
-						this.showLoveEffect = false
-						this.loveBoxOpen = false
-						// 特效结束后清空搜索框并回到初始状态
-						this.searchText = ''
-						this.updateDisplayCards()
-					}, 2200)
+				this.loveEffectTimer = setTimeout(() => {
+					this.showLoveEffect = false
+					this.loveBoxOpen = false
+					// 特效结束后清空搜索框并回到初始状态
+					this.searchText = ''
+					// 重置分类选择
+					this.selectedCategory = ''
+					this.updateDisplayCards()
+				}, 2200)
 					// 保持当前显示状态，不清空
 					return
 				}
