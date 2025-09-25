@@ -462,7 +462,7 @@
 				})
 
 				// 震动提醒
-				uni.vibrateShort()
+				uni.vibrateLong()
 			},
 
 			formatTime(seconds) {
