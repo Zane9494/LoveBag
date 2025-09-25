@@ -137,7 +137,8 @@
 					startY: 0,
 					currentY: 0,
 					itemHeight: 60,
-					longPressTimer: null
+					longPressTimer: null,
+					isAnimating: false
 				}
 			}
 		},
@@ -360,17 +361,37 @@
 				const fromIndex = this.dragState.dragIndex;
 				const toIndex = this.dragState.dragOverIndex;
 				
-				// 执行移动
+				// 如果位置有变化，启动动画
 				if (fromIndex !== toIndex) {
-					this.moveItem(fromIndex, toIndex);
+					this.animateItemMove(fromIndex, toIndex);
+				} else {
+					// 没有移动，直接重置状态
+					this.resetDragState();
 				}
+			},
+			
+			// 动画移动项目
+			animateItemMove(fromIndex, toIndex) {
+				this.dragState.isAnimating = true;
 				
-				// 重置状态
-				setTimeout(() => {
-					this.dragState.isDragging = false;
-					this.dragState.dragIndex = -1;
-					this.dragState.dragOverIndex = -1;
-				}, 200);
+				// 先移动数据
+				this.moveItem(fromIndex, toIndex);
+				
+				// 等待一帧让DOM更新
+				this.$nextTick(() => {
+					// 300ms后重置状态
+					setTimeout(() => {
+						this.resetDragState();
+					}, 300);
+				});
+			},
+			
+			// 重置拖拽状态
+			resetDragState() {
+				this.dragState.isDragging = false;
+				this.dragState.dragIndex = -1;
+				this.dragState.dragOverIndex = -1;
+				this.dragState.isAnimating = false;
 			},
 
 			// 移动数组元素
@@ -596,7 +617,7 @@
 		border-bottom: 1rpx solid #f0f0f0;
 		background: white;
 		position: relative;
-		/* 移除默认过渡，通过JS动态控制 */
+		transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	}
 
 	.nav-item-edit:last-child {
@@ -612,6 +633,11 @@
 		border: 2rpx solid rgba(78, 205, 196, 0.3);
 		transform: scale(1.02);
 		transition: none;
+	}
+	
+	/* 动画完成后的平滑过渡 */
+	.nav-item-edit:not(.dragging):not(.drag-over) {
+		transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	}
 
 	.nav-item-edit.drag-over {
