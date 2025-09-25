@@ -1,0 +1,249 @@
+@font-face {
+  font-family: "iconfont"; /* Project id  */
+  src: url('iconfont.ttf?t=1758797823257') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-caidan-:before {
+  content: "\e622";
+}
+
+.icon-lianliankan:before {
+  content: "\e623";
+}
+
+.icon-relitu:before {
+  content: "\e66e";
+}
+
+.icon-wode-shududaochu:before {
+  content: "\e609";
+}
+
+.icon-dadishu:before {
+  content: "\e711";
+}
+
+.icon-fenpingduibi:before {
+  content: "\e60f";
+}
+
+.icon-lianxian:before {
+  content: "\e737";
+}
+
+.icon-J_GZL_A_VA_weilianxiantianjiawanqudian:before {
+  content: "\e843";
+}
+
+.icon-i2048:before {
+  content: "\e626";
+}
+
+.icon-ham-leg:before {
+  content: "\e682";
+}
+
+.icon-bishop:before {
+  content: "\e683";
+}
+
+.icon-shovel:before {
+  content: "\e684";
+}
+
+.icon-chest:before {
+  content: "\e685";
+}
+
+.icon-space-invaders:before {
+  content: "\e686";
+}
+
+.icon-hourglass:before {
+  content: "\e687";
+}
+
+.icon-key:before {
+  content: "\e688";
+}
+
+.icon-diamond:before {
+  content: "\e689";
+}
+
+.icon-crown:before {
+  content: "\e68a";
+}
+
+.icon-tic-tac-toe:before {
+  content: "\e68b";
+}
+
+.icon-pokeball:before {
+  content: "\e68c";
+}
+
+.icon-pacman:before {
+  content: "\e68d";
+}
+
+.icon-steering-wheel:before {
+  content: "\e68e";
+}
+
+.icon-domino:before {
+  content: "\e68f";
+}
+
+.icon-potion:before {
+  content: "\e690";
+}
+
+.icon-game-controller-:before {
+  content: "\e691";
+}
+
+.icon-roulette:before {
+  content: "\e692";
+}
+
+.icon-heart:before {
+  content: "\e693";
+}
+
+.icon-bowling:before {
+  content: "\e694";
+}
+
+.icon-slot-machine:before {
+  content: "\e695";
+}
+
+.icon-joker:before {
+  content: "\e696";
+}
+
+.icon-axe:before {
+  content: "\e697";
+}
+
+.icon-clover:before {
+  content: "\e698";
+}
+
+.icon-spades:before {
+  content: "\e699";
+}
+
+.icon-king:before {
+  content: "\e69a";
+}
+
+.icon-crystal:before {
+  content: "\e69b";
+}
+
+.icon-sword:before {
+  content: "\e69c";
+}
+
+.icon-pawn:before {
+  content: "\e69d";
+}
+
+.icon-vr-glasses:before {
+  content: "\e69e";
+}
+
+.icon-diamond-:before {
+  content: "\e69f";
+}
+
+.icon-poker:before {
+  content: "\e6a0";
+}
+
+.icon-fighting-game:before {
+  content: "\e6a1";
+}
+
+.icon-ghost:before {
+  content: "\e6a2";
+}
+
+.icon-queen:before {
+  content: "\e6a3";
+}
+
+.icon-billiard:before {
+  content: "\e6a4";
+}
+
+.icon-horseshoe:before {
+  content: "\e6a5";
+}
+
+.icon-bronze-medal:before {
+  content: "\e6a6";
+}
+
+.icon-scroll:before {
+  content: "\e6a7";
+}
+
+.icon-joystick:before {
+  content: "\e6a8";
+}
+
+.icon-snake:before {
+  content: "\e6a9";
+}
+
+.icon-clubs:before {
+  content: "\e6aa";
+}
+
+.icon-knight:before {
+  content: "\e6ab";
+}
+
+.icon-stars:before {
+  content: "\e6ac";
+}
+
+.icon-dice:before {
+  content: "\e6ad";
+}
+
+.icon-tetris:before {
+  content: "\e6ae";
+}
+
+.icon-pickaxe:before {
+  content: "\e6af";
+}
+
+.icon-dart:before {
+  content: "\e6b0";
+}
+
+.icon-poker-chip:before {
+  content: "\e6b1";
+}
+
+.icon-game-controller:before {
+  content: "\e6b2";
+}
+
+.icon-rook:before {
+  content: "\e6b3";
+}
+
