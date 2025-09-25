@@ -121,7 +121,8 @@
 				dragIndex: -1,
 				isDragging: false,
 				startY: 0,
-				dragOffset: 0
+				dragOffset: 0,
+				lastTargetIndex: -1 // 记录上一次的目标位置，避免重复移动
 			}
 		},
 		mounted() {
@@ -229,6 +230,7 @@
 			startDrag(e, index) {
 				this.isDragging = true;
 				this.dragIndex = index;
+				this.lastTargetIndex = index; // 初始化上一次目标位置
 				this.startY = e.touches[0].clientY;
 				this.dragOffset = 0;
 
@@ -245,21 +247,21 @@
 				const currentY = e.touches[0].clientY;
 				this.dragOffset = currentY - this.startY;
 
-				// 计算目标位置
-				const itemHeight = 84; // rpx转换成实际高度大约84px
+				// 计算目标位置，支持跨越多个位置
+				const itemHeight = 80; // 每个项目的高度
 				const moveSteps = Math.round(this.dragOffset / itemHeight);
 				const targetIndex = Math.max(0, Math.min(this.navItems.length - 1, this.dragIndex + moveSteps));
 
-				if (targetIndex !== this.dragIndex && Math.abs(moveSteps) >= 1) {
-					// 移动元素
+				// 只有当目标位置与上一次的目标位置不同时才进行移动，避免重复操作
+				if (targetIndex !== this.lastTargetIndex && targetIndex !== this.dragIndex) {
+					// 移动元素到目标位置
 					const dragItem = this.navItems[this.dragIndex];
 					this.navItems.splice(this.dragIndex, 1);
 					this.navItems.splice(targetIndex, 0, dragItem);
 
-					// 更新拖拽索引和起始位置
+					// 更新拖拽索引和上一次目标位置
 					this.dragIndex = targetIndex;
-					this.startY = currentY;
-					this.dragOffset = 0;
+					this.lastTargetIndex = targetIndex;
 
 					// 添加触感反馈
 					if (uni.vibrateShort) {
@@ -273,22 +275,39 @@
 			endDrag(e) {
 				if (!this.isDragging) return;
 
+				// 先重置拖拽状态
 				this.isDragging = false;
-				
-				// 立即重置拖拽状态，避免悬浮
-				this.dragIndex = -1;
 				this.dragOffset = 0;
+				this.lastTargetIndex = -1;
+				
+				// 使用nextTick确保DOM更新后再重置dragIndex
+				this.$nextTick(() => {
+					this.dragIndex = -1;
+				});
 			},
 
 			getDragStyle(index) {
+				// 只有在正在拖拽且是当前拖拽元素时才应用特殊样式
 				if (this.dragIndex === index && this.isDragging) {
+					// 计算当前应该显示的偏移量
+					const itemHeight = 80;
+					const currentSteps = Math.round(this.dragOffset / itemHeight);
+					const remainingOffset = this.dragOffset - (currentSteps * itemHeight);
+					
 					return {
-						transform: `translateY(${this.dragOffset}px)`,
+						transform: `translateY(${remainingOffset}px)`,
 						zIndex: 100,
-						opacity: 0.8
+						opacity: 0.8,
+						transition: 'none' // 拖拽时禁用过渡动画
 					};
 				}
-				return {};
+				// 拖拽结束后恢复正常样式，添加过渡动画
+				return {
+					transform: 'translateY(0px)',
+					zIndex: 'auto',
+					opacity: 1,
+					transition: 'all 0.2s ease'
+				};
 			},
 
 			resetToDefault() {
@@ -501,9 +520,9 @@
 		align-items: center;
 		padding: 30rpx;
 		border-bottom: 1rpx solid #f0f0f0;
-		transition: all 0.2s ease;
 		background: white;
 		position: relative;
+		/* 移除默认过渡，通过JS动态控制 */
 	}
 
 	.nav-item-edit:last-child {
@@ -512,11 +531,12 @@
 
 	.nav-item-edit.dragging {
 		background: #fff;
-		box-shadow: 0 12rpx 32rpx rgba(78, 205, 196, 0.3);
-		border-radius: 12rpx;
-		margin: 8rpx 16rpx;
+		box-shadow: 0 16rpx 48rpx rgba(78, 205, 196, 0.4);
+		border-radius: 16rpx;
+		margin: 12rpx 20rpx;
 		z-index: 100;
-		border: 2rpx solid rgba(78, 205, 196, 0.2);
+		border: 2rpx solid rgba(78, 205, 196, 0.3);
+		transform: scale(1.02);
 	}
 
 	.drag-handle {
