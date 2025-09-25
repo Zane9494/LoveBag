@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1758535052748') format('truetype');
+  src: url('iconfont.ttf?t=1758785740634') format('truetype');
 }
 
 .iconfont {
@@ -9,6 +9,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-youxi:before {
+  content: "\e652";
+}
+
+.icon-shezhi:before {
+  content: "\e892";
 }
 
 .icon-gengduo1:before {
