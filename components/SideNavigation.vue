@@ -46,13 +46,13 @@
 								'dragging': dragState.isDragging && dragState.dragIndex === index,
 								'drag-over': dragState.dragOverIndex === index && dragState.dragOverIndex !== dragState.dragIndex
 							}"
+							@touchstart="onDragStart($event, index)"
+							@touchmove.prevent="onDragMove"
+							@touchend="onDragEnd"
+							@touchcancel="onDragEnd"
 						>
-							<view class="drag-handle" 
-								@touchstart="onDragStart($event, index)"
-								@touchmove.prevent="onDragMove"
-								@touchend="onDragEnd"
-								@touchcancel="onDragEnd">
-								<text class="drag-icon">⋮⋮</text>
+							<view class="drag-handle">
+								<text class="drag-icon" :class="{ 'active': dragState.isDragging && dragState.dragIndex === index }">⋮⋮</text>
 							</view>
 
 							<view class="item-info">
@@ -622,35 +622,22 @@
 	}
 
 	.drag-handle {
-		margin-right: 20rpx;
-		opacity: 0.6;
-		padding: 15rpx 10rpx;
-		transition: all 0.2s ease;
+		margin-right: 15rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 60rpx;
-		border-radius: 8rpx;
-	}
-
-	.nav-item-edit:active .drag-handle {
-		opacity: 0.8;
-		background: rgba(78, 205, 196, 0.1);
+		min-width: 30rpx;
 	}
 
 	.drag-icon {
-		font-size: 32rpx;
-		color: #999;
+		font-size: 28rpx;
+		color: #ccc;
 		font-weight: bold;
 		line-height: 1;
+		transition: color 0.2s ease;
 	}
 
-	.nav-item-edit.dragging .drag-handle {
-		opacity: 1;
-		background: rgba(78, 205, 196, 0.2);
-	}
-
-	.nav-item-edit.dragging .drag-icon {
+	.drag-icon.active {
 		color: #4ecdc4;
 	}
 
