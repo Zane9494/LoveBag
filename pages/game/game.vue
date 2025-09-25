@@ -28,10 +28,20 @@
 
 			<!-- 游戏内容区域 -->
 			<view class="game-content">
-				<view class="content-placeholder">
-					<text class="iconfont icon-youxi placeholder-icon"></text>
-					<text class="placeholder-title">游戏功能开发中</text>
-					<text class="placeholder-desc">敬请期待精彩的游戏内容</text>
+				<view class="games-grid">
+					<view 
+						class="game-card" 
+						v-for="(game, index) in games" 
+						:key="index"
+						@click="playGame(game)"
+						:style="getGameCardStyle(game)"
+					>
+						<view class="game-icon">
+							<text :class="'iconfont ' + game.icon" :style="{color: game.color}"></text>
+						</view>
+						<text class="game-name">{{ game.name }}</text>
+						<text class="game-desc">{{ game.desc }}</text>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -87,7 +97,91 @@
 				themeColors: {
 					primary: '#4ecdc4',
 					secondary: '#2ba3a8'
-				}
+				},
+
+				// 游戏列表数据
+				games: [
+					{
+						id: '2048',
+						name: '2048',
+						desc: '数字合并游戏',
+						icon: 'icon-shuzi',
+						color: '#FF6B6B',
+						bgColor: '#FFE5E5'
+					},
+					{
+						id: 'sudoku',
+						name: '数独',
+						desc: '逻辑推理游戏',
+						icon: 'icon-jiugongge',
+						color: '#4ECDC4',
+						bgColor: '#E5F9F7'
+					},
+					{
+						id: 'snake',
+						name: '贪吃蛇',
+						desc: '经典街机游戏',
+						icon: 'icon-she',
+						color: '#45B7D1',
+						bgColor: '#E5F3F9'
+					},
+					{
+						id: 'klotski',
+						name: '华容道',
+						desc: '益智滑块游戏',
+						icon: 'icon-tuozhuai',
+						color: '#F7B731',
+						bgColor: '#FEF3E0'
+					},
+					{
+						id: 'whack-mole',
+						name: '打地鼠',
+						desc: '反应速度游戏',
+						icon: 'icon-dishu',
+						color: '#5F27CD',
+						bgColor: '#F0E8FF'
+					},
+					{
+						id: 'flappy-bird',
+						name: '飞翔的小鸟',
+						desc: '躲避障碍游戏',
+						icon: 'icon-xiaoniao',
+						color: '#00D2D3',
+						bgColor: '#E0F8F8'
+					},
+					{
+						id: 'jump-jump',
+						name: '跳一跳',
+						desc: '跳跃挑战游戏',
+						icon: 'icon-tiaoyue',
+						color: '#FF9FF3',
+						bgColor: '#FFF0FE'
+					},
+					{
+						id: 'match-game',
+						name: '连连看',
+						desc: '图案配对游戏',
+						icon: 'icon-lianliankan',
+						color: '#54A0FF',
+						bgColor: '#E8F4FF'
+					},
+					{
+						id: 'breakout',
+						name: '打砖块',
+						desc: '弹球消砖游戏',
+						icon: 'icon-zhuankuai',
+						color: '#26DE81',
+						bgColor: '#E8FFF3'
+					},
+					{
+						id: 'spider-solitaire',
+						name: '蜘蛛牌',
+						desc: '纸牌策略游戏',
+						icon: 'icon-zhipai',
+						color: '#FD79A8',
+						bgColor: '#FFEBF0'
+					}
+				]
 			}
 		},
 		computed: {
@@ -116,6 +210,35 @@
 		},
 
 		methods: {
+			// 获取游戏卡片样式
+			getGameCardStyle(game) {
+				return {
+					background: game.bgColor,
+					borderColor: game.color
+				}
+			},
+
+			// 点击游戏卡片
+			playGame(game) {
+				uni.showToast({
+					title: `即将开始${game.name}`,
+					icon: 'none',
+					duration: 1500
+				})
+				
+				// 这里可以根据游戏ID跳转到对应的游戏逻辑
+				console.log('开始游戏:', game.name, game.id)
+				
+				// 简单的游戏启动提示
+				setTimeout(() => {
+					uni.showModal({
+						title: game.name,
+						content: `${game.desc}\n\n游戏功能正在开发中，敬请期待！`,
+						showCancel: false,
+						confirmText: '知道了'
+					})
+				}, 1600)
+			},
 			// 获取系统信息
 			getSystemInfo() {
 				const systemInfo = uni.getSystemInfoSync()
@@ -271,37 +394,132 @@
 	.game-content {
 		background: white;
 		border-radius: 16rpx;
-		padding: 60rpx 24rpx;
+		padding: 30rpx 20rpx;
 		box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.06);
 		min-height: 400rpx;
+	}
+
+	/* 游戏网格布局 */
+	.games-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20rpx;
+		width: 100%;
+	}
+
+	/* 游戏卡片样式 */
+	.game-card {
+		aspect-ratio: 1;
+		border-radius: 16rpx;
+		padding: 20rpx;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-	}
-
-	.content-placeholder {
 		text-align: center;
+		border: 2rpx solid transparent;
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+		box-sizing: border-box;
 	}
 
-	.placeholder-icon {
-		font-size: 80rpx;
-		color: #4ecdc4;
-		display: block;
-		margin-bottom: 24rpx;
+	.game-card:active {
+		transform: scale(0.95);
+		box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
 	}
 
-	.placeholder-title {
-		font-size: 32rpx;
-		font-weight: 600;
-		color: #495057;
-		display: block;
+	.game-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+		transform: translateX(-100%);
+		transition: transform 0.6s ease;
+	}
+
+	.game-card:active::before {
+		transform: translateX(100%);
+	}
+
+	/* 游戏图标 */
+	.game-icon {
 		margin-bottom: 12rpx;
 	}
 
-	.placeholder-desc {
+	.game-icon .iconfont {
+		font-size: 48rpx;
+		font-weight: bold;
+	}
+
+	/* 游戏名称 */
+	.game-name {
 		font-size: 26rpx;
+		font-weight: 600;
+		color: #495057;
+		margin-bottom: 6rpx;
+		line-height: 1.2;
+	}
+
+	/* 游戏描述 */
+	.game-desc {
+		font-size: 20rpx;
 		color: #6c757d;
-		display: block;
+		line-height: 1.3;
+		opacity: 0.8;
+	}
+
+	/* 响应式适配 */
+	@media screen and (max-width: 750rpx) {
+		.games-grid {
+			gap: 16rpx;
+		}
+		
+		.game-card {
+			padding: 16rpx;
+		}
+		
+		.game-icon .iconfont {
+			font-size: 44rpx;
+		}
+		
+		.game-name {
+			font-size: 24rpx;
+		}
+		
+		.game-desc {
+			font-size: 18rpx;
+		}
+	}
+
+	/* 更小屏幕的适配 */
+	@media screen and (max-width: 600rpx) {
+		.game-content {
+			padding: 24rpx 16rpx;
+		}
+		
+		.games-grid {
+			gap: 12rpx;
+		}
+		
+		.game-card {
+			padding: 12rpx;
+		}
+		
+		.game-icon .iconfont {
+			font-size: 40rpx;
+		}
+		
+		.game-name {
+			font-size: 22rpx;
+		}
+		
+		.game-desc {
+			font-size: 16rpx;
+		}
 	}
 
 	/* 弹窗样式 */
