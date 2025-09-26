@@ -139,7 +139,7 @@
 						color: '#45B7D1',
 						bgColor: 'linear-gradient(135deg, #E5F3F9 0%, #D6EDF7 100%)',
 						shadowColor: 'rgba(69, 183, 209, 0.3)',
-						path: '/pages/game/snake/snake' // 已完成 - 有跳转链接
+						// path: '/pages/game/snake/snake' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'klotski',
@@ -189,7 +189,7 @@
 						color: '#27AE60',
 						bgColor: 'linear-gradient(135deg, #E8FFF3 0%, #DFFFEC 100%)',
 						shadowColor: 'rgba(39, 174, 96, 0.3)',
-						path: '/pages/game/breakout/breakout' // 已完成 - 有跳转链接
+						// path: '/pages/game/breakout/breakout' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'pacman',
