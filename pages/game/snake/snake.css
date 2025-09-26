@@ -1,0 +1,720 @@
+/* 引入游戏图标 */
+@import url('/static/game/iconfont.css');
+/* 引入贪吃蛇专用图标 */
+@import url('/static/game/snake/iconfont.css');
+
+.page {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background-color: #f8f9fa;
+}
+
+/* 导航栏样式 */
+.custom-navbar {
+	width: 100%;
+	background-color: #fff;
+	box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
+.navbar-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 88rpx;
+	padding: 0 40rpx;
+	position: relative;
+}
+
+.back-btn, .info-btn {
+	width: 56rpx;
+	height: 56rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	transition: all 0.2s ease;
+}
+
+.back-btn:active, .info-btn:active {
+	transform: scale(0.9);
+	background: rgba(0, 0, 0, 0.05);
+}
+
+.back-icon, .info-icon {
+	font-size: 28rpx;
+	color: #495057;
+}
+
+.navbar-title {
+	font-size: 32rpx;
+	color: #495057;
+	font-weight: 600;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+/* 游戏容器 */
+.game-container {
+	flex: 1;
+	padding: 20rpx;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* 分数区域 */
+.score-container {
+	display: flex;
+	gap: 20rpx;
+	margin-bottom: 20rpx;
+	width: 100%;
+	max-width: 600rpx;
+}
+
+.score-box {
+	flex: 1;
+	background: linear-gradient(135deg, #45B7D1 0%, #2E86AB 100%);
+	border-radius: 16rpx;
+	padding: 24rpx;
+	text-align: center;
+	color: white;
+	box-shadow: 0 8rpx 24rpx rgba(69, 183, 209, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+.best-score-box {
+	background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+	box-shadow: 0 8rpx 24rpx rgba(243, 156, 18, 0.3);
+}
+
+.score-label {
+	font-size: 24rpx;
+	opacity: 0.9;
+	display: block;
+	margin-bottom: 8rpx;
+}
+
+.score-value {
+	font-size: 36rpx;
+	font-weight: bold;
+	display: block;
+}
+
+/* 新纪录发光效果 */
+.new-record-glow {
+	animation: recordGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes recordGlow {
+	0% {
+		box-shadow: 0 8rpx 24rpx rgba(243, 156, 18, 0.3);
+		transform: scale(1);
+	}
+	100% {
+		box-shadow: 0 12rpx 32rpx rgba(243, 156, 18, 0.6), 0 0 20rpx rgba(243, 156, 18, 0.4);
+		transform: scale(1.02);
+	}
+}
+
+.new-record-badge {
+	position: absolute;
+	top: -8rpx;
+	right: -8rpx;
+	background: #e74c3c;
+	color: white;
+	padding: 4rpx 12rpx;
+	border-radius: 20rpx;
+	font-size: 18rpx;
+	animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4rpx); }
+}
+
+.badge-text {
+	font-weight: bold;
+}
+
+/* 游戏说明 */
+.game-info {
+	background: white;
+	border-radius: 12rpx;
+	padding: 20rpx;
+	margin-bottom: 20rpx;
+	width: 100%;
+	max-width: 600rpx;
+	text-align: center;
+	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.info-text {
+	font-size: 26rpx;
+	color: #6c757d;
+	line-height: 1.4;
+}
+
+/* 游戏画布容器 */
+.game-canvas-container {
+	background: white;
+	border-radius: 16rpx;
+	padding: 20rpx;
+	margin-bottom: 20rpx;
+	box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.1);
+	border: 3rpx solid #e9ecef;
+}
+
+.game-canvas {
+	display: block;
+	border-radius: 8rpx;
+	background: #2c3e50;
+}
+
+/* 控制按钮区域 */
+.control-container {
+	display: flex;
+	gap: 20rpx;
+	margin-bottom: 20rpx;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+/* 游戏控制区域 */
+.game-control-area {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 30rpx;
+	margin-bottom: 20rpx;
+	width: 100%;
+}
+
+.control-btn {
+	padding: 24rpx 48rpx;
+	border-radius: 50rpx;
+	font-weight: 600;
+	transition: all 0.3s ease;
+	box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.15);
+	cursor: pointer;
+}
+
+.start-btn {
+	background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+	color: white;
+}
+
+.restart-btn {
+	background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+	color: white;
+}
+
+.pause-btn {
+	background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+	color: white;
+}
+
+.control-btn:active {
+	transform: translateY(2rpx) scale(0.98);
+	box-shadow: 0 3rpx 10rpx rgba(0,0,0,0.2);
+}
+
+.btn-text {
+	font-size: 28rpx;
+	font-weight: 600;
+}
+
+/* 游戏结束信息 */
+.game-over-info {
+	background: white;
+	border-radius: 16rpx;
+	padding: 40rpx;
+	text-align: center;
+	box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.1);
+	margin-bottom: 20rpx;
+	width: 100%;
+	max-width: 600rpx;
+}
+
+.game-over-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	color: #2c3e50;
+	display: block;
+	margin-bottom: 16rpx;
+}
+
+.game-over-subtitle {
+	font-size: 28rpx;
+	color: #6c757d;
+	display: block;
+	margin-bottom: 16rpx;
+}
+
+.final-score {
+	font-size: 32rpx;
+	color: #e74c3c;
+	font-weight: bold;
+	display: block;
+}
+
+/* 新纪录特效 */
+.new-record-effect {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	pointer-events: none;
+}
+
+.flash-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);
+	animation: flash 0.5s ease-in-out 3;
+}
+
+@keyframes flash {
+	0%, 100% { opacity: 0; }
+	50% { opacity: 1; }
+}
+
+.record-text-container {
+	position: relative;
+	text-align: center;
+	z-index: 10;
+}
+
+.record-main-text {
+	font-size: 72rpx;
+	font-weight: bold;
+	color: #f39c12;
+	text-shadow: 0 4rpx 8rpx rgba(0,0,0,0.3);
+	display: block;
+	animation: recordBounce 1s ease-in-out infinite alternate;
+}
+
+.record-sub-text {
+	font-size: 32rpx;
+	color: #e67e22;
+	text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.2);
+	display: block;
+	margin-top: 16rpx;
+	animation: recordFade 2s ease-in-out infinite alternate;
+}
+
+@keyframes recordBounce {
+	0% { transform: scale(1) rotate(-2deg); }
+	100% { transform: scale(1.1) rotate(2deg); }
+}
+
+@keyframes recordFade {
+	0% { opacity: 0.8; }
+	100% { opacity: 1; }
+}
+
+/* 粒子效果 */
+.particle {
+	position: absolute;
+	font-size: 48rpx;
+	animation: particleFloat 3s ease-in-out infinite;
+}
+
+.particle-icon {
+	display: block;
+	animation: particleSpin 2s linear infinite;
+}
+
+@keyframes particleFloat {
+	0%, 100% { 
+		transform: translateY(0) rotate(0deg);
+		opacity: 1;
+	}
+	50% { 
+		transform: translateY(-100rpx) rotate(180deg);
+		opacity: 0.5;
+	}
+}
+
+@keyframes particleSpin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+/* 为不同粒子设置不同位置和延迟 */
+.particle-1 { top: 20%; left: 10%; animation-delay: 0s; }
+.particle-2 { top: 30%; right: 15%; animation-delay: 0.2s; }
+.particle-3 { top: 50%; left: 20%; animation-delay: 0.4s; }
+.particle-4 { top: 60%; right: 25%; animation-delay: 0.6s; }
+.particle-5 { top: 80%; left: 30%; animation-delay: 0.8s; }
+.particle-6 { top: 70%; right: 10%; animation-delay: 1s; }
+.particle-7 { top: 40%; left: 5%; animation-delay: 1.2s; }
+.particle-8 { top: 25%; right: 30%; animation-delay: 1.4s; }
+.particle-9 { top: 65%; left: 15%; animation-delay: 1.6s; }
+.particle-10 { top: 35%; right: 20%; animation-delay: 1.8s; }
+.particle-11 { top: 75%; left: 25%; animation-delay: 2s; }
+.particle-12 { top: 45%; right: 5%; animation-delay: 2.2s; }
+
+/* 光环效果 */
+.light-ring {
+	position: absolute;
+	width: 400rpx;
+	height: 400rpx;
+	border: 4rpx solid rgba(243, 156, 18, 0.6);
+	border-radius: 50%;
+	animation: ringExpand 2s ease-out infinite;
+}
+
+.light-ring-2 {
+	width: 300rpx;
+	height: 300rpx;
+	border-color: rgba(230, 126, 34, 0.4);
+	animation-delay: 0.5s;
+}
+
+@keyframes ringExpand {
+	0% {
+		transform: scale(0.5);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1.5);
+		opacity: 0;
+	}
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	padding: 40rpx;
+	box-sizing: border-box;
+}
+
+.modal-content {
+	background: white;
+	border-radius: 20rpx;
+	width: 100%;
+	max-width: 600rpx;
+	max-height: 80vh;
+	overflow: hidden;
+	box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.15);
+}
+
+.info-modal {
+	max-width: 700rpx;
+}
+
+.modal-header {
+	background: linear-gradient(135deg, #45B7D1 0%, #2E86AB 100%);
+	color: white;
+	padding: 30rpx;
+	position: relative;
+}
+
+.modal-title {
+	font-size: 32rpx;
+	font-weight: 600;
+}
+
+.modal-close {
+	position: absolute;
+	top: 20rpx;
+	right: 20rpx;
+	width: 48rpx;
+	height: 48rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.2);
+	transition: all 0.2s ease;
+}
+
+.modal-close:active {
+	background: rgba(255, 255, 255, 0.3);
+	transform: scale(0.9);
+}
+
+.close-icon {
+	font-size: 28rpx;
+	color: white;
+	font-weight: bold;
+}
+
+.modal-body {
+	padding: 30rpx;
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+/* 游戏说明弹窗 */
+.info-section {
+	display: flex;
+	flex-direction: column;
+	gap: 24rpx;
+}
+
+.rule-item {
+	padding: 20rpx;
+	background: #f8f9fa;
+	border-radius: 12rpx;
+	border-left: 4rpx solid #45B7D1;
+}
+
+.rule-title {
+	font-size: 28rpx;
+	font-weight: 600;
+	color: #2c3e50;
+	display: block;
+	margin-bottom: 12rpx;
+}
+
+.rule-desc {
+	font-size: 24rpx;
+	color: #6c757d;
+	line-height: 1.6;
+	display: block;
+	margin-bottom: 8rpx;
+}
+
+.rule-desc:last-child {
+	margin-bottom: 0;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 750rpx) {
+	.game-container {
+		padding: 16rpx;
+	}
+	
+	.score-container {
+		gap: 16rpx;
+	}
+	
+	.score-box {
+		padding: 20rpx;
+	}
+	
+	.score-value {
+		font-size: 32rpx;
+	}
+	
+	.control-btn {
+		padding: 20rpx 40rpx;
+	}
+	
+	.btn-text {
+		font-size: 26rpx;
+	}
+}
+
+/* 更小屏幕的适配 */
+@media screen and (max-width: 600rpx) {
+	.game-container {
+		padding: 12rpx;
+	}
+	
+	.score-container {
+		gap: 12rpx;
+	}
+	
+	.score-box {
+		padding: 16rpx;
+	}
+	
+	.score-label {
+		font-size: 22rpx;
+	}
+	
+	.score-value {
+		font-size: 28rpx;
+	}
+	
+	.game-canvas-container {
+		padding: 16rpx;
+	}
+	
+	.control-btn {
+		padding: 18rpx 36rpx;
+	}
+	
+	.btn-text {
+		font-size: 24rpx;
+	}
+}
+
+/* 方向控制手柄样式 */
+.direction-controller {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8rpx;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 20rpx;
+	padding: 24rpx;
+	box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+	backdrop-filter: blur(10rpx);
+	border: 2rpx solid rgba(69, 183, 209, 0.2);
+}
+
+.middle-row {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+}
+
+.direction-btn {
+	width: 80rpx;
+	height: 80rpx;
+	background: linear-gradient(135deg, #45B7D1 0%, #2E86AB 100%);
+	border-radius: 16rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	box-shadow: 0 4rpx 12rpx rgba(69, 183, 209, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+.direction-btn::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+	border-radius: 16rpx;
+}
+
+.direction-btn:active {
+	transform: scale(0.92) translateY(2rpx);
+	box-shadow: 0 2rpx 8rpx rgba(69, 183, 209, 0.4);
+	background: linear-gradient(135deg, #2E86AB 0%, #45B7D1 100%);
+}
+
+.direction-icon {
+	font-size: 32rpx;
+	color: white;
+	font-weight: bold;
+	text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.2);
+	z-index: 1;
+	position: relative;
+}
+
+/* 方向图标旋转调整 */
+.up-icon {
+	transform: rotate(0deg);
+}
+
+.down-icon {
+	transform: rotate(0deg);
+}
+
+.left-icon {
+	transform: rotate(0deg);
+}
+
+.right-icon {
+	transform: rotate(0deg);
+}
+
+.center-area {
+	width: 80rpx;
+	height: 80rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: rgba(69, 183, 209, 0.1);
+	border-radius: 50%;
+	border: 2rpx dashed rgba(69, 183, 209, 0.3);
+}
+
+.center-text {
+	font-size: 20rpx;
+	color: #45B7D1;
+	font-weight: 600;
+}
+
+/* 方向按钮悬停效果（仅在支持的设备上） */
+@media (hover: hover) {
+	.direction-btn:hover {
+		transform: translateY(-2rpx) scale(1.05);
+		box-shadow: 0 6rpx 16rpx rgba(69, 183, 209, 0.4);
+	}
+}
+
+/* 方向控制器响应式适配 */
+@media screen and (max-width: 750rpx) {
+	.direction-controller {
+		padding: 20rpx;
+		gap: 6rpx;
+	}
+	
+	.middle-row {
+		gap: 6rpx;
+	}
+	
+	.direction-btn, .center-area {
+		width: 70rpx;
+		height: 70rpx;
+	}
+	
+	.direction-icon {
+		font-size: 28rpx;
+	}
+	
+	.center-text {
+		font-size: 18rpx;
+	}
+}
+
+@media screen and (max-width: 600rpx) {
+	.direction-controller {
+		padding: 16rpx;
+		gap: 4rpx;
+	}
+	
+	.middle-row {
+		gap: 4rpx;
+	}
+	
+	.direction-btn, .center-area {
+		width: 60rpx;
+		height: 60rpx;
+		border-radius: 12rpx;
+	}
+	
+	.direction-icon {
+		font-size: 24rpx;
+	}
+	
+	.center-text {
+		font-size: 16rpx;
+	}
+}

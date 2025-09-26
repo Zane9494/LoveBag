@@ -48,6 +48,13 @@
 				"navigationBarTitleText": "数独",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/game/snake/snake",
+			"style": {
+				"navigationBarTitleText": "贪吃蛇",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {

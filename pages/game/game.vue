@@ -139,7 +139,7 @@
 						color: '#45B7D1',
 						bgColor: 'linear-gradient(135deg, #E5F3F9 0%, #D6EDF7 100%)',
 						shadowColor: 'rgba(69, 183, 209, 0.3)',
-						// path: '/pages/game/snake/snake' // 已完成 - 有跳转链接
+						path: '/pages/game/snake/snake' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'klotski',
