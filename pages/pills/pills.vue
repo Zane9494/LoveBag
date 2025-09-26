@@ -610,6 +610,16 @@
 					classes.push('today')
 				}
 
+				// 判断是否是未来日期
+				const todayDate = new Date()
+				todayDate.setHours(23, 59, 59, 999)
+				const targetDate = new Date(day.fullDate)
+				targetDate.setHours(0, 0, 0, 0)
+				
+				if (targetDate > todayDate) {
+					classes.push('future-date')
+				}
+
 				// 添加状态样式
 				if (day.status) {
 					classes.push(`status-${day.status}`)
@@ -659,7 +669,15 @@
 			canModifyDay(day) {
 				if (!day.isCurrentMonth) return false
 				const cycleDay = this.getCycleDay(day.fullDate)
-				return cycleDay !== null && cycleDay <= 21
+				if (cycleDay === null || cycleDay > 21) return false
+				
+				// 只允许修改过去和今天的日期，不允许修改未来日期
+				const today = new Date()
+				today.setHours(23, 59, 59, 999) // 设置为今天的最后一刻
+				const targetDate = new Date(day.fullDate)
+				targetDate.setHours(0, 0, 0, 0) // 设置为目标日期的开始
+				
+				return targetDate <= today
 			},
 
 			// 记录服药情况
@@ -667,10 +685,44 @@
 				const targetDate = day ? day.fullDate : this.currentDate
 				const dateStr = this.formatDate(targetDate)
 
+				// 验证是否可以修改该日期
+				if (day && !this.canModifyDay(day)) {
+					uni.showToast({
+						title: '不能修改未来日期的状态',
+						icon: 'none',
+						duration: 2000
+					})
+					return
+				}
+
+				// 验证今日操作按钮的日期限制
+				if (!day) {
+					const today = new Date()
+					today.setHours(23, 59, 59, 999)
+					const target = new Date(targetDate)
+					target.setHours(0, 0, 0, 0)
+					
+					if (target > today) {
+						uni.showToast({
+							title: '不能修改未来日期的状态',
+							icon: 'none',
+							duration: 2000
+						})
+						return
+					}
+				}
+
+				// 检查是否是新周期的第一天
+				const isNewCycleStart = !this.cycleStartDate
+
 				// 如果还没有开始周期，则开始新周期
 				if (!this.cycleStartDate) {
 					this.startNewCycle(targetDate)
 				}
+
+				// 检查是否是周期第一天的首次记录
+				const cycleDay = this.getCycleDay(targetDate)
+				const isFirstDayFirstRecord = cycleDay === 1 && !this.records.hasOwnProperty(dateStr)
 
 				this.records[dateStr] = taken
 				this.saveData()
@@ -678,6 +730,11 @@
 				if (day) {
 					day.status = this.getDayStatus(day.fullDate)
 					this.closeDetailModal()
+				}
+
+				// 如果是新周期开始或第一天首次记录，显示通知
+				if (isNewCycleStart || isFirstDayFirstRecord) {
+					this.showCycleStartNotification()
 				}
 
 				uni.showToast({
@@ -713,6 +770,21 @@
 			// 选择日期
 			selectDay(day) {
 				if (!day.isCurrentMonth) return
+
+				// 检查是否是未来日期，如果是则不允许选择
+				const today = new Date()
+				today.setHours(23, 59, 59, 999)
+				const targetDate = new Date(day.fullDate)
+				targetDate.setHours(0, 0, 0, 0)
+				
+				if (targetDate > today) {
+					uni.showToast({
+						title: '不能查看未来日期',
+						icon: 'none',
+						duration: 1500
+					})
+					return
+				}
 
 				this.selectedDay = day
 				this.showDetailModal = true
@@ -844,6 +916,25 @@
 			handleStatusCardClick() {
 				// 任何状态都可以显示新周期设置弹窗
 				this.showNewCycle()
+			},
+
+			// 显示新周期开始通知
+			showCycleStartNotification() {
+				// 使用uni-app的本地通知API
+				if (uni.showNotification) {
+					uni.showNotification({
+						title: '药丸提醒',
+						content: '新的服药周期已开始，请按时服用！',
+						showCancel: false
+					})
+				}
+				
+				// 同时显示Toast作为备选
+				uni.showToast({
+					title: '新周期已开始！',
+					icon: 'success',
+					duration: 3000
+				})
 			}
 		}
 	}
@@ -1089,6 +1180,11 @@
 	.date-cell:active {
 		background: rgba(0,0,0,0.05);
 		transform: scale(0.9);
+	}
+
+	.date-cell.future-date {
+		opacity: 0.5;
+		pointer-events: none;
 	}
 
 	.date-cell.today {
