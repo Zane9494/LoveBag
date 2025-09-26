@@ -30,7 +30,7 @@
 			<view class="game-content">
 				<view class="games-grid">
 					<view 
-						class="game-card" 
+						:class="['game-card', { 'coming-soon': game.isComingSoon }]" 
 						v-for="(game, index) in games" 
 						:key="index"
 						@click="playGame(game)"
@@ -99,63 +99,106 @@
 					secondary: '#2ba3a8'
 				},
 
-				// 游戏列表数据
+				// 游戏列表数据 - 使用game目录中的图标
 				games: [
 					{
 						id: '2048',
 						name: '2048',
 						desc: '数字合并游戏',
-						icon: 'icon-shuzi',
+						icon: 'icon-i2048',
 						color: '#FF6B6B',
-						bgColor: '#FFE5E5'
+						bgColor: 'linear-gradient(135deg, #FFE5E5 0%, #FFD6D6 100%)',
+						shadowColor: 'rgba(255, 107, 107, 0.3)'
 					},
 					{
 						id: 'sudoku',
 						name: '数独',
 						desc: '逻辑推理游戏',
-						icon: 'icon-jiugongge',
+						icon: 'icon-wode-shududaochu',
 						color: '#4ECDC4',
-						bgColor: '#E5F9F7'
+						bgColor: 'linear-gradient(135deg, #E5F9F7 0%, #D6F5F2 100%)',
+						shadowColor: 'rgba(78, 205, 196, 0.3)'
 					},
 					{
 						id: 'snake',
 						name: '贪吃蛇',
 						desc: '经典街机游戏',
-						icon: 'icon-she',
+						icon: 'icon-snake',
 						color: '#45B7D1',
-						bgColor: '#E5F3F9'
+						bgColor: 'linear-gradient(135deg, #E5F3F9 0%, #D6EDF7 100%)',
+						shadowColor: 'rgba(69, 183, 209, 0.3)'
 					},
 					{
 						id: 'klotski',
 						name: '华容道',
 						desc: '益智滑块游戏',
-						icon: 'icon-tuozhuai',
-						color: '#F7B731',
-						bgColor: '#FEF3E0'
+						icon: 'icon-game-controller-',
+						color: '#F39C12',
+						bgColor: 'linear-gradient(135deg, #FEF3E0 0%, #FDF0D5 100%)',
+						shadowColor: 'rgba(243, 156, 18, 0.3)'
 					},
 					{
 						id: 'whack-mole',
 						name: '打地鼠',
 						desc: '反应速度游戏',
-						icon: 'icon-dishu',
-						color: '#5F27CD',
-						bgColor: '#F0E8FF'
+						icon: 'icon-dadishu',
+						color: '#8E44AD',
+						bgColor: 'linear-gradient(135deg, #F4ECFF 0%, #EEDDFF 100%)',
+						shadowColor: 'rgba(142, 68, 173, 0.3)'
 					},
 					{
 						id: 'flappy-bird',
 						name: '飞翔的小鸟',
 						desc: '躲避障碍游戏',
-						icon: 'icon-xiaoniao',
-						color: '#00D2D3',
-						bgColor: '#E0F8F8'
+						icon: 'icon-ghost',
+						color: '#E74C3C',
+						bgColor: 'linear-gradient(135deg, #FDEDEC 0%, #FADBD8 100%)',
+						shadowColor: 'rgba(231, 76, 60, 0.3)'
 					},
 					{
 						id: 'jump-jump',
 						name: '跳一跳',
 						desc: '跳跃挑战游戏',
-						icon: 'icon-tiaoyue',
+						icon: 'icon-pawn',
 						color: '#FF9FF3',
-						bgColor: '#FFF0FE'
+						bgColor: 'linear-gradient(135deg, #FFF0FE 0%, #FFE8FD 100%)',
+						shadowColor: 'rgba(255, 159, 243, 0.3)'
+					},
+					{
+						id: 'breakout',
+						name: '打砖块',
+						desc: '弹球消砖游戏',
+						icon: 'icon-relitu',
+						color: '#27AE60',
+						bgColor: 'linear-gradient(135deg, #E8FFF3 0%, #DFFFEC 100%)',
+						shadowColor: 'rgba(39, 174, 96, 0.3)'
+					},
+					{
+						id: 'pacman',
+						name: '吃豆人',
+						desc: '经典街机游戏',
+						icon: 'icon-pacman',
+						color: '#F7B731',
+						bgColor: 'linear-gradient(135deg, #FEF9E7 0%, #FCF3CF 100%)',
+						shadowColor: 'rgba(247, 183, 49, 0.3)'
+					},
+					{
+						id: 'tetris',
+						name: '俄罗斯方块',
+						desc: '经典消除游戏',
+						icon: 'icon-tetris',
+						color: '#00D2D3',
+						bgColor: 'linear-gradient(135deg, #E0F8F8 0%, #D1F5F5 100%)',
+						shadowColor: 'rgba(0, 210, 211, 0.3)'
+					},
+					{
+						id: 'tic-tac-toe',
+						name: '井字游戏',
+						desc: '策略对战游戏',
+						icon: 'icon-tic-tac-toe',
+						color: '#3498DB',
+						bgColor: 'linear-gradient(135deg, #EBF5FB 0%, #D6EAF8 100%)',
+						shadowColor: 'rgba(52, 152, 219, 0.3)'
 					},
 					{
 						id: 'match-game',
@@ -163,23 +206,45 @@
 						desc: '图案配对游戏',
 						icon: 'icon-lianliankan',
 						color: '#54A0FF',
-						bgColor: '#E8F4FF'
-					},
-					{
-						id: 'breakout',
-						name: '打砖块',
-						desc: '弹球消砖游戏',
-						icon: 'icon-zhuankuai',
-						color: '#26DE81',
-						bgColor: '#E8FFF3'
+						bgColor: 'linear-gradient(135deg, #E8F4FF 0%, #DCF0FF 100%)',
+						shadowColor: 'rgba(84, 160, 255, 0.3)'
 					},
 					{
 						id: 'spider-solitaire',
 						name: '蜘蛛牌',
 						desc: '纸牌策略游戏',
-						icon: 'icon-zhipai',
+						icon: 'icon-spades',
+						color: '#2C3E50',
+						bgColor: 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
+						shadowColor: 'rgba(44, 62, 80, 0.3)'
+					},
+					{
+						id: 'dice',
+						name: '骰子游戏',
+						desc: '运气与策略',
+						icon: 'icon-dice',
 						color: '#FD79A8',
-						bgColor: '#FFEBF0'
+						bgColor: 'linear-gradient(135deg, #FFEBF0 0%, #FFE2EC 100%)',
+						shadowColor: 'rgba(253, 121, 168, 0.3)'
+					},
+					{
+						id: 'space-invaders',
+						name: '太空入侵者',
+						desc: '射击防御游戏',
+						icon: 'icon-space-invaders',
+						color: '#9B59B6',
+						bgColor: 'linear-gradient(135deg, #F4ECF7 0%, #EBDEF0 100%)',
+						shadowColor: 'rgba(155, 89, 182, 0.3)'
+					},
+					{
+						id: 'coming-soon',
+						name: '敬请期待',
+						desc: '更多精彩游戏',
+						icon: 'icon-caidan-',
+						color: '#95A5A6',
+						bgColor: 'linear-gradient(135deg, #F8F9FA 0%, #ECF0F1 100%)',
+						shadowColor: 'rgba(149, 165, 166, 0.3)',
+						isComingSoon: true
 					}
 				]
 			}
@@ -212,14 +277,40 @@
 		methods: {
 			// 获取游戏卡片样式
 			getGameCardStyle(game) {
-				return {
+				const baseStyle = {
 					background: game.bgColor,
-					borderColor: game.color
+					borderColor: game.color,
+					boxShadow: `0 8rpx 24rpx ${game.shadowColor}`,
+					transform: 'translateY(0)'
 				}
+				
+				// 为敬请期待卡片添加特殊样式
+				if (game.isComingSoon) {
+					baseStyle.opacity = '0.8'
+					baseStyle.border = '2rpx dashed #95A5A6'
+				}
+				
+				return baseStyle
 			},
 
 			// 点击游戏卡片
 			playGame(game) {
+				// 添加点击反馈效果
+				uni.vibrateShort({
+					type: 'light'
+				})
+				
+				// 特殊处理敬请期待卡片
+				if (game.isComingSoon) {
+					uni.showModal({
+						title: '敬请期待',
+						content: '更多精彩游戏正在紧张开发中，\n敬请期待后续更新！',
+						showCancel: false,
+						confirmText: '了解了'
+					})
+					return
+				}
+				
 				uni.showToast({
 					title: `即将开始${game.name}`,
 					icon: 'none',
@@ -283,6 +374,8 @@
 </script>
 
 <style scoped>
+	/* 引入游戏图标 */
+	@import url('/static/game/iconfont.css');
 	.page {
 		display: flex;
 		flex-direction: column;
@@ -403,30 +496,41 @@
 	.games-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: 20rpx;
+		gap: 24rpx;
 		width: 100%;
+		padding: 10rpx;
 	}
 
 	/* 游戏卡片样式 */
 	.game-card {
 		aspect-ratio: 1;
-		border-radius: 16rpx;
-		padding: 20rpx;
+		border-radius: 20rpx;
+		padding: 24rpx;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
-		border: 2rpx solid transparent;
-		transition: all 0.3s ease;
+		border: 3rpx solid transparent;
+		transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 		position: relative;
 		overflow: hidden;
 		box-sizing: border-box;
+		cursor: pointer;
+		backdrop-filter: blur(10rpx);
 	}
 
 	.game-card:active {
-		transform: scale(0.95);
-		box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
+		transform: scale(0.92) translateY(4rpx);
+		box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.2);
+		filter: brightness(0.95);
+	}
+
+	.game-card:hover {
+		transform: translateY(-6rpx) scale(1.02);
+		box-shadow: 0 12rpx 32rpx rgba(0,0,0,0.15);
+		border-color: currentColor;
+		filter: brightness(1.05);
 	}
 
 	.game-card::before {
@@ -436,50 +540,180 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-		transform: translateX(-100%);
-		transition: transform 0.6s ease;
+		background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+		transform: translateX(-100%) rotate(45deg);
+		transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		pointer-events: none;
 	}
 
 	.game-card:active::before {
-		transform: translateX(100%);
+		transform: translateX(100%) rotate(45deg);
+	}
+
+	/* 游戏卡片光效 */
+	.game-card::after {
+		content: '';
+		position: absolute;
+		top: -2rpx;
+		left: -2rpx;
+		right: -2rpx;
+		bottom: -2rpx;
+		border-radius: 22rpx;
+		background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+		opacity: 0;
+		transition: opacity 0.3s ease;
+		pointer-events: none;
+		z-index: -1;
+	}
+
+	.game-card:hover::after {
+		opacity: 1;
 	}
 
 	/* 游戏图标 */
 	.game-icon {
-		margin-bottom: 12rpx;
+		margin-bottom: 16rpx;
+		position: relative;
+		transition: all 0.3s ease;
 	}
 
 	.game-icon .iconfont {
-		font-size: 48rpx;
+		font-size: 52rpx;
 		font-weight: bold;
+		transition: all 0.3s ease;
+		filter: drop-shadow(0 2rpx 4rpx rgba(0,0,0,0.1));
+	}
+
+	.game-card:hover .game-icon {
+		transform: scale(1.1) rotate(5deg);
+	}
+
+	.game-card:active .game-icon {
+		transform: scale(0.95);
 	}
 
 	/* 游戏名称 */
 	.game-name {
-		font-size: 26rpx;
-		font-weight: 600;
-		color: #495057;
-		margin-bottom: 6rpx;
+		font-size: 28rpx;
+		font-weight: 700;
+		color: #2c3e50;
+		margin-bottom: 8rpx;
 		line-height: 1.2;
+		transition: all 0.3s ease;
+		text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.1);
+	}
+
+	.game-card:hover .game-name {
+		color: #1a252f;
+		transform: translateY(-2rpx);
 	}
 
 	/* 游戏描述 */
 	.game-desc {
-		font-size: 20rpx;
+		font-size: 22rpx;
 		color: #6c757d;
-		line-height: 1.3;
-		opacity: 0.8;
+		line-height: 1.4;
+		opacity: 0.85;
+		transition: all 0.3s ease;
+		font-weight: 500;
+	}
+
+	.game-card:hover .game-desc {
+		opacity: 1;
+		color: #495057;
+		transform: translateY(-1rpx);
+	}
+
+	/* 敬请期待卡片特殊样式 */
+	.game-card.coming-soon {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.game-card.coming-soon::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+		animation: shimmer 2s infinite;
+	}
+
+	@keyframes shimmer {
+		0% {
+			left: -100%;
+		}
+		100% {
+			left: 100%;
+		}
+	}
+
+	.game-card.coming-soon .game-icon {
+		animation: pulse 1.5s ease-in-out infinite alternate;
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 0.7;
+			transform: scale(1);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1.05);
+		}
+	}
+
+	.game-card.coming-soon .game-name {
+		color: #7F8C8D;
+		font-style: italic;
+	}
+
+	.game-card.coming-soon .game-desc {
+		color: #95A5A6;
+		font-size: 20rpx;
 	}
 
 	/* 响应式适配 */
 	@media screen and (max-width: 750rpx) {
 		.games-grid {
+			gap: 20rpx;
+			padding: 8rpx;
+		}
+		
+		.game-card {
+			padding: 20rpx;
+			border-radius: 18rpx;
+		}
+		
+		.game-icon .iconfont {
+			font-size: 48rpx;
+		}
+		
+		.game-name {
+			font-size: 26rpx;
+		}
+		
+		.game-desc {
+			font-size: 20rpx;
+		}
+	}
+
+	/* 更小屏幕的适配 */
+	@media screen and (max-width: 600rpx) {
+		.game-content {
+			padding: 24rpx 16rpx;
+		}
+		
+		.games-grid {
 			gap: 16rpx;
+			padding: 6rpx;
 		}
 		
 		.game-card {
 			padding: 16rpx;
+			border-radius: 16rpx;
 		}
 		
 		.game-icon .iconfont {
@@ -492,33 +726,6 @@
 		
 		.game-desc {
 			font-size: 18rpx;
-		}
-	}
-
-	/* 更小屏幕的适配 */
-	@media screen and (max-width: 600rpx) {
-		.game-content {
-			padding: 24rpx 16rpx;
-		}
-		
-		.games-grid {
-			gap: 12rpx;
-		}
-		
-		.game-card {
-			padding: 12rpx;
-		}
-		
-		.game-icon .iconfont {
-			font-size: 40rpx;
-		}
-		
-		.game-name {
-			font-size: 22rpx;
-		}
-		
-		.game-desc {
-			font-size: 16rpx;
 		}
 	}
 
