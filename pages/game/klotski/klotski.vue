@@ -15,19 +15,24 @@
 
 		<!-- 游戏区域 -->
 		<view class="game-container">
-			<!-- 游戏信息区域 -->
-			<view class="game-info-container">
-				<view class="info-item">
-					<text class="info-label">步数</text>
-					<text class="info-value">{{ moves }}</text>
+			<!-- 分数区域 -->
+			<view class="score-container">
+				<view class="score-box">
+					<text class="score-label">步数</text>
+					<text class="score-value">{{ moves }}</text>
 				</view>
-				<view class="info-item">
-					<text class="info-label">时间</text>
-					<text class="info-value">{{ formatTime(time) }}</text>
+				<view class="score-box">
+					<text class="score-label">时间</text>
+					<text class="score-value">{{ formatTime(time) }}</text>
 				</view>
-				<view class="info-item">
-					<text class="info-label">最少步数</text>
-					<text class="info-value">{{ bestMoves > 0 ? bestMoves : '--' }}</text>
+				<view class="best-score-wrapper">
+					<view class="score-box best-score-box" :class="{ 'new-record-glow': isNewRecord }">
+						<text class="score-label">最少步数</text>
+						<text class="score-value">{{ bestMoves }}</text>
+					</view>
+					<view class="new-record-badge" v-if="isNewRecord">
+						<text class="badge-text">新纪录!</text>
+					</view>
 				</view>
 			</view>
 
@@ -54,6 +59,27 @@
 				<text class="complete-title">🎉 恭喜完成！</text>
 				<text class="complete-subtitle">用时 {{ formatTime(time) }}，共 {{ moves }} 步</text>
 				<text class="complete-record" v-if="isNewRecord">🏆 创造新纪录！</text>
+			</view>
+			
+			<!-- 新纪录特效 -->
+			<view class="new-record-effect" v-if="showNewRecordEffect">
+				<!-- 闪光效果 -->
+				<view class="flash-overlay"></view>
+				
+				<!-- 主文本 -->
+				<view class="record-text-container">
+					<text class="record-main-text">🏆 新纪录 🏆</text>
+					<text class="record-sub-text">恭喜创造最少步数记录！</text>
+				</view>
+				
+				<!-- 粒子效果 -->
+				<view class="particle" v-for="i in 12" :key="i" :class="`particle-${i}`">
+					<text class="particle-icon">✨</text>
+				</view>
+				
+				<!-- 光环效果 -->
+				<view class="light-ring"></view>
+				<view class="light-ring light-ring-2"></view>
 			</view>
 			
 			<!-- 操作按钮区域 -->
@@ -119,26 +145,40 @@
 				puzzle: [],
 				moves: 0,
 				time: 0,
-				bestMoves: 0,
+				// 专门的最少步数存储变量
+				_bestMovesData: 0, // 内部存储最少步数的变量
 				isComplete: false,
-				isNewRecord: false,
+				isNewRecord: false, // 是否创造了新记录
+				showNewRecordEffect: false, // 显示新纪录特效
 				showInfoModal: false,
 				timer: null
 			}
 		},
 		
+		computed: {
+			// 最少步数的计算属性 - 基于专门的存储变量
+			bestMoves() {
+				return this._bestMovesData || 0
+			}
+		},
+		
 		onLoad() {
+			console.log('=== 页面onLoad开始 ===')
 			this.getSystemInfo()
-			this.loadBestRecord()
+			this.loadBestMoves() // 同步加载最少步数
 			this.initGame()
+			console.log('=== 页面onLoad完成，bestMoves:', this.bestMoves, '===')
 		},
 		
 		onShow() {
-			this.loadBestRecord()
+			console.log('=== 页面onShow开始 ===')
+			// 每次显示页面时重新加载最少步数，确保显示正确
+			this.loadBestMoves()
+			console.log('=== 页面onShow完成，_bestMovesData:', this._bestMovesData, 'bestMoves:', this.bestMoves, '===')
 		},
 		
 		onUnload() {
-			this.saveBestRecord()
+			this.saveBestMoves()
 			if (this.timer) {
 				clearInterval(this.timer)
 			}
@@ -170,17 +210,41 @@
 				if (this.game.isComplete() && !this.isComplete) {
 					this.isComplete = true
 					this.stopTimer()
-					this.checkNewRecord()
+					this.checkAndShowNewRecord()
 					uni.vibrateShort({ type: 'heavy' })
 				}
 			},
 			
-			// 检查新纪录
-			checkNewRecord() {
+			// 检查并显示新纪录（仅在游戏结束时）
+			checkAndShowNewRecord() {
 				if (this.bestMoves === 0 || this.moves < this.bestMoves) {
-					this.bestMoves = this.moves
+					// 创造了新纪录
+					console.log('检测到新纪录，当前步数:', this.moves, '原最少步数:', this.bestMoves)
+					
+					// 直接更新专门的存储变量
+					this._bestMovesData = this.moves
 					this.isNewRecord = true
-					this.saveBestRecord()
+					
+					console.log('创造新纪录，更新后的_bestMovesData:', this._bestMovesData, 'bestMoves:', this.bestMoves)
+					
+					// 保存到本地存储
+					this.saveBestMovesToStorage()
+					
+					// 显示新纪录特效
+					this.showNewRecordEffect = true
+					
+					// 震动反馈
+					uni.vibrateShort({ type: 'heavy' })
+					
+					// 4秒后隐藏特效
+					setTimeout(() => {
+						this.showNewRecordEffect = false
+					}, 4000)
+					
+					// 6秒后隐藏新纪录标识
+					setTimeout(() => {
+						this.isNewRecord = false
+					}, 6000)
 				}
 			},
 			
@@ -222,11 +286,22 @@
 			
 			// 重新开始游戏
 			restartGame() {
+				// 重置特效状态
+				this.isNewRecord = false
+				this.showNewRecordEffect = false
+				
 				this.resetGame()
 				this.game.reset()
 				this.game.shuffle() // 重新开始后要打乱棋盘
 				this.updateDisplay()
 				this.startTimer()
+				
+				// 显示提示
+				uni.showToast({
+					title: '游戏重新开始',
+					icon: 'none',
+					duration: 1500
+				})
 			},
 			
 			// 重置游戏状态
@@ -262,26 +337,53 @@
 				return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 			},
 			
-			// 加载最佳纪录
-			loadBestRecord() {
+			// 加载最少步数 - 使用专门的存储变量
+			loadBestMoves() {
 				try {
+					console.log('开始加载最少步数...')
 					const saved = uni.getStorageSync('klotski_best_moves')
-					if (saved && !isNaN(saved)) {
-						this.bestMoves = parseInt(saved)
+					console.log('从存储读取的原始数据:', saved, '类型:', typeof saved)
+					
+					let newBestMoves = 0
+					if (saved !== null && saved !== undefined && saved !== '') {
+						const numValue = Number(saved)
+						if (!isNaN(numValue) && numValue >= 0) {
+							newBestMoves = Math.floor(numValue)
+						}
 					}
+					
+					console.log('计算出的最少步数:', newBestMoves)
+					
+					// 直接设置专门的存储变量
+					this._bestMovesData = newBestMoves
+					
+					console.log('设置后的_bestMovesData:', this._bestMovesData)
+					console.log('计算属性bestMoves:', this.bestMoves)
+					
 				} catch (e) {
-					console.log('加载最佳纪录失败:', e)
+					console.log('加载最少步数失败:', e)
+					this._bestMovesData = 0
 				}
 			},
-			
-			// 保存最佳纪录
-			saveBestRecord() {
+
+			// 保存最少步数到本地存储 - 基于专门的存储变量
+			saveBestMovesToStorage() {
 				try {
-					if (this.bestMoves > 0) {
-						uni.setStorageSync('klotski_best_moves', this.bestMoves)
-					}
+					const movesToSave = this._bestMovesData
+					uni.setStorageSync('klotski_best_moves', movesToSave)
+					console.log('最少步数已保存:', movesToSave)
 				} catch (e) {
-					console.log('保存最佳纪录失败:', e)
+					console.log('保存最少步数失败:', e)
+				}
+			},
+
+			// 保存最少步数（兼容旧版本）
+			saveBestMoves() {
+				if (this.bestMoves === 0 || this.moves < this.bestMoves) {
+					console.log('保存最少步数，当前步数:', this.moves, '原最少步数:', this.bestMoves)
+					this._bestMovesData = this.moves
+					this.saveBestMovesToStorage()
+					console.log('保存最少步数完成，新最少步数:', this.bestMoves)
 				}
 			},
 			
@@ -298,6 +400,17 @@
 			// 关闭游戏说明弹窗
 			closeInfoModal() {
 				this.showInfoModal = false
+			},
+			
+			// 测试方法：清除最少步数存储（仅用于调试）
+			clearBestMoves() {
+				try {
+					uni.removeStorageSync('klotski_best_moves')
+					this._bestMovesData = 0
+					console.log('最少步数存储已清除，_bestMovesData:', this._bestMovesData, 'bestMoves:', this.bestMoves)
+				} catch (e) {
+					console.log('清除最少步数失败:', e)
+				}
 			}
 		}
 	}

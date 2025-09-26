@@ -67,38 +67,88 @@
 	align-items: center;
 }
 
-/* 游戏信息区域 */
-.game-info-container {
+/* 分数区域 - 完全按照2048游戏的样式 */
+.score-container {
 	display: flex;
-	justify-content: space-between;
+	gap: 24rpx;
+	margin-bottom: 20rpx;
 	width: 100%;
+	justify-content: center;
 	max-width: 600rpx;
-	margin-bottom: 30rpx;
-	gap: 20rpx;
 }
 
-.info-item {
+.score-box {
 	flex: 1;
 	background: rgba(255, 255, 255, 0.9);
 	border-radius: 16rpx;
-	padding: 20rpx;
+	padding: 24rpx;
 	text-align: center;
-	box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.1);
-	backdrop-filter: blur(10rpx);
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+	position: relative;
+	overflow: hidden;
 }
 
-.info-label {
-	font-size: 22rpx;
-	color: #6c757d;
+.best-score-box {
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.score-label {
+	font-size: 24rpx;
+	opacity: 0.9;
 	display: block;
 	margin-bottom: 8rpx;
 }
 
-.info-value {
-	font-size: 32rpx;
-	font-weight: 700;
-	color: #495057;
+.score-value {
+	font-size: 36rpx;
+	font-weight: bold;
 	display: block;
+}
+
+/* 新纪录发光效果 */
+.new-record-glow {
+	animation: recordGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes recordGlow {
+	0% {
+		box-shadow: 0 8rpx 24rpx rgba(243, 156, 18, 0.3);
+		transform: scale(1);
+	}
+	100% {
+		box-shadow: 0 12rpx 32rpx rgba(243, 156, 18, 0.6), 0 0 20rpx rgba(243, 156, 18, 0.4);
+		transform: scale(1.02);
+	}
+}
+
+/* 最少步数外层包装器 */
+.best-score-wrapper {
+	flex: 1;
+	position: relative;
+}
+
+/* 新纪录徽章 */
+.new-record-badge {
+	position: absolute;
+	top: -8rpx;
+	right: -8rpx;
+	background: #e74c3c;
+	color: white;
+	padding: 4rpx 12rpx;
+	border-radius: 20rpx;
+	font-size: 18rpx;
+	animation: bounce 1s ease-in-out infinite;
+	z-index: 10;
+}
+
+@keyframes bounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4rpx); }
+}
+
+.badge-text {
+	font-weight: bold;
 }
 
 /* 游戏说明 */
@@ -118,6 +168,121 @@
 	font-size: 24rpx;
 	color: #6c757d;
 	line-height: 1.5;
+}
+
+/* 新纪录特效 */
+.new-record-effect {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 999;
+	pointer-events: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	animation: recordEffectAppear 0.8s ease-out;
+}
+
+@keyframes recordEffectAppear {
+	0% {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* 闪光效果 */
+.flash-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+	animation: flashEffect 2s ease-in-out;
+}
+
+@keyframes flashEffect {
+	0%, 100% {
+		opacity: 0;
+	}
+	20% {
+		opacity: 1;
+	}
+	40% {
+		opacity: 0.3;
+	}
+	60% {
+		opacity: 0.8;
+	}
+	80% {
+		opacity: 0.2;
+	}
+}
+
+/* 主文本容器 */
+.record-text-container {
+	position: relative;
+	z-index: 10;
+	text-align: center;
+	animation: textBounce 1s ease-out;
+}
+
+@keyframes textBounce {
+	0% {
+		transform: scale(0) rotate(-10deg);
+		opacity: 0;
+	}
+	50% {
+		transform: scale(1.2) rotate(5deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1) rotate(0deg);
+		opacity: 1;
+	}
+}
+
+.record-main-text {
+	font-size: 64rpx;
+	font-weight: 800;
+	color: #FFD700;
+	display: block;
+	margin-bottom: 16rpx;
+	text-shadow: 
+		0 0 10rpx rgba(255, 215, 0, 0.8),
+		0 0 20rpx rgba(255, 215, 0, 0.6),
+		0 0 30rpx rgba(255, 215, 0, 0.4);
+	animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+.record-sub-text {
+	font-size: 28rpx;
+	color: #fff;
+	text-shadow: 
+		0 0 5rpx rgba(255, 255, 255, 0.8),
+		0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+	opacity: 0.9;
+}
+
+@keyframes textGlow {
+	0% {
+		text-shadow: 
+			0 0 10rpx rgba(255, 215, 0, 0.8),
+			0 0 20rpx rgba(255, 215, 0, 0.6),
+			0 0 30rpx rgba(255, 215, 0, 0.4);
+	}
+	100% {
+		text-shadow: 
+			0 0 20rpx rgba(255, 215, 0, 1),
+			0 0 30rpx rgba(255, 215, 0, 0.8),
+			0 0 40rpx rgba(255, 215, 0, 0.6);
+	}
 }
 
 /* 游戏网格 */
@@ -264,6 +429,315 @@
 	font-weight: 600;
 }
 
+/* 粒子效果 */
+.particle {
+	position: absolute;
+	pointer-events: none;
+	z-index: 5;
+}
+
+.particle-icon {
+	font-size: 40rpx;
+	color: #FFD700;
+	filter: drop-shadow(0 0 6rpx rgba(255, 215, 0, 0.8));
+}
+
+/* 为每个粒子定义不同的动画 */
+.particle-1 {
+	top: 20%;
+	left: 15%;
+	animation: particle1 3s ease-out;
+}
+
+.particle-2 {
+	top: 25%;
+	right: 20%;
+	animation: particle2 3s ease-out 0.2s;
+}
+
+.particle-3 {
+	top: 35%;
+	left: 25%;
+	animation: particle3 3s ease-out 0.4s;
+}
+
+.particle-4 {
+	top: 30%;
+	right: 15%;
+	animation: particle4 3s ease-out 0.6s;
+}
+
+.particle-5 {
+	top: 45%;
+	left: 10%;
+	animation: particle5 3s ease-out 0.8s;
+}
+
+.particle-6 {
+	top: 40%;
+	right: 25%;
+	animation: particle6 3s ease-out 1s;
+}
+
+.particle-7 {
+	bottom: 35%;
+	left: 20%;
+	animation: particle7 3s ease-out 0.3s;
+}
+
+.particle-8 {
+	bottom: 40%;
+	right: 18%;
+	animation: particle8 3s ease-out 0.5s;
+}
+
+.particle-9 {
+	bottom: 30%;
+	left: 30%;
+	animation: particle9 3s ease-out 0.7s;
+}
+
+.particle-10 {
+	bottom: 25%;
+	right: 30%;
+	animation: particle10 3s ease-out 0.9s;
+}
+
+.particle-11 {
+	top: 50%;
+	left: 5%;
+	animation: particle11 3s ease-out 1.1s;
+}
+
+.particle-12 {
+	top: 50%;
+	right: 5%;
+	animation: particle12 3s ease-out 1.3s;
+}
+
+/* 粒子动画定义 */
+@keyframes particle1 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(180deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(360deg) translateY(-100rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle2 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(-180deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(-360deg) translateY(-120rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle3 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(90deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(270deg) translateX(-80rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle4 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(-90deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(-270deg) translateX(80rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle5 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(45deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(225deg) translate(-60rpx, -60rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle6 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(-45deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(-225deg) translate(60rpx, -60rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle7 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(135deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(315deg) translate(-70rpx, 70rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle8 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(-135deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(-315deg) translate(70rpx, 70rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle9 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(60deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(240deg) translateY(90rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle10 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(-60deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(-240deg) translateY(90rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle11 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(120deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(300deg) translateX(-100rpx);
+		opacity: 0;
+	}
+}
+
+@keyframes particle12 {
+	0% {
+		transform: scale(0) rotate(0deg);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1) rotate(-120deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0) rotate(-300deg) translateX(100rpx);
+		opacity: 0;
+	}
+}
+
+/* 光环效果 */
+.light-ring {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 300rpx;
+	height: 300rpx;
+	border: 4rpx solid rgba(255, 215, 0, 0.6);
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	animation: ringExpand 2s ease-out;
+}
+
+.light-ring-2 {
+	width: 200rpx;
+	height: 200rpx;
+	border: 3rpx solid rgba(255, 107, 107, 0.6);
+	animation: ringExpand2 2s ease-out 0.3s;
+}
+
+@keyframes ringExpand {
+	0% {
+		transform: translate(-50%, -50%) scale(0);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(-50%, -50%) scale(2);
+		opacity: 0;
+	}
+}
+
+@keyframes ringExpand2 {
+	0% {
+		transform: translate(-50%, -50%) scale(0);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(-50%, -50%) scale(2.5);
+		opacity: 0;
+	}
+}
+
 /* 弹窗样式 */
 .modal-overlay {
 	position: fixed;
@@ -383,11 +857,16 @@
 		font-size: 36rpx;
 	}
 	
-	.info-item {
-		padding: 16rpx;
+	.score-box {
+		min-width: 100rpx;
+		padding: 12rpx 20rpx;
 	}
 	
-	.info-value {
+	.score-label {
+		font-size: 20rpx;
+	}
+	
+	.score-value {
 		font-size: 28rpx;
 	}
 }
@@ -404,20 +883,20 @@
 		font-size: 32rpx;
 	}
 	
-	.game-info-container {
+	.score-container {
 		gap: 16rpx;
 	}
 	
-	.info-item {
+	.score-box {
 		padding: 12rpx;
 	}
 	
-	.info-value {
+	.score-value {
 		font-size: 24rpx;
 	}
 	
-	.info-label {
-		font-size: 20rpx;
+	.score-label {
+		font-size: 18rpx;
 	}
 }
 
