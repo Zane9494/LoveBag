@@ -370,12 +370,12 @@
 				}
 			},
 			
-			// 动画移动项目
+			// 动画交换项目
 			animateItemMove(fromIndex, toIndex) {
 				this.dragState.isAnimating = true;
 				
-				// 先移动数据
-				this.moveItem(fromIndex, toIndex);
+				// 先交换数据
+				this.swapItems(fromIndex, toIndex);
 				
 				// 等待一帧让DOM更新
 				this.$nextTick(() => {
@@ -394,14 +394,16 @@
 				this.dragState.isAnimating = false;
 			},
 
-			// 移动数组元素
-			moveItem(fromIndex, toIndex) {
+			// 交换数组元素位置
+			swapItems(fromIndex, toIndex) {
 				if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
 				if (fromIndex >= this.navItems.length || toIndex >= this.navItems.length) return;
 				
 				const newItems = [...this.navItems];
-				const [movedItem] = newItems.splice(fromIndex, 1);
-				newItems.splice(toIndex, 0, movedItem);
+				// 简单交换两个位置的元素
+				const temp = newItems[fromIndex];
+				newItems[fromIndex] = newItems[toIndex];
+				newItems[toIndex] = temp;
 				this.navItems = newItems;
 			},
 
