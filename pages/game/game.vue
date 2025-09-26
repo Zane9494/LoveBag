@@ -30,17 +30,25 @@
 			<view class="game-content">
 				<view class="games-grid">
 					<view 
-						:class="['game-card', { 'coming-soon': game.isComingSoon }]" 
+						:class="['game-card', { 
+							'coming-soon': game.isComingSoon,
+							'clicked': clickedGameId === game.id
+						}]" 
 						v-for="(game, index) in games" 
 						:key="index"
 						@click="playGame(game)"
 						:style="getGameCardStyle(game)"
 					>
+						<!-- 游戏图标 -->
 						<view class="game-icon">
 							<text :class="'iconfont ' + game.icon" :style="{color: game.color}"></text>
 						</view>
-						<text class="game-name">{{ game.name }}</text>
-						<text class="game-desc">{{ game.desc }}</text>
+						
+						<!-- 游戏信息 -->
+						<view class="game-info">
+							<text class="game-name">{{ game.name }}</text>
+							<text class="game-desc">{{ game.desc }}</text>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -92,6 +100,8 @@
 				statusBarHeight: 0,
 				showInfoModal: false,
 				sideNavVisible: false, // 侧边导航栏可见性
+				clickedGameId: null, // 当前被点击的游戏ID
+				clickTimeout: null, // 点击效果定时器
 
 				// 固定使用绿色主题
 				themeColors: {
@@ -109,6 +119,7 @@
 						color: '#FF6B6B',
 						bgColor: 'linear-gradient(135deg, #FFE5E5 0%, #FFD6D6 100%)',
 						shadowColor: 'rgba(255, 107, 107, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'sudoku',
@@ -118,6 +129,7 @@
 						color: '#4ECDC4',
 						bgColor: 'linear-gradient(135deg, #E5F9F7 0%, #D6F5F2 100%)',
 						shadowColor: 'rgba(78, 205, 196, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'snake',
@@ -126,7 +138,8 @@
 						icon: 'icon-snake',
 						color: '#45B7D1',
 						bgColor: 'linear-gradient(135deg, #E5F3F9 0%, #D6EDF7 100%)',
-						shadowColor: 'rgba(69, 183, 209, 0.3)'
+						shadowColor: 'rgba(69, 183, 209, 0.3)',
+						path: '/pages/game/snake/snake' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'klotski',
@@ -136,6 +149,7 @@
 						color: '#F39C12',
 						bgColor: 'linear-gradient(135deg, #FEF3E0 0%, #FDF0D5 100%)',
 						shadowColor: 'rgba(243, 156, 18, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'whack-mole',
@@ -145,6 +159,7 @@
 						color: '#8E44AD',
 						bgColor: 'linear-gradient(135deg, #F4ECFF 0%, #EEDDFF 100%)',
 						shadowColor: 'rgba(142, 68, 173, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'flappy-bird',
@@ -154,6 +169,7 @@
 						color: '#E74C3C',
 						bgColor: 'linear-gradient(135deg, #FDEDEC 0%, #FADBD8 100%)',
 						shadowColor: 'rgba(231, 76, 60, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'jump-jump',
@@ -163,6 +179,7 @@
 						color: '#FF9FF3',
 						bgColor: 'linear-gradient(135deg, #FFF0FE 0%, #FFE8FD 100%)',
 						shadowColor: 'rgba(255, 159, 243, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'breakout',
@@ -171,7 +188,8 @@
 						icon: 'icon-relitu',
 						color: '#27AE60',
 						bgColor: 'linear-gradient(135deg, #E8FFF3 0%, #DFFFEC 100%)',
-						shadowColor: 'rgba(39, 174, 96, 0.3)'
+						shadowColor: 'rgba(39, 174, 96, 0.3)',
+						path: '/pages/game/breakout/breakout' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'pacman',
@@ -181,6 +199,7 @@
 						color: '#F7B731',
 						bgColor: 'linear-gradient(135deg, #FEF9E7 0%, #FCF3CF 100%)',
 						shadowColor: 'rgba(247, 183, 49, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'tetris',
@@ -190,6 +209,7 @@
 						color: '#00D2D3',
 						bgColor: 'linear-gradient(135deg, #E0F8F8 0%, #D1F5F5 100%)',
 						shadowColor: 'rgba(0, 210, 211, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'tic-tac-toe',
@@ -199,6 +219,7 @@
 						color: '#3498DB',
 						bgColor: 'linear-gradient(135deg, #EBF5FB 0%, #D6EAF8 100%)',
 						shadowColor: 'rgba(52, 152, 219, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'match-game',
@@ -208,6 +229,7 @@
 						color: '#54A0FF',
 						bgColor: 'linear-gradient(135deg, #E8F4FF 0%, #DCF0FF 100%)',
 						shadowColor: 'rgba(84, 160, 255, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'spider-solitaire',
@@ -217,6 +239,7 @@
 						color: '#2C3E50',
 						bgColor: 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
 						shadowColor: 'rgba(44, 62, 80, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'dice',
@@ -226,6 +249,7 @@
 						color: '#FD79A8',
 						bgColor: 'linear-gradient(135deg, #FFEBF0 0%, #FFE2EC 100%)',
 						shadowColor: 'rgba(253, 121, 168, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'space-invaders',
@@ -235,6 +259,7 @@
 						color: '#9B59B6',
 						bgColor: 'linear-gradient(135deg, #F4ECF7 0%, #EBDEF0 100%)',
 						shadowColor: 'rgba(155, 89, 182, 0.3)'
+						// 无跳转链接 - 开发中
 					},
 					{
 						id: 'coming-soon',
@@ -274,6 +299,14 @@
 			this.recordCurrentPage()
 		},
 
+		onUnload() {
+			// 页面卸载时清理定时器和状态
+			if (this.clickTimeout) {
+				clearTimeout(this.clickTimeout)
+			}
+			this.clickedGameId = null
+		},
+
 		methods: {
 			// 获取游戏卡片样式
 			getGameCardStyle(game) {
@@ -295,6 +328,19 @@
 
 			// 点击游戏卡片
 			playGame(game) {
+				// 清除之前的定时器
+				if (this.clickTimeout) {
+					clearTimeout(this.clickTimeout)
+				}
+				
+				// 立即设置点击状态
+				this.clickedGameId = game.id
+				
+				// 900ms后清除点击状态，让元素通过CSS过渡回到初始样式
+				this.clickTimeout = setTimeout(() => {
+					this.clickedGameId = null
+				}, 900)
+				
 				// 添加点击反馈效果
 				uni.vibrateShort({
 					type: 'light'
@@ -311,24 +357,30 @@
 					return
 				}
 				
-				uni.showToast({
-					title: `即将开始${game.name}`,
-					icon: 'none',
-					duration: 1500
-				})
-				
-				// 这里可以根据游戏ID跳转到对应的游戏逻辑
-				console.log('开始游戏:', game.name, game.id)
-				
-				// 简单的游戏启动提示
-				setTimeout(() => {
-					uni.showModal({
-						title: game.name,
-						content: `${game.desc}\n\n游戏功能正在开发中，敬请期待！`,
-						showCancel: false,
-						confirmText: '知道了'
+				// 根据是否有跳转链接判断游戏是否完成
+				if (game.path) {
+					// 已完成的游戏 - 显示启动提示后跳转
+					uni.showToast({
+						title: `${game.name} 即将启动`,
+						icon: 'none',
+						duration: 1500
 					})
-				}, 1600)
+					
+					// 延迟跳转，让用户看到提示信息
+					setTimeout(() => {
+						console.log('跳转到游戏:', game.name, game.path)
+						uni.navigateTo({
+							url: game.path
+						})
+					}, 800)
+				} else {
+					// 开发中的游戏 - 直接提示，不需要确认
+					uni.showToast({
+						title: `${game.name}正在开发中`,
+						icon: 'none',
+						duration: 2000
+					})
+				}
 			},
 			// 获取系统信息
 			getSystemInfo() {
@@ -504,7 +556,7 @@
 	/* 游戏卡片样式 */
 	.game-card {
 		aspect-ratio: 1;
-		border-radius: 20rpx;
+		border-radius: 24rpx;
 		padding: 24rpx;
 		display: flex;
 		flex-direction: column;
@@ -520,10 +572,19 @@
 		backdrop-filter: blur(10rpx);
 	}
 
+	/* 完全通过JavaScript控制点击效果 */
+	.game-card.clicked {
+		transform: scale(0.92) translateY(4rpx) !important;
+		box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.2) !important;
+		filter: brightness(0.95) !important;
+		transition: all 0.9s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	}
+
+	/* 禁用默认的active状态 */
 	.game-card:active {
-		transform: scale(0.92) translateY(4rpx);
-		box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.2);
-		filter: brightness(0.95);
+		transform: none !important;
+		box-shadow: none !important;
+		filter: none !important;
 	}
 
 	.game-card:hover {
@@ -570,11 +631,12 @@
 		opacity: 1;
 	}
 
+
 	/* 游戏图标 */
 	.game-icon {
-		margin-bottom: 16rpx;
 		position: relative;
 		transition: all 0.3s ease;
+		margin-bottom: 16rpx;
 	}
 
 	.game-icon .iconfont {
@@ -592,12 +654,20 @@
 		transform: scale(0.95);
 	}
 
+	/* 游戏信息容器 */
+	.game-info {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+
 	/* 游戏名称 */
 	.game-name {
-		font-size: 28rpx;
+		font-size: 26rpx;
 		font-weight: 700;
 		color: #2c3e50;
-		margin-bottom: 8rpx;
+		margin-bottom: 6rpx;
 		line-height: 1.2;
 		transition: all 0.3s ease;
 		text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.1);
@@ -610,9 +680,9 @@
 
 	/* 游戏描述 */
 	.game-desc {
-		font-size: 22rpx;
+		font-size: 20rpx;
 		color: #6c757d;
-		line-height: 1.4;
+		line-height: 1.3;
 		opacity: 0.85;
 		transition: all 0.3s ease;
 		font-weight: 500;
@@ -624,10 +694,14 @@
 		transform: translateY(-1rpx);
 	}
 
+
+
 	/* 敬请期待卡片特殊样式 */
 	.game-card.coming-soon {
 		position: relative;
 		overflow: hidden;
+		opacity: 0.8;
+		border: 2rpx dashed #95A5A6;
 	}
 
 	.game-card.coming-soon::before {
@@ -672,7 +746,7 @@
 
 	.game-card.coming-soon .game-desc {
 		color: #95A5A6;
-		font-size: 20rpx;
+		font-size: 18rpx;
 	}
 
 	/* 响应式适配 */
@@ -683,8 +757,8 @@
 		}
 		
 		.game-card {
-			padding: 20rpx;
-			border-radius: 18rpx;
+			padding: 18rpx;
+			border-radius: 20rpx;
 		}
 		
 		.game-icon .iconfont {
@@ -692,11 +766,11 @@
 		}
 		
 		.game-name {
-			font-size: 26rpx;
+			font-size: 24rpx;
 		}
 		
 		.game-desc {
-			font-size: 20rpx;
+			font-size: 18rpx;
 		}
 	}
 
@@ -713,7 +787,7 @@
 		
 		.game-card {
 			padding: 16rpx;
-			border-radius: 16rpx;
+			border-radius: 18rpx;
 		}
 		
 		.game-icon .iconfont {
@@ -721,11 +795,11 @@
 		}
 		
 		.game-name {
-			font-size: 24rpx;
+			font-size: 22rpx;
 		}
 		
 		.game-desc {
-			font-size: 18rpx;
+			font-size: 16rpx;
 		}
 	}
 
