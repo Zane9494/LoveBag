@@ -359,20 +359,11 @@
 				
 				// 根据是否有跳转链接判断游戏是否完成
 				if (game.path) {
-					// 已完成的游戏 - 显示启动提示后跳转
-					uni.showToast({
-						title: `${game.name} 即将启动`,
-						icon: 'none',
-						duration: 1500
+					// 已完成的游戏 - 直接跳转
+					console.log('跳转到游戏:', game.name, game.path)
+					uni.navigateTo({
+						url: game.path
 					})
-					
-					// 延迟跳转，让用户看到提示信息
-					setTimeout(() => {
-						console.log('跳转到游戏:', game.name, game.path)
-						uni.navigateTo({
-							url: game.path
-						})
-					}, 800)
 				} else {
 					// 开发中的游戏 - 直接提示，不需要确认
 					uni.showToast({
