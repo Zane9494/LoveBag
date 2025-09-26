@@ -80,7 +80,7 @@
 	overflow: hidden; /* 防止容器内滚动 */
 }
 
-/* 分数区域 */
+/* 分数区域 - 完全按照snake游戏的样式 */
 .score-container {
 	display: flex;
 	gap: 24rpx;
@@ -91,80 +91,81 @@
 }
 
 .score-box {
+	flex: 1;
 	background: rgba(255, 255, 255, 0.9);
 	border-radius: 16rpx;
-	padding: 20rpx 28rpx;
+	padding: 24rpx;
 	text-align: center;
+
 	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(10rpx);
-	min-width: 140rpx;
-	flex: 1;
 	position: relative;
-	transition: all 0.3s ease;
+	overflow: hidden;
 }
 
-
-/* 最高分特效 */
 .best-score-box {
-	overflow: visible;
-}
-
-.new-record-glow {
-	animation: newRecordGlow 2s ease-in-out infinite;
-	box-shadow: 0 0 20rpx rgba(255, 215, 0, 0.6), 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-}
-
-@keyframes newRecordGlow {
-	0%, 100% {
-		box-shadow: 0 0 20rpx rgba(255, 215, 0, 0.6), 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-	}
-	50% {
-		box-shadow: 0 0 40rpx rgba(255, 215, 0, 0.8), 0 6rpx 20rpx rgba(255, 215, 0, 0.3);
-	}
-}
-
-/* 新纪录徽章 */
-.new-record-badge {
-	position: absolute;
-	top: -10rpx;
-	right: -10rpx;
-	background: linear-gradient(45deg, #FF6B6B, #FFD93D);
-	border-radius: 20rpx;
-	padding: 6rpx 12rpx;
-	animation: badgeBounce 1s ease-in-out infinite;
-	box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.4);
-}
-
-@keyframes badgeBounce {
-	0%, 100% {
-		transform: scale(1) rotate(-5deg);
-	}
-	50% {
-		transform: scale(1.1) rotate(-3deg);
-	}
-}
-
-.badge-text {
-	font-size: 20rpx;
-	color: white;
-	font-weight: 600;
-	text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .score-label {
-	font-size: 26rpx;
-	color: #8f7a66;
+	font-size: 24rpx;
+	opacity: 0.9;
 	display: block;
 	margin-bottom: 8rpx;
-	font-weight: 600;
 }
 
 .score-value {
 	font-size: 36rpx;
-	color: #776e65;
-	font-weight: 700;
+	font-weight: bold;
 	display: block;
 }
+
+/* 新纪录发光效果 */
+.new-record-glow {
+	animation: recordGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes recordGlow {
+	0% {
+		box-shadow: 0 8rpx 24rpx rgba(243, 156, 18, 0.3);
+		transform: scale(1);
+	}
+	100% {
+		box-shadow: 0 12rpx 32rpx rgba(243, 156, 18, 0.6), 0 0 20rpx rgba(243, 156, 18, 0.4);
+		transform: scale(1.02);
+	}
+}
+
+/* 最高分外层包装器 */
+.best-score-wrapper {
+	flex: 1;
+	position: relative;
+}
+
+
+/* 新纪录徽章 */
+.new-record-badge {
+	position: absolute;
+	top: -8rpx;
+	right: -8rpx;
+	background: #e74c3c;
+	color: white;
+	padding: 4rpx 12rpx;
+	border-radius: 20rpx;
+	font-size: 18rpx;
+	animation: bounce 1s ease-in-out infinite;
+	z-index: 10;
+}
+
+@keyframes bounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4rpx); }
+}
+
+.badge-text {
+	font-weight: bold;
+}
+
 
 /* 游戏说明 */
 .game-info {
