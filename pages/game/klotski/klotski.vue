@@ -33,7 +33,7 @@
 
 			<!-- 游戏说明 -->
 			<view class="game-desc">
-				<text class="desc-text">移动数字方块，按顺序排列1-15，空格在右下角即获胜！</text>
+				<text class="desc-text">移动数字方块，按顺序排列1-8，空格在右下角即获胜！</text>
 			</view>
 
 			<!-- 游戏网格 -->
@@ -58,11 +58,11 @@
 			
 			<!-- 操作按钮区域 -->
 			<view class="button-container">
-				<view class="game-btn shuffle-btn" @click="shufflePuzzle">
+				<view class="game-btn shuffle-btn" @click="shufflePuzzle" v-if="!isComplete">
 					<text class="btn-text">打乱</text>
 				</view>
-				<view class="game-btn restart-btn" @click="restartGame">
-					<text class="btn-text">重新开始</text>
+				<view class="game-btn restart-btn" @click="restartGame" v-if="isComplete">
+					<text class="btn-text">重新挑战</text>
 				</view>
 			</view>
 		</view>
@@ -80,7 +80,7 @@
 					<view class="info-section">
 						<view class="rule-item">
 							<text class="rule-title">🎯 游戏目标</text>
-							<text class="rule-desc">将数字方块按顺序排列，1-15从左到右、从上到下，空格在右下角。</text>
+							<text class="rule-desc">将数字方块按顺序排列，1-8从左到右、从上到下，空格在右下角。</text>
 						</view>
 						<view class="rule-item">
 							<text class="rule-title">🎮 操作方法</text>

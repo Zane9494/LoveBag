@@ -1,13 +1,13 @@
 /**
  * 华容道游戏逻辑类
- * 经典15数字拼图游戏
+ * 经典8数字拼图游戏
  */
 export class KlotskiGame {
 	constructor() {
-		this.size = 4; // 4x4网格
+		this.size = 3; // 3x3网格
 		this.puzzle = [];
 		this.moves = 0;
-		this.emptyIndex = 15; // 空格位置索引
+		this.emptyIndex = 8; // 空格位置索引
 		this.init();
 	}
 	
@@ -15,13 +15,13 @@ export class KlotskiGame {
 	 * 初始化游戏
 	 */
 	init() {
-		// 创建已完成状态的拼图 (1-15, 0代表空格)
+		// 创建已完成状态的拼图 (1-8, 0代表空格)
 		this.puzzle = [];
-		for (let i = 1; i < 16; i++) {
+		for (let i = 1; i < 9; i++) {
 			this.puzzle.push(i);
 		}
 		this.puzzle.push(0); // 空格在最后
-		this.emptyIndex = 15;
+		this.emptyIndex = 8;
 		this.moves = 0;
 		
 		// 打乱拼图
@@ -33,10 +33,10 @@ export class KlotskiGame {
 	 */
 	reset() {
 		this.moves = 0;
-		this.emptyIndex = 15;
+		this.emptyIndex = 8;
 		// 重新创建已完成状态
 		this.puzzle = [];
-		for (let i = 1; i < 16; i++) {
+		for (let i = 1; i < 9; i++) {
 			this.puzzle.push(i);
 		}
 		this.puzzle.push(0);
@@ -81,20 +81,20 @@ export class KlotskiGame {
 	 * 检查是否完成
 	 */
 	isComplete() {
-		// 检查1-15是否按顺序排列，空格在最后
-		for (let i = 0; i < 15; i++) {
+		// 检查1-8是否按顺序排列，空格在最后
+		for (let i = 0; i < 8; i++) {
 			if (this.puzzle[i] !== i + 1) {
 				return false;
 			}
 		}
-		return this.puzzle[15] === 0;
+		return this.puzzle[8] === 0;
 	}
 	
 	/**
 	 * 检查指定位置的方块是否可以移动
 	 */
 	canMove(index) {
-		if (index < 0 || index >= 16) return false;
+		if (index < 0 || index >= 9) return false;
 		if (this.puzzle[index] === 0) return false;
 		
 		return this.isAdjacent(index, this.emptyIndex);
@@ -152,7 +152,7 @@ export class KlotskiGame {
 	 */
 	getMovablePositions() {
 		const movable = [];
-		for (let i = 0; i < 16; i++) {
+		for (let i = 0; i < 9; i++) {
 			if (this.canMove(i)) {
 				movable.push(i);
 			}
@@ -193,7 +193,7 @@ export class KlotskiGame {
 	 */
 	getHint() {
 		// 简单的提示：找到应该在正确位置但不在的最小数字
-		for (let i = 0; i < 15; i++) {
+		for (let i = 0; i < 8; i++) {
 			if (this.puzzle[i] !== i + 1) {
 				// 找到这个数字应该在的位置
 				const targetValue = i + 1;
