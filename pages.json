@@ -55,6 +55,13 @@
 				"navigationBarTitleText": "贪吃蛇",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/game/klotski/klotski",
+			"style": {
+				"navigationBarTitleText": "华容道",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {

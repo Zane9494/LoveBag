@@ -148,8 +148,8 @@
 						icon: 'icon-game-controller-',
 						color: '#F39C12',
 						bgColor: 'linear-gradient(135deg, #FEF3E0 0%, #FDF0D5 100%)',
-						shadowColor: 'rgba(243, 156, 18, 0.3)'
-						// 无跳转链接 - 开发中
+						shadowColor: 'rgba(243, 156, 18, 0.3)',
+						path: '/pages/game/klotski/klotski' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'whack-mole',
