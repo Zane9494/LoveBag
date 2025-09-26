@@ -128,8 +128,8 @@
 						icon: 'icon-wode-shududaochu',
 						color: '#4ECDC4',
 						bgColor: 'linear-gradient(135deg, #E5F9F7 0%, #D6F5F2 100%)',
-						shadowColor: 'rgba(78, 205, 196, 0.3)'
-						// 无跳转链接 - 开发中
+						shadowColor: 'rgba(78, 205, 196, 0.3)',
+						path: '/pages/game/sudoku/sudoku' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'snake',
