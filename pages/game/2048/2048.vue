@@ -23,7 +23,7 @@
 				</view>
 				<view class="score-box best-score-box" :class="{ 'new-record-glow': isNewRecord }">
 					<text class="score-label">最高分</text>
-					<text class="score-value">{{ bestScore }}</text>
+					<text class="score-value">{{ bestScore || 0 }}</text>
 					<view class="new-record-badge" v-if="isNewRecord">
 						<text class="badge-text">新纪录!</text>
 					</view>
@@ -147,14 +147,14 @@
 			}
 		},
 		
-		onLoad() {
+		async onLoad() {
 			this.getSystemInfo()
-			this.loadBestScore() // 先加载最高分
+			await this.loadBestScore() // 确保最高分加载完成
 			this.initGame()
 		},
 		
-		onUnload() {
-			this.saveBestScore()
+		async onUnload() {
+			await this.saveBestScore()
 		},
 		
 		methods: {
@@ -172,21 +172,33 @@
 			},
 			
 			// 更新显示
-			updateDisplay() {
+			async updateDisplay() {
 				this.grid = this.game.getGrid()
 				this.score = this.game.getScore()
-				this.checkGameStatus()
+				
+				// 实时更新最高分显示（如果当前分数超过最高分）
+				if (this.score > this.bestScore) {
+					// 不立即更新bestScore，只在游戏结束时更新
+					// 但确保显示是正确的
+				}
+				
+				await this.checkGameStatus()
+				
+				// 强制更新视图确保分数显示正确
+				this.$nextTick(() => {
+					this.$forceUpdate()
+				})
 			},
 			
 			// 检查游戏状态
-			checkGameStatus() {
+			async checkGameStatus() {
 				if (this.game.hasWon() && this.gameStatus !== 'win') {
 					this.gameStatus = 'win'
-					this.checkAndShowNewRecord()
+					await this.checkAndShowNewRecord()
 					uni.vibrateShort({ type: 'heavy' })
 				} else if (this.game.isGameOver()) {
 					this.gameStatus = 'lose'
-					this.checkAndShowNewRecord()
+					await this.checkAndShowNewRecord()
 					uni.vibrateShort({ type: 'heavy' })
 				}
 			},
@@ -249,10 +261,10 @@
 			},
 			
 			// 处理移动
-			handleMove(direction) {
+			async handleMove(direction) {
 				const moved = this.game.move(direction)
 				if (moved) {
-					this.updateDisplay()
+					await this.updateDisplay()
 					uni.vibrateShort({ type: 'light' })
 				}
 			},
@@ -281,25 +293,47 @@
 			},
 			
 			// 加载最高分
-			loadBestScore() {
+			async loadBestScore() {
 				try {
-					const saved = uni.getStorageSync('game2048_best_score')
-					this.bestScore = (saved && typeof saved === 'number') ? saved : 0
+					// 使用异步方法获取存储数据
+					const saved = await new Promise((resolve, reject) => {
+						try {
+							const result = uni.getStorageSync('game2048_best_score')
+							resolve(result)
+						} catch (error) {
+							reject(error)
+						}
+					})
+					
+					// 确保数据类型正确并更新视图
+					if (saved !== null && saved !== undefined && typeof saved === 'number' && saved >= 0) {
+						this.bestScore = saved
+					} else {
+						this.bestScore = 0
+					}
+					
+					// 强制更新视图
+					this.$forceUpdate()
+					console.log('最高分加载成功:', this.bestScore)
 				} catch (e) {
 					console.log('加载最高分失败:', e)
 					this.bestScore = 0
+					this.$forceUpdate()
 				}
 			},
 			
 			// 检查并显示新纪录（仅在游戏结束时）
-			checkAndShowNewRecord() {
+			async checkAndShowNewRecord() {
 				if (this.score > this.bestScore) {
 					// 创造了新纪录
 					this.bestScore = this.score
 					this.isNewRecord = true
 					
+					// 立即更新视图
+					this.$forceUpdate()
+					
 					// 保存到本地存储
-					this.saveBestScoreToStorage()
+					await this.saveBestScoreToStorage()
 					
 					// 显示新纪录特效
 					this.showNewRecordEffect = true
@@ -318,25 +352,50 @@
 					}, 6000)
 				} else {
 					// 没有新纪录，保存当前分数（如果需要）
-					this.saveBestScore()
+					await this.saveBestScore()
 				}
 			},
 
 			// 保存最高分到本地存储
-			saveBestScoreToStorage() {
+			async saveBestScoreToStorage() {
 				try {
-					uni.setStorageSync('game2048_best_score', this.bestScore)
-					console.log('最高分已保存:', this.bestScore)
+					// 使用异步方法保存数据，确保保存成功
+					await new Promise((resolve, reject) => {
+						try {
+							uni.setStorageSync('game2048_best_score', this.bestScore)
+							resolve()
+						} catch (error) {
+							reject(error)
+						}
+					})
+					
+					// 验证保存是否成功
+					const verification = uni.getStorageSync('game2048_best_score')
+					if (verification === this.bestScore) {
+						console.log('最高分已保存并验证:', this.bestScore)
+					} else {
+						console.warn('最高分保存验证失败')
+						// 重试一次
+						uni.setStorageSync('game2048_best_score', this.bestScore)
+					}
 				} catch (e) {
 					console.log('保存最高分失败:', e)
+					// 重试保存
+					try {
+						uni.setStorageSync('game2048_best_score', this.bestScore)
+						console.log('重试保存最高分成功')
+					} catch (retryError) {
+						console.log('重试保存最高分也失败:', retryError)
+					}
 				}
 			},
 
 			// 保存最高分（兼容旧版本）
-			saveBestScore() {
+			async saveBestScore() {
 				if (this.score > this.bestScore) {
 					this.bestScore = this.score
-					this.saveBestScoreToStorage()
+					this.$forceUpdate()
+					await this.saveBestScoreToStorage()
 				}
 			},
 			
