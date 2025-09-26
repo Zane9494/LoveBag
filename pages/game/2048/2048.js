@@ -6,7 +6,7 @@ export class Game2048 {
 		this.size = 4 // 4x4网格
 		this.grid = []
 		this.score = 0
-		this.hasWon = false
+		this.won = false
 		this.init()
 	}
 
@@ -14,7 +14,7 @@ export class Game2048 {
 	init() {
 		this.grid = this.createEmptyGrid()
 		this.score = 0
-		this.hasWon = false
+		this.won = false
 		this.addRandomTile()
 		this.addRandomTile()
 	}
@@ -43,7 +43,7 @@ export class Game2048 {
 
 	// 是否获胜
 	hasWon() {
-		return this.hasWon
+		return this.won
 	}
 
 	// 添加随机方块
@@ -98,8 +98,8 @@ export class Game2048 {
 		if (hasMoved) {
 			this.addRandomTile()
 			// 检查是否达到2048
-			if (!this.hasWon && this.hasReached2048()) {
-				this.hasWon = true
+			if (!this.won && this.hasReached2048()) {
+				this.won = true
 			}
 		}
 
@@ -134,8 +134,13 @@ export class Game2048 {
 				}
 			}
 			const merged = this.mergeRow(column)
+			// 清空列
 			for (let i = 0; i < this.size; i++) {
-				this.grid[i][j] = merged[i] || 0
+				this.grid[i][j] = 0
+			}
+			// 从顶部填充合并后的值
+			for (let i = 0; i < merged.length; i++) {
+				this.grid[i][j] = merged[i]
 			}
 		}
 	}
@@ -143,15 +148,25 @@ export class Game2048 {
 	// 向下移动
 	moveDown() {
 		for (let j = 0; j < this.size; j++) {
+			// 从下到上收集非零元素
 			const column = []
-			for (let i = 0; i < this.size; i++) {
+			for (let i = this.size - 1; i >= 0; i--) {
 				if (this.grid[i][j] !== 0) {
 					column.push(this.grid[i][j])
 				}
 			}
-			const merged = this.mergeRow(column.reverse()).reverse()
+			
+			// 合并（从底部开始）
+			const merged = this.mergeRow(column)
+			
+			// 清空整列
 			for (let i = 0; i < this.size; i++) {
-				this.grid[i][j] = merged[i] || 0
+				this.grid[i][j] = 0
+			}
+			
+			// 从底部开始填充
+			for (let i = 0; i < merged.length; i++) {
+				this.grid[this.size - 1 - i][j] = merged[i]
 			}
 		}
 	}
