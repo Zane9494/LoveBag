@@ -25,13 +25,13 @@
 	justify-content: space-between;
 	align-items: center;
 	height: 88rpx;
-	padding: 0 40rpx;
+	padding: 0 20rpx;
 	position: relative;
 }
 
 .back-btn, .info-btn {
-	width: 56rpx;
-	height: 56rpx;
+	width: 88rpx;
+	height: 88rpx;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -45,8 +45,8 @@
 }
 
 .back-icon, .info-icon {
-	font-size: 28rpx;
-	color: #495057;
+	font-size: 40rpx;
+	color: #333;
 }
 
 .navbar-title {
@@ -271,11 +271,12 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 9999;
+	z-index: 99999;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	pointer-events: none;
+	background: rgba(0, 0, 0, 0.2);
 }
 
 .flash-overlay {
@@ -296,35 +297,64 @@
 .record-text-container {
 	position: relative;
 	text-align: center;
-	z-index: 10;
+	z-index: 100001;
+	background: rgba(255, 255, 255, 0.95);
+	padding: 40rpx 60rpx;
+	border-radius: 24rpx;
+	box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(10rpx);
+	border: 3rpx solid rgba(243, 156, 18, 0.5);
 }
 
 .record-main-text {
-	font-size: 72rpx;
+	font-size: 80rpx;
 	font-weight: bold;
 	color: #f39c12;
-	text-shadow: 0 4rpx 8rpx rgba(0,0,0,0.3);
+	text-shadow: 
+		0 4rpx 8rpx rgba(0,0,0,0.3),
+		0 0 20rpx rgba(243, 156, 18, 0.8),
+		0 0 40rpx rgba(243, 156, 18, 0.6);
 	display: block;
 	animation: recordBounce 1s ease-in-out infinite alternate;
+	letter-spacing: 2rpx;
 }
 
 .record-sub-text {
-	font-size: 32rpx;
+	font-size: 36rpx;
 	color: #e67e22;
-	text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.2);
+	text-shadow: 
+		0 2rpx 4rpx rgba(0,0,0,0.2),
+		0 0 10rpx rgba(230, 126, 34, 0.6);
 	display: block;
-	margin-top: 16rpx;
+	margin-top: 20rpx;
 	animation: recordFade 2s ease-in-out infinite alternate;
+	font-weight: 600;
 }
 
 @keyframes recordBounce {
-	0% { transform: scale(1) rotate(-2deg); }
-	100% { transform: scale(1.1) rotate(2deg); }
+	0% { 
+		transform: scale(0.9) rotate(-3deg);
+		filter: brightness(1);
+	}
+	50% {
+		transform: scale(1.15) rotate(0deg);
+		filter: brightness(1.2);
+	}
+	100% { 
+		transform: scale(1.05) rotate(3deg);
+		filter: brightness(1.1);
+	}
 }
 
 @keyframes recordFade {
-	0% { opacity: 0.8; }
-	100% { opacity: 1; }
+	0% { 
+		opacity: 0.7;
+		transform: translateY(10rpx);
+	}
+	100% { 
+		opacity: 1;
+		transform: translateY(-5rpx);
+	}
 }
 
 /* 粒子效果 */
@@ -332,6 +362,7 @@
 	position: absolute;
 	font-size: 48rpx;
 	animation: particleFloat 3s ease-in-out infinite;
+	z-index: 100000;
 }
 
 .particle-icon {
@@ -377,6 +408,7 @@
 	border: 4rpx solid rgba(243, 156, 18, 0.6);
 	border-radius: 50%;
 	animation: ringExpand 2s ease-out infinite;
+	z-index: 99998;
 }
 
 .light-ring-2 {

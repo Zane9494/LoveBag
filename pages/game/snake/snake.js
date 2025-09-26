@@ -5,8 +5,13 @@ export class SnakeGame {
 	constructor(canvasSize, ctx) {
 		this.canvasSize = canvasSize
 		this.ctx = ctx
-		this.gridSize = 20 // 网格大小
-		this.gridCount = Math.floor(canvasSize / this.gridSize) // 网格数量
+		
+		// 计算网格参数，确保能完整显示
+		this.gridCount = 15 // 固定15x15网格
+		this.gridSize = Math.floor(canvasSize / this.gridCount) // 根据网格数量计算网格大小
+		
+		// 使用传入的画布大小，确保完整显示
+		this.actualCanvasSize = canvasSize
 		
 		// 游戏状态
 		this.isRunning = false
@@ -48,7 +53,7 @@ export class SnakeGame {
 		this.direction = { x: 1, y: 0 }
 		this.nextDirection = { x: 1, y: 0 }
 		this.score = 0
-		this.speed = 150
+		this.speed = 150 // 重置为初始速度
 		
 		this.generateFood()
 	}
@@ -181,8 +186,8 @@ export class SnakeGame {
 			// 生成新食物
 			this.generateFood()
 			
-			// 增加速度
-			this.increaseSpeed()
+			// 根据蛇的长度调整速度
+			this.adjustSpeedByLength()
 		} else {
 			// 没吃到食物，移除尾部
 			this.snake.pop()
@@ -206,10 +211,21 @@ export class SnakeGame {
 		)
 	}
 	
-	// 增加游戏速度
-	increaseSpeed() {
-		if (this.speed > this.minSpeed) {
-			this.speed = Math.max(this.minSpeed, this.speed - 3)
+	// 根据蛇的长度调整速度
+	adjustSpeedByLength() {
+		const currentLength = this.snake.length
+		const initialLength = 3 // 初始长度
+		
+		// 根据蛇的长度计算速度
+		// 每吃一个果实（长度+1），速度加快
+		const foodEaten = currentLength - initialLength
+		const speedReduction = foodEaten * 8 // 每吃一个果实，速度减少8ms
+		
+		const newSpeed = Math.max(this.minSpeed, 150 - speedReduction) // 从初始速度150开始计算
+		
+		// 只有当速度真的需要改变时才重新设置定时器
+		if (newSpeed !== this.speed) {
+			this.speed = newSpeed
 			
 			// 重新设置定时器
 			if (this.gameLoop) {
@@ -218,6 +234,8 @@ export class SnakeGame {
 					this.update()
 				}, this.speed)
 			}
+			
+			console.log(`蛇长度: ${currentLength}, 吃了${foodEaten}个果实, 新速度: ${this.speed}ms`)
 		}
 	}
 	
@@ -371,5 +389,19 @@ export class SnakeGame {
 	// 检查游戏是否暂停
 	isGamePaused() {
 		return this.isPaused
+	}
+	
+	// 获取实际画布大小
+	getActualCanvasSize() {
+		return this.actualCanvasSize
+	}
+	
+	// 获取网格信息
+	getGridInfo() {
+		return {
+			gridSize: this.gridSize,
+			gridCount: this.gridCount,
+			actualCanvasSize: this.actualCanvasSize
+		}
 	}
 }

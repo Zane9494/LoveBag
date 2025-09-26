@@ -230,9 +230,16 @@
 				const systemInfo = uni.getSystemInfoSync()
 				this.statusBarHeight = systemInfo.statusBarHeight || 0
 				
-				// 根据屏幕大小调整画布尺寸
+				// 根据屏幕大小调整画布尺寸，确保能完整显示15x15网格
 				const screenWidth = systemInfo.screenWidth
-				this.canvasSize = Math.min(screenWidth - 40, 350)
+				const maxCanvasSize = Math.min(screenWidth - 60, 360) // 留更多边距
+				
+				// 确保画布大小能被15整除，这样每个网格都能完整显示
+				const gridCount = 15
+				const idealGridSize = Math.floor(maxCanvasSize / gridCount)
+				this.canvasSize = idealGridSize * gridCount
+				
+				console.log('屏幕宽度:', screenWidth, '计算的画布大小:', this.canvasSize, '网格大小:', idealGridSize)
 			},
 			
 			// 初始化画布
