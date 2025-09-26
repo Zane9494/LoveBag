@@ -217,7 +217,7 @@
 			
 			// 检查并显示新纪录（仅在游戏结束时）
 			checkAndShowNewRecord() {
-				if (this.bestMoves === 0 || this.moves < this.bestMoves) {
+				if (this.moves > 0 && (this.moves < this.bestMoves || this.bestMoves === 0)) {
 					// 创造了新纪录
 					console.log('检测到新纪录，当前步数:', this.moves, '原最少步数:', this.bestMoves)
 					
@@ -345,9 +345,9 @@
 					console.log('从存储读取的原始数据:', saved, '类型:', typeof saved)
 					
 					let newBestMoves = 0
-					if (saved !== null && saved !== undefined && saved !== '') {
+					if (saved !== null && saved !== undefined && saved !== '' && saved !== '0') {
 						const numValue = Number(saved)
-						if (!isNaN(numValue) && numValue >= 0) {
+						if (!isNaN(numValue) && numValue > 0) {
 							newBestMoves = Math.floor(numValue)
 						}
 					}
@@ -370,8 +370,10 @@
 			saveBestMovesToStorage() {
 				try {
 					const movesToSave = this._bestMovesData
-					uni.setStorageSync('klotski_best_moves', movesToSave)
-					console.log('最少步数已保存:', movesToSave)
+					if (movesToSave > 0) {
+						uni.setStorageSync('klotski_best_moves', movesToSave)
+						console.log('最少步数已保存:', movesToSave)
+					}
 				} catch (e) {
 					console.log('保存最少步数失败:', e)
 				}
@@ -379,7 +381,7 @@
 
 			// 保存最少步数（兼容旧版本）
 			saveBestMoves() {
-				if (this.bestMoves === 0 || this.moves < this.bestMoves) {
+				if (this.moves > 0 && (this.moves < this.bestMoves || this.bestMoves === 0)) {
 					console.log('保存最少步数，当前步数:', this.moves, '原最少步数:', this.bestMoves)
 					this._bestMovesData = this.moves
 					this.saveBestMovesToStorage()
@@ -410,6 +412,17 @@
 					console.log('最少步数存储已清除，_bestMovesData:', this._bestMovesData, 'bestMoves:', this.bestMoves)
 				} catch (e) {
 					console.log('清除最少步数失败:', e)
+				}
+			},
+			
+			// 测试方法：手动设置最少步数（仅用于调试）
+			setBestMoves(moves) {
+				try {
+					this._bestMovesData = moves
+					this.saveBestMovesToStorage()
+					console.log('手动设置最少步数:', moves, '当前显示:', this.bestMoves)
+				} catch (e) {
+					console.log('设置最少步数失败:', e)
 				}
 			}
 		}
