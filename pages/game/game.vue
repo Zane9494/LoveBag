@@ -118,8 +118,8 @@
 						icon: 'icon-i2048',
 						color: '#FF6B6B',
 						bgColor: 'linear-gradient(135deg, #FFE5E5 0%, #FFD6D6 100%)',
-						shadowColor: 'rgba(255, 107, 107, 0.3)'
-						// 无跳转链接 - 开发中
+						shadowColor: 'rgba(255, 107, 107, 0.3)',
+						path: '/pages/game/2048/2048' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'sudoku',
