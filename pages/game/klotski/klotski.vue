@@ -82,13 +82,17 @@
 				<view class="light-ring light-ring-2"></view>
 			</view>
 			
-			<!-- 操作按钮区域 -->
-			<view class="button-container">
-				<view class="game-btn shuffle-btn" @click="shufflePuzzle" v-if="!isComplete">
-					<text class="btn-text">打乱</text>
+			<!-- 重新开始按钮 -->
+			<view class="button-container" v-if="isComplete">
+				<view class="game-btn restart-btn" @click="restartGame">
+					<text class="btn-text">重新开始</text>
 				</view>
-				<view class="game-btn restart-btn" @click="restartGame" v-if="isComplete">
-					<text class="btn-text">重新挑战</text>
+			</view>
+			
+			<!-- 游戏进行中的操作按钮 -->
+			<view class="shuffle-container" v-if="!isComplete">
+				<view class="game-btn shuffle-btn" @click="shufflePuzzle">
+					<text class="btn-text">打乱</text>
 				</view>
 			</view>
 		</view>
