@@ -22,7 +22,7 @@
 				<view class="status-info">
 					<text class="status-title">欢迎来到游戏中心</text>
 					<text class="status-desc">享受有趣的游戏时光</text>
-					<text class="game-info">准备开始你的游戏之旅</text>
+					<text class="status-desc">准备开始你的游戏之旅</text>
 				</view>
 			</view>
 
