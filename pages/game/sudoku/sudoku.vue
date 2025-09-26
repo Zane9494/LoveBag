@@ -31,21 +31,21 @@
 				</view>
 			</view>
 
-			<!-- 控制按钮 -->
-			<view class="control-buttons">
+			<!-- 控制按钮 - 仅在游戏进行中显示 -->
+			<view class="control-buttons" v-if="!gameStatus">
 				<view class="control-btn" @click="newGame">
 					<text class="control-btn-text">新游戏</text>
 				</view>
-				<view class="control-btn" @click="pauseGame" v-if="!gameStatus">
+				<view class="control-btn" @click="pauseGame">
 					<text class="control-btn-text">{{ isPaused ? '继续' : '暂停' }}</text>
 				</view>
-				<view class="control-btn" @click="showHint" v-if="!gameStatus && !isPaused">
+				<view class="control-btn" @click="showHint" v-if="!isPaused">
 					<text class="control-btn-text">提示</text>
 				</view>
 			</view>
 
 			<!-- 数独网格 -->
-			<view class="sudoku-grid" v-if="!isPaused">
+			<view class="sudoku-grid" v-if="!isPaused || gameStatus">
 				<view class="grid-row" v-for="(row, rowIndex) in grid" :key="rowIndex">
 					<view 
 						class="grid-cell" 
@@ -62,7 +62,7 @@
 			</view>
 
 			<!-- 暂停界面 -->
-			<view class="pause-screen" v-if="isPaused">
+			<view class="pause-screen" v-if="isPaused && !gameStatus">
 				<text class="pause-title">游戏已暂停</text>
 				<text class="pause-subtitle">点击继续按钮恢复游戏</text>
 			</view>
@@ -115,7 +115,7 @@
 			<!-- 重新开始按钮 -->
 			<view class="restart-button-container" v-if="gameStatus">
 				<view class="restart-btn" @click="newGame">
-					<text class="restart-btn-text">重新开始</text>
+					<text class="restart-btn-text">新游戏</text>
 				</view>
 			</view>
 		</view>
