@@ -25,8 +25,9 @@ export class SnakeGame {
 		this.direction = { x: 1, y: 0 } // 初始方向：向右
 		this.nextDirection = { x: 1, y: 0 }
 		
-		// 食物状态
-		this.food = { x: 0, y: 0 }
+		// 食物状态 - 改为数组支持多个果子
+		this.foods = []
+		this.maxFoods = 3 // 最多同时显示3个果子
 		
 		// 分数
 		this.score = 0
@@ -55,31 +56,49 @@ export class SnakeGame {
 		this.score = 0
 		this.speed = 150 // 重置为初始速度
 		
-		this.generateFood()
+		this.generateFoods()
 	}
 	
-	// 生成食物
-	generateFood() {
+	// 生成所有食物
+	generateFoods() {
+		this.foods = []
+		for (let i = 0; i < this.maxFoods; i++) {
+			this.generateSingleFood()
+		}
+	}
+	
+	// 生成单个食物
+	generateSingleFood() {
 		let validPosition = false
 		let attempts = 0
 		const maxAttempts = 100
+		let newFood = null
 		
 		while (!validPosition && attempts < maxAttempts) {
-			this.food = {
+			newFood = {
 				x: Math.floor(Math.random() * this.gridCount),
 				y: Math.floor(Math.random() * this.gridCount)
 			}
 			
 			// 检查食物是否与蛇身重叠
-			validPosition = !this.snake.some(segment => 
-				segment.x === this.food.x && segment.y === this.food.y
+			const snakeCollision = this.snake.some(segment => 
+				segment.x === newFood.x && segment.y === newFood.y
 			)
 			
+			// 检查食物是否与其他食物重叠
+			const foodCollision = this.foods.some(food => 
+				food.x === newFood.x && food.y === newFood.y
+			)
+			
+			validPosition = !snakeCollision && !foodCollision
 			attempts++
 		}
 		
-		// 如果找不到有效位置，游戏结束（蛇太长了）
-		if (!validPosition) {
+		// 如果找到有效位置，添加食物
+		if (validPosition && newFood) {
+			this.foods.push(newFood)
+		} else if (this.foods.length === 0) {
+			// 如果一个食物都生成不了，游戏结束（蛇太长了）
 			this.gameOver()
 		}
 	}
@@ -176,16 +195,28 @@ export class SnakeGame {
 		this.snake.unshift(newHead)
 		
 		// 检查是否吃到食物
-		if (newHead.x === this.food.x && newHead.y === this.food.y) {
-			// 吃到食物，增加分数
-			this.score += 10
-			if (this.onScoreChange) {
-				this.onScoreChange(this.score)
+		let foodEaten = false
+		for (let i = this.foods.length - 1; i >= 0; i--) {
+			const food = this.foods[i]
+			if (newHead.x === food.x && newHead.y === food.y) {
+				// 吃到食物，增加分数
+				this.score += 10
+				if (this.onScoreChange) {
+					this.onScoreChange(this.score)
+				}
+				
+				// 移除被吃掉的食物
+				this.foods.splice(i, 1)
+				
+				// 生成新食物补充
+				this.generateSingleFood()
+				
+				foodEaten = true
+				break
 			}
-			
-			// 生成新食物
-			this.generateFood()
-			
+		}
+		
+		if (foodEaten) {
 			// 根据蛇的长度调整速度
 			this.adjustSpeedByLength()
 		} else {
@@ -344,26 +375,30 @@ export class SnakeGame {
 		})
 	}
 	
-	// 绘制食物
+	// 绘制所有食物
 	drawFood() {
-		const x = this.food.x * this.gridSize
-		const y = this.food.y * this.gridSize
-		
-		// 绘制食物（红色圆形）
-		this.ctx.fillStyle = '#e74c3c'
-		const centerX = x + this.gridSize / 2
-		const centerY = y + this.gridSize / 2
-		const radius = this.gridSize / 3
-		
-		this.ctx.beginPath()
-		this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
-		this.ctx.fill()
-		
-		// 添加高光效果
-		this.ctx.fillStyle = '#ffffff'
-		this.ctx.beginPath()
-		this.ctx.arc(centerX - radius/3, centerY - radius/3, radius/4, 0, 2 * Math.PI)
-		this.ctx.fill()
+		this.foods.forEach((food, index) => {
+			const x = food.x * this.gridSize
+			const y = food.y * this.gridSize
+			
+			// 为不同的食物使用不同颜色
+			const colors = ['#e74c3c', '#f39c12', '#9b59b6'] // 红色、橙色、紫色
+			this.ctx.fillStyle = colors[index % colors.length]
+			
+			const centerX = x + this.gridSize / 2
+			const centerY = y + this.gridSize / 2
+			const radius = this.gridSize / 3
+			
+			this.ctx.beginPath()
+			this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+			this.ctx.fill()
+			
+			// 添加高光效果
+			this.ctx.fillStyle = '#ffffff'
+			this.ctx.beginPath()
+			this.ctx.arc(centerX - radius/3, centerY - radius/3, radius/4, 0, 2 * Math.PI)
+			this.ctx.fill()
+		})
 	}
 	
 	// 获取当前分数

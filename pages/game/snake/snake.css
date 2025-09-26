@@ -122,6 +122,12 @@
 	}
 }
 
+/* 最高分外层包装器 */
+.best-score-wrapper {
+	flex: 1;
+	position: relative;
+}
+
 .new-record-badge {
 	position: absolute;
 	top: -8rpx;
@@ -132,6 +138,7 @@
 	border-radius: 20rpx;
 	font-size: 18rpx;
 	animation: bounce 1s ease-in-out infinite;
+	z-index: 10;
 }
 
 @keyframes bounce {

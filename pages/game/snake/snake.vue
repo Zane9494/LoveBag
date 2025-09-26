@@ -21,9 +21,11 @@
 					<text class="score-label">分数</text>
 					<text class="score-value">{{ score }}</text>
 				</view>
-				<view class="score-box best-score-box" :class="{ 'new-record-glow': isNewRecord }">
-					<text class="score-label">最高分</text>
-					<text class="score-value">{{ bestScore }}</text>
+				<view class="best-score-wrapper">
+					<view class="score-box best-score-box" :class="{ 'new-record-glow': isNewRecord }">
+						<text class="score-label">最高分</text>
+						<text class="score-value">{{ bestScore }}</text>
+					</view>
 					<view class="new-record-badge" v-if="isNewRecord">
 						<text class="badge-text">新纪录!</text>
 					</view>
