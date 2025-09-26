@@ -181,7 +181,7 @@ export class Game2048 {
 				// 合并相同的方块
 				const mergedValue = row[i] * 2
 				merged.push(mergedValue)
-				this.score += mergedValue
+				this.score += Math.floor(mergedValue / 2)
 				i += 2 // 跳过已合并的两个方块
 			} else {
 				merged.push(row[i])

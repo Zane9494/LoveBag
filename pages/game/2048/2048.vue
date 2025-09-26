@@ -21,11 +21,15 @@
 					<text class="score-label">分数</text>
 					<text class="score-value">{{ score }}</text>
 				</view>
-				<view class="score-box">
+				<view class="score-box best-score-box" :class="{ 'new-record-glow': isNewRecord }">
 					<text class="score-label">最高分</text>
 					<text class="score-value">{{ bestScore }}</text>
+					<view class="new-record-badge" v-if="isNewRecord">
+						<text class="badge-text">新纪录!</text>
+					</view>
 				</view>
 			</view>
+
 
 			<!-- 游戏说明 -->
 			<view class="game-info">
@@ -46,24 +50,37 @@
 				</view>
 			</view>
 
-			<!-- 游戏状态提示 -->
-			<view class="game-status" v-if="gameStatus">
-				<view class="status-overlay">
-					<view class="status-content">
-						<text class="status-title">{{ gameStatus === 'win' ? '恭喜获胜！' : '游戏结束' }}</text>
-						<text class="status-subtitle">{{ gameStatus === 'win' ? '你达到了2048！' : '没有可移动的方块了' }}</text>
-						<view class="status-buttons">
-							<view class="status-btn" @click="restartGame">
-								<text class="btn-text">重新开始</text>
-							</view>
-							<view class="status-btn secondary" @click="goBack" v-if="gameStatus === 'lose'">
-								<text class="btn-text">返回</text>
-							</view>
-							<view class="status-btn secondary" @click="continueGame" v-if="gameStatus === 'win'">
-								<text class="btn-text">继续游戏</text>
-							</view>
-						</view>
-					</view>
+			<!-- 游戏结束状态 -->
+			<view class="game-over-info" v-if="gameStatus">
+				<text class="game-over-title">{{ gameStatus === 'win' ? '🎉 恭喜获胜！' : '😔 游戏结束' }}</text>
+				<text class="game-over-subtitle">{{ gameStatus === 'win' ? '你达到了2048！' : '没有可移动的方块了' }}</text>
+			</view>
+			
+			<!-- 新纪录特效 -->
+			<view class="new-record-effect" v-if="showNewRecordEffect">
+				<!-- 闪光效果 -->
+				<view class="flash-overlay"></view>
+				
+				<!-- 主文本 -->
+				<view class="record-text-container">
+					<text class="record-main-text">🏆 新纪录 🏆</text>
+					<text class="record-sub-text">恭喜创造最高分记录！</text>
+				</view>
+				
+				<!-- 粒子效果 -->
+				<view class="particle" v-for="i in 12" :key="i" :class="`particle-${i}`">
+					<text class="particle-icon">✨</text>
+				</view>
+				
+				<!-- 光环效果 -->
+				<view class="light-ring"></view>
+				<view class="light-ring light-ring-2"></view>
+			</view>
+			
+			<!-- 重新开始按钮 -->
+			<view class="restart-button-container" v-if="gameStatus">
+				<view class="restart-btn" @click="restartGame">
+					<text class="restart-btn-text">重新开始</text>
 				</view>
 			</view>
 		</view>
@@ -124,7 +141,9 @@
 				touchStartX: 0,
 				touchStartY: 0,
 				minSwipeDistance: 50,
-				showInfoModal: false // 游戏说明弹窗可见性
+				showInfoModal: false, // 游戏说明弹窗可见性
+				isNewRecord: false, // 是否创造了新记录
+				showNewRecordEffect: false // 显示新纪录特效
 			}
 		},
 		
@@ -163,11 +182,11 @@
 			checkGameStatus() {
 				if (this.game.hasWon() && this.gameStatus !== 'win') {
 					this.gameStatus = 'win'
-					this.saveBestScore()
+					this.checkAndShowNewRecord()
 					uni.vibrateShort({ type: 'heavy' })
 				} else if (this.game.isGameOver()) {
 					this.gameStatus = 'lose'
-					this.saveBestScore()
+					this.checkAndShowNewRecord()
 					uni.vibrateShort({ type: 'heavy' })
 				}
 			},
@@ -240,7 +259,14 @@
 			
 			// 重新开始游戏
 			restartGame() {
+				// 重置特效状态
+				this.isNewRecord = false
+				this.showNewRecordEffect = false
+				
+				// 重新初始化游戏
 				this.initGame()
+				
+				// 显示提示
 				uni.showToast({
 					title: '游戏重新开始',
 					icon: 'none',
@@ -248,10 +274,6 @@
 				})
 			},
 			
-			// 继续游戏
-			continueGame() {
-				this.gameStatus = null
-			},
 			
 			// 返回上一页
 			goBack() {
@@ -269,15 +291,52 @@
 				}
 			},
 			
-			// 保存最高分
+			// 检查并显示新纪录（仅在游戏结束时）
+			checkAndShowNewRecord() {
+				if (this.score > this.bestScore) {
+					// 创造了新纪录
+					this.bestScore = this.score
+					this.isNewRecord = true
+					
+					// 保存到本地存储
+					this.saveBestScoreToStorage()
+					
+					// 显示新纪录特效
+					this.showNewRecordEffect = true
+					
+					// 震动反馈
+					uni.vibrateShort({ type: 'heavy' })
+					
+					// 4秒后隐藏特效
+					setTimeout(() => {
+						this.showNewRecordEffect = false
+					}, 4000)
+					
+					// 6秒后隐藏新纪录标识
+					setTimeout(() => {
+						this.isNewRecord = false
+					}, 6000)
+				} else {
+					// 没有新纪录，保存当前分数（如果需要）
+					this.saveBestScore()
+				}
+			},
+
+			// 保存最高分到本地存储
+			saveBestScoreToStorage() {
+				try {
+					uni.setStorageSync('game2048_best_score', this.bestScore)
+					console.log('最高分已保存:', this.bestScore)
+				} catch (e) {
+					console.log('保存最高分失败:', e)
+				}
+			},
+
+			// 保存最高分（兼容旧版本）
 			saveBestScore() {
 				if (this.score > this.bestScore) {
 					this.bestScore = this.score
-					try {
-						uni.setStorageSync('game2048_best_score', this.bestScore)
-					} catch (e) {
-						console.log('保存最高分失败:', e)
-					}
+					this.saveBestScoreToStorage()
 				}
 			},
 			
