@@ -68,95 +68,88 @@
 	align-items: center;
 }
 
-/* 分数区域 */
+/* 分数区域 - 完全按照2048游戏的样式 */
 .score-container {
 	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	width: 100%;
-	max-width: 600rpx;
+	gap: 24rpx;
 	margin-bottom: 20rpx;
-	gap: 20rpx;
+	width: 100%;
+	justify-content: center;
+	max-width: 600rpx;
 }
 
 .score-box {
+	flex: 1;
 	background: rgba(255, 255, 255, 0.9);
 	border-radius: 16rpx;
-	padding: 16rpx 24rpx;
+	padding: 24rpx;
 	text-align: center;
 	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(10rpx);
-	border: 2rpx solid rgba(255, 255, 255, 0.3);
-	flex: 1;
-	transition: all 0.3s ease;
-}
-
-.best-score-wrapper {
 	position: relative;
-	flex: 1;
+	overflow: hidden;
 }
 
 .best-score-box {
-	transition: all 0.3s ease;
-}
-
-.new-record-glow {
-	background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
-	border-color: #FFD700 !important;
-	box-shadow: 0 8rpx 24rpx rgba(255, 215, 0, 0.4) !important;
-	animation: glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-	0% {
-		box-shadow: 0 8rpx 24rpx rgba(255, 215, 0, 0.4);
-	}
-	100% {
-		box-shadow: 0 12rpx 32rpx rgba(255, 215, 0, 0.6);
-	}
-}
-
-.new-record-badge {
-	position: absolute;
-	top: -12rpx;
-	right: -12rpx;
-	background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
-	color: white;
-	padding: 6rpx 12rpx;
-	border-radius: 20rpx;
-	font-size: 20rpx;
-	font-weight: bold;
-	box-shadow: 0 4rpx 8rpx rgba(255, 107, 107, 0.3);
-	animation: bounce 1s ease-in-out infinite alternate;
-}
-
-@keyframes bounce {
-	0% {
-		transform: translateY(0);
-	}
-	100% {
-		transform: translateY(-4rpx);
-	}
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .score-label {
-	font-size: 22rpx;
-	color: #666;
+	font-size: 24rpx;
+	opacity: 0.9;
 	display: block;
 	margin-bottom: 8rpx;
-	font-weight: 500;
 }
 
 .score-value {
 	font-size: 36rpx;
-	color: #2c3e50;
 	font-weight: bold;
 	display: block;
 }
 
-.new-record-glow .score-label,
-.new-record-glow .score-value {
-	color: white !important;
+/* 新纪录发光效果 */
+.new-record-glow {
+	animation: recordGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes recordGlow {
+	0% {
+		box-shadow: 0 8rpx 24rpx rgba(243, 156, 18, 0.3);
+		transform: scale(1);
+	}
+	100% {
+		box-shadow: 0 12rpx 32rpx rgba(243, 156, 18, 0.6), 0 0 20rpx rgba(243, 156, 18, 0.4);
+		transform: scale(1.02);
+	}
+}
+
+/* 最高分外层包装器 */
+.best-score-wrapper {
+	flex: 1;
+	position: relative;
+}
+
+/* 新纪录徽章 */
+.new-record-badge {
+	position: absolute;
+	top: -8rpx;
+	right: -8rpx;
+	background: #e74c3c;
+	color: white;
+	padding: 4rpx 12rpx;
+	border-radius: 20rpx;
+	font-size: 18rpx;
+	animation: bounce 1s ease-in-out infinite;
+	z-index: 10;
+}
+
+@keyframes bounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4rpx); }
+}
+
+.badge-text {
+	font-weight: bold;
 }
 
 /* 游戏说明 */
@@ -254,6 +247,104 @@
 .start-btn-text, .restart-btn-text {
 	font-size: 28rpx;
 	font-weight: 600;
+}
+
+/* 倒计时遮罩层 */
+.countdown-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 20;
+	pointer-events: none;
+	animation: countdownAppear 0.5s ease-out;
+}
+
+@keyframes countdownAppear {
+	0% {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.countdown-content {
+	text-align: center;
+}
+
+.countdown-number {
+	font-size: 160rpx;
+	font-weight: 900;
+	color: #FFD700;
+	text-shadow: 
+		0 0 30rpx rgba(255, 215, 0, 1),
+		0 0 60rpx rgba(255, 215, 0, 0.8),
+		0 0 90rpx rgba(255, 215, 0, 0.6),
+		0 6rpx 12rpx rgba(0, 0, 0, 0.8),
+		0 0 10rpx rgba(255, 255, 255, 0.3);
+	animation: countdownPulse 1s ease-in-out;
+	display: block;
+	-webkit-text-stroke: 2px rgba(255, 165, 0, 0.8);
+}
+
+@keyframes countdownPulse {
+	0% {
+		transform: scale(0.3);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1.2);
+		opacity: 1;
+	}
+	50% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1.1);
+		opacity: 0.9;
+	}
+}
+
+/* GO! 文字特殊样式 */
+.countdown-go {
+	color: #FF6B6B !important;
+	font-size: 140rpx !important;
+	text-shadow: 
+		0 0 30rpx rgba(255, 107, 107, 1),
+		0 0 60rpx rgba(255, 107, 107, 0.8),
+		0 0 90rpx rgba(255, 107, 107, 0.6),
+		0 6rpx 12rpx rgba(0, 0, 0, 0.8),
+		0 0 10rpx rgba(255, 255, 255, 0.3) !important;
+	animation: goAnimation 1s ease-out !important;
+	-webkit-text-stroke: 2px rgba(255, 69, 69, 0.8) !important;
+}
+
+@keyframes goAnimation {
+	0% {
+		transform: scale(0.5) rotate(-10deg);
+		opacity: 0;
+	}
+	30% {
+		transform: scale(1.3) rotate(5deg);
+		opacity: 1;
+	}
+	70% {
+		transform: scale(1.1) rotate(-2deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1.2) rotate(0deg);
+		opacity: 1;
+	}
 }
 
 /* 新纪录特效 */

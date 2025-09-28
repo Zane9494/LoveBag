@@ -114,6 +114,17 @@ export class FlappyBirdGame {
 		}
 	}
 	
+	// 渲染初始状态（用于倒计时期间显示）
+	renderInitialState() {
+		// 确保有初始的管道
+		if (this.pipes.length === 0) {
+			this.generatePipe()
+		}
+		
+		// 渲染游戏画面但不更新游戏逻辑
+		this.render()
+	}
+	
 	// 小鸟跳跃
 	flap() {
 		if (this.isRunning) {

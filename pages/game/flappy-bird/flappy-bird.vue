@@ -47,7 +47,7 @@
 				></canvas>
 				
 				<!-- 游戏开始/结束遮罩 -->
-				<view class="game-overlay" v-if="gameStatus !== 'playing'">
+				<view class="game-overlay" v-if="gameStatus !== 'playing' && gameStatus !== 'countdown'">
 					<view class="overlay-content">
 						<view v-if="gameStatus === 'ready'">
 							<text class="overlay-title">🐦 飞翔的小鸟</text>
@@ -64,6 +64,15 @@
 								<text class="restart-btn-text">重新开始</text>
 							</view>
 						</view>
+					</view>
+				</view>
+				
+				<!-- 倒计时遮罩 -->
+				<view class="countdown-overlay" v-if="showCountdown">
+					<view class="countdown-content">
+						<text class="countdown-number" :class="{'countdown-go': countdownNumber === 0}">
+							{{ countdownNumber === 0 ? 'GO!' : countdownNumber }}
+						</text>
 					</view>
 				</view>
 			</view>
@@ -140,19 +149,22 @@
 	import { FlappyBirdGame } from './flappy-bird.js'
 
 	export default {
-		data() {
-			return {
-				statusBarHeight: 0,
-				game: null,
-				score: 0,
-				// 专门的最高分存储变量
-				_bestScoreData: 0, // 内部存储最高分的变量
-				gameStatus: 'ready', // 'ready', 'playing', 'gameOver'
-				showInfoModal: false, // 游戏说明弹窗可见性
-				isNewRecord: false, // 是否创造了新记录
-				showNewRecordEffect: false // 显示新纪录特效
-			}
-		},
+			data() {
+				return {
+					statusBarHeight: 0,
+					game: null,
+					score: 0,
+					// 专门的最高分存储变量
+					_bestScoreData: 0, // 内部存储最高分的变量
+					gameStatus: 'ready', // 'ready', 'playing', 'gameOver', 'countdown'
+					showInfoModal: false, // 游戏说明弹窗可见性
+					isNewRecord: false, // 是否创造了新记录
+					showNewRecordEffect: false, // 显示新纪录特效
+					countdownNumber: 3, // 倒计时数字
+					showCountdown: false, // 显示倒计时
+					countdownTimer: null // 倒计时定时器
+				}
+			},
 		
 		computed: {
 			// 最高分的计算属性 - 基于专门的存储变量
@@ -162,22 +174,23 @@
 		},
 		
 		onLoad() {
-			console.log('=== 飞翔的小鸟页面onLoad开始 ===')
+			console.log('=== 页面onLoad开始 ===')
 			this.getSystemInfo()
 			this.loadBestScore() // 同步加载最高分
 			this.initGame()
-			console.log('=== 飞翔的小鸟页面onLoad完成，bestScore:', this.bestScore, '===')
+			console.log('=== 页面onLoad完成，bestScore:', this.bestScore, '===')
 		},
 		
 		onShow() {
-			console.log('=== 飞翔的小鸟页面onShow开始 ===')
+			console.log('=== 页面onShow开始 ===')
 			// 每次显示页面时重新加载最高分，确保显示正确
 			this.loadBestScore()
-			console.log('=== 飞翔的小鸟页面onShow完成，_bestScoreData:', this._bestScoreData, 'bestScore:', this.bestScore, '===')
+			console.log('=== 页面onShow完成，_bestScoreData:', this._bestScoreData, 'bestScore:', this.bestScore, '===')
 		},
 		
 		onUnload() {
 			this.saveBestScore()
+			this.clearCountdownTimer()
 			if (this.game) {
 				this.game.destroy()
 			}
@@ -188,6 +201,8 @@
 			if (this.game && this.gameStatus === 'playing') {
 				this.game.pause()
 			}
+			// 清理倒计时
+			this.clearCountdownTimer()
 		},
 		
 		methods: {
@@ -212,13 +227,15 @@
 				})
 				this.gameStatus = 'ready'
 				this.score = 0
+				// 立即渲染一帧游戏画面，显示初始状态
+				this.game.renderInitialState()
 			},
 			
 			// 开始游戏
 			startGame() {
 				if (this.game) {
-					this.gameStatus = 'playing'
-					this.game.start()
+					// 开始倒计时
+					this.startCountdown()
 				}
 			},
 			
@@ -230,14 +247,55 @@
 				
 				// 重新初始化游戏
 				this.initGame()
-				this.startGame()
 				
-				// 显示提示
-				uni.showToast({
-					title: '游戏重新开始',
-					icon: 'none',
-					duration: 1500
-				})
+				// 开始倒计时
+				this.startCountdown()
+			},
+			
+			// 开始倒计时
+			startCountdown() {
+				// 清理之前的计时器
+				this.clearCountdownTimer()
+				
+				this.gameStatus = 'countdown'
+				this.showCountdown = true
+				this.countdownNumber = 3
+				
+				// 在倒计时期间保持游戏画面渲染，但不启动游戏逻辑
+				this.game.renderInitialState()
+				
+				// 倒计时动画
+				this.countdownTimer = setInterval(() => {
+					// 震动反馈
+					uni.vibrateShort({ type: 'light' })
+					
+					if (this.countdownNumber > 1) {
+						this.countdownNumber--
+					} else if (this.countdownNumber === 1) {
+						this.countdownNumber = 0 // 显示 GO!
+					} else {
+						// 倒计时结束，开始游戏
+						this.clearCountdownTimer()
+						this.showCountdown = false
+						this.gameStatus = 'playing'
+						
+						// 延迟一点再开始游戏，让GO!动画完成
+						setTimeout(() => {
+							this.game.start()
+						}, 200)
+						
+						// 最后一次震动
+						uni.vibrateShort({ type: 'heavy' })
+					}
+				}, 1000) // 每秒更新一次
+			},
+			
+			// 清理倒计时定时器
+			clearCountdownTimer() {
+				if (this.countdownTimer) {
+					clearInterval(this.countdownTimer)
+					this.countdownTimer = null
+				}
 			},
 			
 			// 处理点击事件
@@ -248,6 +306,7 @@
 					this.game.flap()
 					uni.vibrateShort({ type: 'light' })
 				}
+				// 倒计时期间不响应点击
 			},
 			
 			// 返回上一页
@@ -258,7 +317,7 @@
 			// 加载最高分 - 使用专门的存储变量
 			loadBestScore() {
 				try {
-					console.log('开始加载飞翔的小鸟最高分...')
+					console.log('开始加载最高分...')
 					const saved = uni.getStorageSync('flappybird_best_score')
 					console.log('从存储读取的原始数据:', saved, '类型:', typeof saved)
 					
@@ -279,7 +338,7 @@
 					console.log('计算属性bestScore:', this.bestScore)
 					
 				} catch (e) {
-					console.log('加载飞翔的小鸟最高分失败:', e)
+					console.log('加载最高分失败:', e)
 					this._bestScoreData = 0
 				}
 			},
@@ -322,19 +381,19 @@
 				try {
 					const scoreToSave = this._bestScoreData
 					uni.setStorageSync('flappybird_best_score', scoreToSave)
-					console.log('飞翔的小鸟最高分已保存:', scoreToSave)
+					console.log('最高分已保存:', scoreToSave)
 				} catch (e) {
-					console.log('保存飞翔的小鸟最高分失败:', e)
+					console.log('保存最高分失败:', e)
 				}
 			},
 
 			// 保存最高分（兼容旧版本）
 			saveBestScore() {
 				if (this.score > this.bestScore) {
-					console.log('保存飞翔的小鸟最高分，当前分数:', this.score, '原最高分:', this.bestScore)
+					console.log('保存最高分，当前分数:', this.score, '原最高分:', this.bestScore)
 					this._bestScoreData = this.score
 					this.saveBestScoreToStorage()
-					console.log('保存飞翔的小鸟最高分完成，新最高分:', this.bestScore)
+					console.log('保存最高分完成，新最高分:', this.bestScore)
 				}
 			},
 			
@@ -346,6 +405,17 @@
 			// 关闭游戏说明弹窗
 			closeInfoModal() {
 				this.showInfoModal = false
+			},
+			
+			// 测试方法：清除最高分存储（仅用于调试）
+			clearBestScore() {
+				try {
+					uni.removeStorageSync('flappybird_best_score')
+					this._bestScoreData = 0
+					console.log('最高分存储已清除，_bestScoreData:', this._bestScoreData, 'bestScore:', this.bestScore)
+				} catch (e) {
+					console.log('清除最高分失败:', e)
+				}
 			}
 		}
 	}
