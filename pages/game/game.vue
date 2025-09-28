@@ -168,8 +168,8 @@
 						icon: 'icon-ghost',
 						color: '#E74C3C',
 						bgColor: 'linear-gradient(135deg, #FDEDEC 0%, #FADBD8 100%)',
-						shadowColor: 'rgba(231, 76, 60, 0.3)'
-						// 无跳转链接 - 开发中
+						shadowColor: 'rgba(231, 76, 60, 0.3)',
+						path: '/pages/game/flappy-bird/flappy-bird' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'jump-jump',
