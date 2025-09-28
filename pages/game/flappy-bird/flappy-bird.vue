@@ -118,12 +118,10 @@
 							<text class="rule-title">🎮 操作方法</text>
 							<text class="rule-desc">• 点击屏幕让小鸟向上飞</text>
 							<text class="rule-desc">• 松开手指小鸟会下降</text>
-							<text class="rule-desc">• 控制好节奏穿过管道间隙</text>
 						</view>
 						<view class="rule-item">
 							<text class="rule-title">🏆 计分规则</text>
 							<text class="rule-desc">• 成功穿过一对管道得1分</text>
-							<text class="rule-desc">• 连续穿过更多管道挑战高分</text>
 							<text class="rule-desc">• 挑战你的最高分记录！</text>
 						</view>
 						<view class="rule-item">
@@ -219,11 +217,10 @@
 					onScoreUpdate: (score) => {
 						this.score = score
 					},
-					onGameOver: () => {
-						this.gameStatus = 'gameOver'
-						this.checkAndShowNewRecord()
-						uni.vibrateShort({ type: 'heavy' })
-					}
+				onGameOver: () => {
+					this.handleGameOver()
+					uni.vibrateShort({ type: 'heavy' })
+				}
 				})
 				this.gameStatus = 'ready'
 				this.score = 0
@@ -343,6 +340,21 @@
 				}
 			},
 			
+			// 处理游戏结束
+			handleGameOver() {
+				if (this.score > this.bestScore) {
+					// 创造了新纪录，先显示新纪录特效
+					this.checkAndShowNewRecord()
+					// 延迟显示游戏结束界面，让新纪录特效先播放
+					setTimeout(() => {
+						this.gameStatus = 'gameOver'
+					}, 4500) // 新纪录特效播放4秒，再延迟0.5秒显示游戏结束
+				} else {
+					// 没有新纪录，直接显示游戏结束
+					this.gameStatus = 'gameOver'
+				}
+			},
+
 			// 检查并显示新纪录（仅在游戏结束时）
 			checkAndShowNewRecord() {
 				if (this.score > this.bestScore) {
