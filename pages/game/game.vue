@@ -158,8 +158,8 @@
 						icon: 'icon-dadishu',
 						color: '#8E44AD',
 						bgColor: 'linear-gradient(135deg, #F4ECFF 0%, #EEDDFF 100%)',
-						shadowColor: 'rgba(142, 68, 173, 0.3)'
-						// 无跳转链接 - 开发中
+						shadowColor: 'rgba(142, 68, 173, 0.3)',
+						path: '/pages/game/whack-mole/whack-mole' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'flappy-bird',

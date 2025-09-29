@@ -69,6 +69,13 @@
 				"navigationBarTitleText": "飞翔的小鸟",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/game/whack-mole/whack-mole",
+			"style": {
+				"navigationBarTitleText": "打地鼠",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {
