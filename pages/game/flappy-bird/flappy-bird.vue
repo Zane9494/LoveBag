@@ -68,11 +68,12 @@
 				</view>
 				
 				<!-- 倒计时遮罩 -->
-				<view class="countdown-overlay" v-if="showCountdown">
+				<view class="countdown-overlay" v-if="showCountdown" @click="skipCountdown">
 					<view class="countdown-content">
 						<text class="countdown-number" :class="{'countdown-go': countdownNumber === 0}">
 							{{ countdownNumber === 0 ? 'GO!' : countdownNumber }}
 						</text>
+						<text class="countdown-tip">点击屏幕跳过倒计时</text>
 					</view>
 				</view>
 			</view>
@@ -295,15 +296,37 @@
 				}
 			},
 			
+			// 跳过倒计时直接开始游戏
+			skipCountdown() {
+				// 清理倒计时定时器
+				this.clearCountdownTimer()
+				
+				// 隐藏倒计时遮罩
+				this.showCountdown = false
+				
+				// 设置游戏状态为进行中
+				this.gameStatus = 'playing'
+				
+				// 立即开始游戏
+				if (this.game) {
+					this.game.start()
+				}
+				
+				// 震动反馈
+				uni.vibrateShort({ type: 'heavy' })
+			},
+			
 			// 处理点击事件
 			handleTap() {
 				if (this.gameStatus === 'ready') {
 					this.startGame()
+				} else if (this.gameStatus === 'countdown') {
+					// 倒计时期间点击可以跳过倒计时直接开始游戏
+					this.skipCountdown()
 				} else if (this.gameStatus === 'playing' && this.game) {
 					this.game.flap()
 					uni.vibrateShort({ type: 'light' })
 				}
-				// 倒计时期间不响应点击
 			},
 			
 			// 返回上一页
