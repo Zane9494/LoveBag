@@ -72,93 +72,88 @@
 	min-height: calc(100vh - 88rpx);
 }
 
-/* 分数区域 */
+/* 分数区域 - 完全按照2048游戏的样式 */
 .score-container {
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	gap: 24rpx;
+	margin-bottom: 20rpx;
 	width: 100%;
+	justify-content: center;
 	max-width: 600rpx;
-	margin-bottom: 30rpx;
-	gap: 20rpx;
 }
 
 .score-box {
-	background: rgba(255, 255, 255, 0.95);
+	flex: 1;
+	background: rgba(255, 255, 255, 0.9);
 	border-radius: 16rpx;
-	padding: 20rpx 24rpx;
+	padding: 24rpx;
 	text-align: center;
-	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
-	flex: 1;
-	backdrop-filter: blur(10rpx);
-	border: 2rpx solid rgba(255, 255, 255, 0.3);
-}
-
-.score-label {
-	font-size: 24rpx;
-	color: #6c757d;
-	display: block;
-	margin-bottom: 8rpx;
-	font-weight: 500;
-}
-
-.score-value {
-	font-size: 36rpx;
-	color: #2c3e50;
-	font-weight: 700;
-	display: block;
-}
-
-.best-score-wrapper {
-	position: relative;
-	flex: 1;
-}
-
-.best-score-box {
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 	position: relative;
 	overflow: hidden;
 }
 
+.best-score-box {
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.score-label {
+	font-size: 24rpx;
+	opacity: 0.9;
+	display: block;
+	margin-bottom: 8rpx;
+}
+
+.score-value {
+	font-size: 36rpx;
+	font-weight: bold;
+	display: block;
+}
+
+/* 新纪录发光效果 */
 .new-record-glow {
-	background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
-	border: 2rpx solid #ffd700 !important;
 	animation: recordGlow 2s ease-in-out infinite alternate;
 }
 
 @keyframes recordGlow {
 	0% {
-		box-shadow: 0 8rpx 32rpx rgba(255, 215, 0, 0.3);
+		box-shadow: 0 8rpx 24rpx rgba(243, 156, 18, 0.3);
+		transform: scale(1);
 	}
 	100% {
-		box-shadow: 0 8rpx 32rpx rgba(255, 215, 0, 0.6);
+		box-shadow: 0 12rpx 32rpx rgba(243, 156, 18, 0.6), 0 0 20rpx rgba(243, 156, 18, 0.4);
+		transform: scale(1.02);
 	}
 }
 
+/* 最高分外层包装器 */
+.best-score-wrapper {
+	flex: 1;
+	position: relative;
+}
+
+/* 新纪录徽章 */
 .new-record-badge {
 	position: absolute;
 	top: -8rpx;
 	right: -8rpx;
-	background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+	background: #e74c3c;
 	color: white;
-	font-size: 18rpx;
 	padding: 4rpx 12rpx;
 	border-radius: 20rpx;
-	font-weight: 600;
-	animation: badgeBounce 1s ease-in-out infinite alternate;
-	box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.4);
+	font-size: 18rpx;
+	animation: bounce 1s ease-in-out infinite;
+	z-index: 10;
 }
 
-@keyframes badgeBounce {
-	0% {
-		transform: scale(1);
-	}
-	100% {
-		transform: scale(1.1);
-	}
+@keyframes bounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4rpx); }
 }
 
 .badge-text {
-	font-size: 18rpx;
+	font-weight: bold;
 }
 
 /* 游戏信息区域 */
