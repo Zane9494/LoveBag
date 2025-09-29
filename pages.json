@@ -77,13 +77,6 @@
 				"navigationStyle": "custom",
 				"disableScroll": true
 			}
-		},
-		{
-			"path": "pages/game/jump-jump/jump-jump",
-			"style": {
-				"navigationBarTitleText": "跳一跳",
-				"navigationStyle": "custom"
-			}
 		}
 	],
 	"globalStyle": {
