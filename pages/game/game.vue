@@ -178,8 +178,8 @@
 						icon: 'icon-pawn',
 						color: '#FF9FF3',
 						bgColor: 'linear-gradient(135deg, #FFF0FE 0%, #FFE8FD 100%)',
-						shadowColor: 'rgba(255, 159, 243, 0.3)'
-						// 无跳转链接 - 开发中
+						shadowColor: 'rgba(255, 159, 243, 0.3)',
+						path: '/pages/game/jump-jump/jump-jump' // 已完成 - 有跳转链接
 					},
 					{
 						id: 'breakout',
