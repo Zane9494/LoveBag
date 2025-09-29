@@ -77,10 +77,7 @@ export class WhackMoleGame {
 	spawnMole() {
 		if (!this.gameRunning) return
 		
-		// 隐藏当前地鼠（如果有）
-		this.hideCurrentMole()
-		
-		// 随机选择一个洞穴
+		// 随机选择一个没有地鼠的洞穴
 		const availableHoles = this.holes
 			.map((hole, index) => ({ hole, index }))
 			.filter(item => !item.hole.hasMole)
@@ -116,12 +113,6 @@ export class WhackMoleGame {
 		}, 200)
 	}
 	
-	// 隐藏当前地鼠
-	hideCurrentMole() {
-		if (this.currentMoleIndex >= 0) {
-			this.hideMole(this.currentMoleIndex)
-		}
-	}
 	
 	// 隐藏指定地鼠
 	hideMole(index) {
@@ -292,3 +283,4 @@ export class WhackMoleGame {
 		}
 	}
 }
+

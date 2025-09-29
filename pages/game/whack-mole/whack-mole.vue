@@ -194,18 +194,18 @@
 		},
 		
 		onLoad() {
-			console.log('=== 打地鼠页面onLoad开始 ===')
+			console.log('=== 页面onLoad开始 ===')
 			this.getSystemInfo()
 			this.loadBestScore() // 同步加载最高分
 			this.initGame()
-			console.log('=== 打地鼠页面onLoad完成，bestScore:', this.bestScore, '===')
+			console.log('=== 页面onLoad完成，bestScore:', this.bestScore, '===')
 		},
 		
 		onShow() {
-			console.log('=== 打地鼠页面onShow开始 ===')
+			console.log('=== 页面onShow开始 ===')
 			// 每次显示页面时重新加载最高分，确保显示正确
 			this.loadBestScore()
-			console.log('=== 打地鼠页面onShow完成，_bestScoreData:', this._bestScoreData, 'bestScore:', this.bestScore, '===')
+			console.log('=== 页面onShow完成，_bestScoreData:', this._bestScoreData, 'bestScore:', this.bestScore, '===')
 		},
 		
 		onUnload() {
@@ -327,7 +327,7 @@
 			// 加载最高分 - 使用专门的存储变量
 			loadBestScore() {
 				try {
-					console.log('开始加载打地鼠最高分...')
+					console.log('开始加载最高分...')
 					const saved = uni.getStorageSync('whack_mole_best_score')
 					console.log('从存储读取的原始数据:', saved, '类型:', typeof saved)
 					
@@ -348,7 +348,7 @@
 					console.log('计算属性bestScore:', this.bestScore)
 					
 				} catch (e) {
-					console.log('加载打地鼠最高分失败:', e)
+					console.log('加载最高分失败:', e)
 					this._bestScoreData = 0
 				}
 			},
@@ -357,7 +357,7 @@
 			checkAndShowNewRecord() {
 				if (this.score > this.bestScore) {
 					// 创造了新纪录
-					console.log('检测到打地鼠新纪录，当前分数:', this.score, '原最高分:', this.bestScore)
+					console.log('检测到新纪录，当前分数:', this.score, '原最高分:', this.bestScore)
 					
 					// 直接更新专门的存储变量
 					this._bestScoreData = this.score
@@ -391,19 +391,19 @@
 				try {
 					const scoreToSave = this._bestScoreData
 					uni.setStorageSync('whack_mole_best_score', scoreToSave)
-					console.log('打地鼠最高分已保存:', scoreToSave)
+					console.log('最高分已保存:', scoreToSave)
 				} catch (e) {
-					console.log('保存打地鼠最高分失败:', e)
+					console.log('保存最高分失败:', e)
 				}
 			},
 
 			// 保存最高分（兼容旧版本）
 			saveBestScore() {
 				if (this.score > this.bestScore) {
-					console.log('保存打地鼠最高分，当前分数:', this.score, '原最高分:', this.bestScore)
+					console.log('保存最高分，当前分数:', this.score, '原最高分:', this.bestScore)
 					this._bestScoreData = this.score
 					this.saveBestScoreToStorage()
-					console.log('保存打地鼠最高分完成，新最高分:', this.bestScore)
+					console.log('保存最高分完成，新最高分:', this.bestScore)
 				}
 			},
 			
@@ -423,3 +423,4 @@
 <style>
 	@import './whack-mole.css';
 </style>
+

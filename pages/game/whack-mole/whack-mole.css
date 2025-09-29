@@ -11,11 +11,12 @@
 	overflow: hidden;
 }
 
-/* 导航栏样式 - 与2048保持一致 */
+/* 导航栏样式 */
 .custom-navbar {
 	width: 100%;
-	background-color: #fff;
-	box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(10rpx);
+	box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.1);
 	position: sticky;
 	top: 0;
 	z-index: 100;
@@ -26,18 +27,19 @@
 	justify-content: space-between;
 	align-items: center;
 	height: 88rpx;
-	padding: 0 40rpx;
+	padding: 0 20rpx;
 	position: relative;
 }
 
 .back-btn, .info-btn {
-	width: 56rpx;
-	height: 56rpx;
+	width: 88rpx;
+	height: 88rpx;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	border-radius: 50%;
 	transition: all 0.2s ease;
+	cursor: pointer;
 }
 
 .back-btn:active, .info-btn:active {
@@ -46,17 +48,18 @@
 }
 
 .back-icon, .info-icon {
-	font-size: 28rpx;
-	color: #495057;
+	font-size: 40rpx;
+	color: #333;
 }
 
 .navbar-title {
-	font-size: 32rpx;
-	color: #495057;
-	font-weight: 600;
+	font-size: 36rpx;
+	color: #2c3e50;
+	font-weight: 700;
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
+	text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 
 /* 游戏容器 */
@@ -221,7 +224,11 @@
 		inset 0 20rpx 40rpx rgba(0, 0, 0, 0.6),
 		0 8rpx 20rpx rgba(0, 0, 0, 0.3);
 	border: 4rpx solid #654321;
-	transition: all 0.2s ease;
+	transition: transform 0.2s ease;
+	/* 确保洞穴始终保持圆形 */
+	aspect-ratio: 1;
+	width: 100%;
+	height: auto;
 }
 
 .hole:active {
@@ -251,15 +258,15 @@
 	border-radius: 50%;
 	border: 3rpx solid #8B4513;
 	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-	animation: moleAppear 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	transition: transform 0.2s ease;
+	animation: moleAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 	box-shadow: 
 		0 8rpx 20rpx rgba(0, 0, 0, 0.4),
 		inset 0 4rpx 8rpx rgba(255, 255, 255, 0.3);
 }
 
 .mole.mole-appear {
-	animation: molePopUp 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	animation: molePopUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .mole.hit {
@@ -270,21 +277,25 @@
 
 @keyframes moleAppear {
 	0% {
-		transform: translateY(100%) scale(0);
+		transform: scale(0) translateY(20rpx);
 		opacity: 0;
 	}
+	60% {
+		transform: scale(1.1) translateY(0);
+		opacity: 1;
+	}
 	100% {
-		transform: translateY(0) scale(1);
+		transform: scale(1) translateY(0);
 		opacity: 1;
 	}
 }
 
 @keyframes molePopUp {
 	0% {
-		transform: scale(0.8);
+		transform: scale(0.9);
 	}
 	50% {
-		transform: scale(1.1);
+		transform: scale(1.05);
 	}
 	100% {
 		transform: scale(1);
@@ -618,7 +629,7 @@
 }
 
 .modal-header {
-	background: linear-gradient(135deg, #4ecdc4 0%, #2ba3a8 100%);
+	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
 	color: white;
 	padding: 30rpx;
 	position: relative;
@@ -738,3 +749,4 @@
 		font-size: 24rpx;
 	}
 }
+
