@@ -29,6 +29,13 @@
 			}
 		},
 		{
+			"path": "pages/debt-list/debt-list",
+			"style": {
+				"navigationBarTitleText": "欠欠清单",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/hotpot/hotpot",
 			"style": {
 				"navigationBarTitleText": "小锅伴",

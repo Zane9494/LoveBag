@@ -112,6 +112,13 @@
 						route: '/pages/pills/pills'
 					},
 					{
+						key: 'debt-list',
+						name: '欠欠清单',
+						icon: 'icon-lingyong',
+						visible: true,
+						route: '/pages/debt-list/debt-list'
+					},
+					{
 						key: 'hotpot',
 						name: '小锅伴',
 						icon: 'icon-diancanling',
