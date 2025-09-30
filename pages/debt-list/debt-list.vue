@@ -26,7 +26,7 @@
         </view>
         <view class="hero-text">
           <text class="subtitle">欠欠清单</text>
-          <text class="description">记录他欠我的小美好</text>
+          <text class="description">记录TA欠我的小美好</text>
         </view>
       </view>
 
