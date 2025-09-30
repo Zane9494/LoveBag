@@ -15,7 +15,7 @@
 			}
 		},
 		{
-			"path": "pages/theme-settings/theme-settings",
+			"path": "pages/index/theme-settings",
 			"style": {
 				"navigationBarTitleText": "主题设置",
 				"navigationStyle": "custom"

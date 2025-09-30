@@ -486,7 +486,7 @@
 			goToThemeSettings() {
 				// 跳转到主题设置页面的逻辑
 				uni.navigateTo({
-					url: '/pages/theme-settings/theme-settings'
+					url: '/pages/index/theme-settings'
 				})
 			},
 			// 获取分类项样式
