@@ -1,10 +1,24 @@
 {
   "id": "5027773",
-  "name": "lovecards",
+  "name": "lovebag",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "13674237",
+      "name": "领用",
+      "font_class": "lingyong",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "34746228",
+      "name": "伸手",
+      "font_class": "shou",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
     {
       "icon_id": "1727457",
       "name": "223保存",

@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1758786701397') format('truetype');
+  src: url('iconfont.ttf?t=1759215691717') format('truetype');
 }
 
 .iconfont {
@@ -9,6 +9,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-lingyong:before {
+  content: "\e63e";
+}
+
+.icon-shou:before {
+  content: "\e604";
 }
 
 .icon-baocun:before {
